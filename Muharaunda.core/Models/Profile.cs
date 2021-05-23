@@ -27,12 +27,24 @@ namespace Muharaunda.Core.Models
         [Required]
         public string IdentificationNumber { get; set; }
         [Required]
+        public string MobileNumber { get; set; }
+        [Required]
+        [EmailAddress(ErrorMessage = "Invalid Email Address")]
+        public string Email { get; set; }
+        [Required]
         public ProfileTypes ProfileType { get; set; }
         [Required]
         public ProfileStatuses ProfileStatus { get; set; }
         [Required]
         public string Address { get; set; }
         public string Image { get; set; }
+        public int CreatedBy { get; set; }
+        public DateTime Created { get; set; }
+
+        public int UpdatedBy { get; set; }
+        public DateTime Updated { get; set; }
+        public int ApprovedBy { get; set; }
+        public DateTime Approved { get; set; }
 
     }
 }

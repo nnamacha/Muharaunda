@@ -1,4 +1,5 @@
-﻿using Muharaunda.Core.Models;
+﻿using FluentValidation;
+using Muharaunda.Core.Models;
 using Munharaunda.Application.Validators.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -9,11 +10,12 @@ using static Muharaunda.Core.Constants.SystemWideConstants;
 
 namespace Munharaunda.Application.Validators.Implementations
 {
-    public class DependentValidator : IValidator<Profile>
+    public class DependentValidator : AbstractValidator<Profile>
     {
-        public bool Validate(Profile t)
+        public DependentValidator()
         {
-            return t.ProfileType == ProfileTypes.Dependent ? true : false;
+            RuleFor(x => x.ProfileType).Equal(ProfileTypes.Dependent);
         }
+        
     }
 }

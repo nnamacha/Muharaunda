@@ -11,7 +11,9 @@ namespace Muharaunda.Core.Models
     {
         [Key]
         public int Id { get; set; }
+        [Required]
         public int ProfileId { get; set; }
+        [Required]
         public int DependentId { get; set; }
     }
 }
