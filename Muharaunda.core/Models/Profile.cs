@@ -32,12 +32,16 @@ namespace Muharaunda.Core.Models
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string Email { get; set; }
         [Required]
+        public bool IsNextOfKin { get; set; }
+        public int NextOfKin { get; set; }
+        [Required]
         public ProfileTypes ProfileType { get; set; }
         [Required]
         public ProfileStatuses ProfileStatus { get; set; }
         [Required]
         public string Address { get; set; }
         public string Image { get; set; }
+        [Required]
         public int CreatedBy { get; set; }
         public DateTime Created { get; set; }
 

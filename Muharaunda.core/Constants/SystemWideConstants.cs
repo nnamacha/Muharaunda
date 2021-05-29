@@ -12,7 +12,9 @@ namespace Muharaunda.Core.Constants
         {
             Admin,
             Member,
-            Dependent
+            Dependent,
+            NextKin,
+
         }
 
         public enum ProfileStatuses
@@ -33,5 +35,8 @@ namespace Muharaunda.Core.Constants
             Income,
             Expense
         }
+
+        // Responses
+
     }
 }
