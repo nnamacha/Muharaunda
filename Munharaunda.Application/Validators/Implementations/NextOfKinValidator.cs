@@ -13,21 +13,21 @@ namespace Munharaunda.Application.Validators.Implementations
 {
     public class NextOfKinValidator: AbstractValidator<ProfileNextOfKin>
     {
-        private readonly IDataRespository _dataRespository;
+        private readonly IProfileRespository _profileRespository;
 
-        public NextOfKinValidator(IDataRespository dataRespository)
+        public NextOfKinValidator(IProfileRespository profileRespository)
         {
             RuleFor(x => x.NextOfKinProfileId)
                 .MustAsync(async (NextOfKinProfileId,cancellation) => {
                     return await IsValidProfile(NextOfKinProfileId);
                 })
                 .WithMessage("Next of kin's profile not found");
-            _dataRespository = dataRespository;
+            _profileRespository = profileRespository;
         }
 
         private async Task<bool> IsValidProfile(int profileId)
         {
-            var response =  await _dataRespository.GetProfileDetails(profileId);
+            var response =  await _profileRespository.GetProfileDetails(profileId);
 
             return response.ResponseCode == ResponseConstants.R00;
         }

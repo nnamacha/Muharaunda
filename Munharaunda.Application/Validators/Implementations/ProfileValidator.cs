@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
+using Munharaunda.Application.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +15,13 @@ namespace Munharaunda.Application.Validators.Implementations
     public class ProfileValidator : AbstractValidator<Profile>
     {
         private readonly IAppSettings _appSettings;
+        private readonly IProfileRespository _profileRepository;
 
-        public ProfileValidator(IAppSettings appSettings)
+        public ProfileValidator(IAppSettings appSettings, IProfileRespository profileRepository)
         {
+            _appSettings = appSettings;
+            _profileRepository = profileRepository;
+
             RuleFor(x => x.ProfileType).IsInEnum();
 
             RuleFor(x => x.Email)
@@ -27,10 +32,29 @@ namespace Munharaunda.Application.Validators.Implementations
                 .Must(IsValidDateOfBirth)
                 .WithMessage($"Invalid Dependent or Member must be old than {_appSettings.MinAgeInMonths} months") ;
 
-            _appSettings = appSettings;
+            RuleFor(x => x.IdentificationNumber)
+                .MustAsync(async (IdentificationNumber, cancellation) => {
+                    return await isUniqueID(IdentificationNumber);
+                })
+                .WithMessage($"Another profile has the same ID number");
+
+            RuleFor(x => x.MobileNumber)
+                .Must(IsValidMobileNumber)
+                .WithMessage("Invalid Mobile Number");
+
+            RuleFor(x => x.Address).NotNull();
+
+            RuleFor(x => x.CreatedBy).NotNull();
+
+            
         }
 
+        private async Task<bool> isUniqueID(string idNumber)
+        {
+            var response = await _profileRepository.ValidateIdNumber(idNumber);
 
+            return response.ResponseData[0];
+        }
 
         private bool IsValidEmailAddress(string email)
         {
@@ -52,7 +76,9 @@ namespace Munharaunda.Application.Validators.Implementations
             {
                 var dateOfBirth = Convert.ToDateTime(dob);
 
-                return (_appSettings.MinAgeInMonths <= dateOfBirth.Subtract(DateTime.Now).Days / (365.2425 / 12));
+                var ageInmonths = dateOfBirth.Subtract(DateTime.Now).Days / (365.2425 / 12) * -1;
+
+                return (_appSettings.MinAgeInMonths <= ageInmonths);
 
                 
             }

@@ -14,6 +14,7 @@ namespace Munharaunda.Application
         public static IServiceCollection AppApplication(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IAppSettings, AppSettings>(a => new AppSettings(configuration));
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             return services;
         }
     }

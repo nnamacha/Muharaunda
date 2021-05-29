@@ -1,5 +1,6 @@
 ﻿using Muharaunda.Core.Models;
 using Munharaunda.Application.Dtos;
+using Munharaunda.Application.Orchestration.Contracts;
 using Munharaunda.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Munharaunda.Application.Contracts
 {
-    public interface IDataRespository
+    public interface IProfileRespository
     {
         #region Profile Related
         public Task<ResponseModel<Profile>> CreateProfile(CreateProfileRequest request);
@@ -25,6 +26,7 @@ namespace Munharaunda.Application.Contracts
         public Task<ResponseModel<List<Profile>>> GetListOfDependentsByProfile(int profileId);
         public Task<ResponseModel<Profile>> GetNextOfKindByProfile(int profileId);
 
+        public Task<ResponseModel<bool>> ValidateIdNumber(string IdNumber);
 
         #endregion
 

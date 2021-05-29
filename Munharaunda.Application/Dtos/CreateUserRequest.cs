@@ -9,6 +9,6 @@ namespace Munharaunda.Application.Dtos
 {
     public class CreateProfileRequest : Profile
     {
-
+        
     }
 }
