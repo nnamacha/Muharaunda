@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Munharaunda.Application.Dtos
+namespace Munharaunda.Core.Dtos
 {
     public class CreateProfileRequest : Profile
     {

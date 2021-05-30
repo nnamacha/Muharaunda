@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Munharaunda.Application.Dtos;
+using Munharaunda.Core.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;

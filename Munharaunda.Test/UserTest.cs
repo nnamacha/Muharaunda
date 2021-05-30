@@ -1,13 +1,13 @@
 ﻿using Moq;
 using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
-using Munharaunda.Application.Contracts;
-using Munharaunda.Application.Dtos;
 using Munharaunda.Application.Orchestration.Implementation;
 using Munharaunda.Application.Validators.Implementations;
 using Munharaunda.Core.Constants;
+using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 using static Muharaunda.Core.Constants.SystemWideConstants;
 
@@ -17,10 +17,10 @@ namespace Munharaunda.Test
 
     public class UserTest
     {
-        private CreateProfileRequest _createProfileRequest;
+        private CreateProfileRequest createProfileRequest;
         private Mock<IProfileRespository> _profileRepository;
         private Mock<IAppSettings> _appSettings;
-        private readonly Profiles profilesImplementation;
+        private readonly ProfilesImplementation profilesImplementation;
 
         private ProfileValidator validator;
 
@@ -28,7 +28,7 @@ namespace Munharaunda.Test
 
         public UserTest()
         {
-            _createProfileRequest = new CreateProfileRequest()
+            createProfileRequest = new CreateProfileRequest()
             {
                 FirstName = "Nicholas",
                 Surname = "Namacha",
@@ -60,7 +60,10 @@ namespace Munharaunda.Test
 
             };
 
-
+            var userCreationRepoResponse = new ResponseModel<Profile>
+            {
+                ResponseCode = ResponseConstants.R00,
+            };
 
 
 
@@ -69,10 +72,12 @@ namespace Munharaunda.Test
             _appSettings = new Mock<IAppSettings>();
             _profileRepository.Setup(x => x.ValidateIdNumber(It.IsAny<string>())).ReturnsAsync(resultValidNumber);
             _profileRepository.Setup(x => x.GetProfileDetails(It.IsAny<int>())).ReturnsAsync(resultGetProfileDetails);
+            _profileRepository.Setup(x => x.CreateProfile(It.IsAny<CreateProfileRequest>())).ReturnsAsync(userCreationRepoResponse);
             _appSettings.SetupGet(x => x.MinAgeInMonths).Returns(3);
             _appSettings.SetupGet(x => x.LengthForMobileNumber).Returns(10);
-            profilesImplementation = new Profiles(_profileRepository.Object);
             validator = new ProfileValidator(_appSettings.Object, _profileRepository.Object);
+            profilesImplementation = new ProfilesImplementation(_profileRepository.Object, validator);
+
 
         }
         [Theory]
@@ -117,7 +122,7 @@ namespace Munharaunda.Test
 
 
 
-            var validation = validator.Validate(_createProfileRequest);
+            var validation = validator.Validate(createProfileRequest);
 
             var isValid = validation.IsValid;
 
@@ -132,7 +137,7 @@ namespace Munharaunda.Test
         {
 
             _appSettings.SetupGet(x => x.MinAgeInMonths).Returns(months);
-            var validation = validator.Validate(_createProfileRequest);
+            var validation = validator.Validate(createProfileRequest);
 
             var isValid = validation.IsValid;
 
@@ -146,11 +151,30 @@ namespace Munharaunda.Test
         {
 
             _appSettings.SetupGet(x => x.LengthForMobileNumber).Returns(noOfCharacters);
-            var validation = validator.Validate(_createProfileRequest);
+
+            var validation = validator.Validate(createProfileRequest);
 
             var isValid = validation.IsValid;
 
             Assert.Equal(Validation, isValid);
+        }
+
+        [Theory]
+        [InlineData(ResponseConstants.R00)]
+        [InlineData(ResponseConstants.R01)]
+        public async Task TestSuccessfulProfileCreation(string repoResponse)
+        {
+            var userCreationRepoResponse = new ResponseModel<Profile>
+            {
+                ResponseCode = repoResponse,
+            };
+
+            _profileRepository.Setup(x => x.CreateProfile(It.IsAny<CreateProfileRequest>())).ReturnsAsync(userCreationRepoResponse);
+
+            var result = await profilesImplementation.CreateProfile(createProfileRequest);
+
+            Assert.Equal(result.ResponseCode, repoResponse);
+
         }
 
 

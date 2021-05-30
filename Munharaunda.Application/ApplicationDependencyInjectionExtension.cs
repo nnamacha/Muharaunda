@@ -1,11 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Muharaunda.Core.Contracts;
+using Munharaunda.Application.Validators.Implementations;
+using Munharaunda.Resources.Implementation;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Munharaunda.Application
 {
@@ -13,7 +11,13 @@ namespace Munharaunda.Application
     {
         public static IServiceCollection AppApplication(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<IAppSettings, AppSettings>(a => new AppSettings(configuration));
+            AppSettings appSettings = new AppSettings(configuration);
+
+            ProfileRespository profileRespository = new ProfileRespository();
+
+            services.AddTransient<IAppSettings>(a => appSettings);
+            services.AddScoped<IProfileRespository>(r => profileRespository);
+            services.AddScoped<ProfileValidator>(s => new ProfileValidator(appSettings, profileRespository));
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             return services;
         }

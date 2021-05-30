@@ -21,6 +21,7 @@ namespace Munharaunda.Core.Constants
         public const string R00Message = "Success";
         public const string R01Message = "Failure";
         public const string R02Message = "Validation error";
+        public const string CREATE_PROFILE_REQUEST_INVALID = "The Create profile request is invalid";
        
     }
 }

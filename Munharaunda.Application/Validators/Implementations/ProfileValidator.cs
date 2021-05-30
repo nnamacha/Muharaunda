@@ -1,14 +1,9 @@
 ﻿using FluentValidation;
 using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
-using Munharaunda.Application.Contracts;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
-using static Muharaunda.Core.Constants.SystemWideConstants;
 
 namespace Munharaunda.Application.Validators.Implementations
 {
@@ -27,13 +22,14 @@ namespace Munharaunda.Application.Validators.Implementations
             RuleFor(x => x.Email)
                 .Must(IsValidEmailAddress)
                 .WithMessage("Invalid Email Address");
-            
+
             RuleFor(x => x.DateOfBirth)
                 .Must(IsValidDateOfBirth)
-                .WithMessage($"Invalid Dependent or Member must be old than {_appSettings.MinAgeInMonths} months") ;
+                .WithMessage($"Invalid Dependent or Member must be old than {_appSettings.MinAgeInMonths} months");
 
             RuleFor(x => x.IdentificationNumber)
-                .MustAsync(async (IdentificationNumber, cancellation) => {
+                .MustAsync(async (IdentificationNumber, cancellation) =>
+                {
                     return await isUniqueID(IdentificationNumber);
                 })
                 .WithMessage($"Another profile has the same ID number");
@@ -46,7 +42,7 @@ namespace Munharaunda.Application.Validators.Implementations
 
             RuleFor(x => x.CreatedBy).NotNull();
 
-            
+
         }
 
         private async Task<bool> isUniqueID(string idNumber)
@@ -80,7 +76,7 @@ namespace Munharaunda.Application.Validators.Implementations
 
                 return (_appSettings.MinAgeInMonths <= ageInmonths);
 
-                
+
             }
             catch (Exception)
             {
@@ -96,9 +92,9 @@ namespace Munharaunda.Application.Validators.Implementations
             else if (mobileNumber.Substring(0, 1) == "00")
                 return mobileNumber.Length == (_appSettings.LengthForMobileNumber + 2);
             else
-               return mobileNumber.Length == _appSettings.LengthForMobileNumber;
+                return mobileNumber.Length == _appSettings.LengthForMobileNumber;
         }
 
-        
+
     }
 }

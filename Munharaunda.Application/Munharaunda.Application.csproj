@@ -12,6 +12,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Muharaunda.core\Munharaunda.Core.csproj" />
+    <ProjectReference Include="..\Munharaunda.Resources\Munharaunda.Resources.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Contracts\" />
+    <Folder Include="Orchestration\Contracts\" />
   </ItemGroup>
 
 </Project>
