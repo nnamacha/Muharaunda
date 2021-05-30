@@ -14,17 +14,17 @@ namespace Muharaunda.Core.Contracts
     public interface IProfileRespository
     {
         #region Profile Related
+
         public Task<ResponseModel<Profile>> CreateProfile(CreateProfileRequest request);
-        public Task<ResponseModel<List<Profile>>> GetUnauthorisedProfiles();
-        public Task<ResponseModel<Profile>> DeleteProfile(int ProfileId);
+        public Task<ResponseModel<Profile>> GetUnauthorisedProfiles();
+        public Task<ResponseModel<bool>> DeleteProfile(int ProfileId);
         public Task<ResponseModel<Profile>> GetProfileDetails(int ProfileId);
 
         public Task<ResponseModel<Profile>> AuthoriseProfile(int ProfileId);
-        public Task<ResponseModel<List<Profile>>> GetListofAuthorisedProfiles();
-        public Task<ResponseModel<List<Profile>>> GetListOfActiveProfiles();
+        public Task<ResponseModel<Profile>> GetListOfActiveProfiles();
 
-        public Task<ResponseModel<List<Profile>>> GetOverAgeDependents();
-        public Task<ResponseModel<List<Profile>>> GetListOfDependentsByProfile(int profileId);
+        public Task<ResponseModel<Profile>> GetOverAgeDependents();
+        public Task<ResponseModel<Profile>> GetListOfDependentsByProfile(int profileId);
         public Task<ResponseModel<Profile>> GetNextOfKindByProfile(int profileId);
 
         public Task<ResponseModel<bool>> ValidateIdNumber(string IdNumber);

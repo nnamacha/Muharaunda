@@ -1,4 +1,6 @@
-﻿using Muharaunda.Core.Contracts;
+﻿using AutoMapper;
+using Muharaunda.Core.Constants;
+using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
 using Munharaunda.Application.Dtos;
 using Munharaunda.Application.Orchestration.Contracts;
@@ -9,31 +11,55 @@ using Munharaunda.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Profile = Muharaunda.Core.Models.Profile;
 
 namespace Munharaunda.Application.Orchestration.Implementation
 {
     public class ProfilesImplementation : IProfilesImplementation
     {
         private readonly IProfileRespository _repository;
+        private readonly IMapper _mapper;
         private readonly ProfileValidator _validator;
 
-        public ProfilesImplementation(IProfileRespository repository, ProfileValidator validator)
+        public ProfilesImplementation(IProfileRespository repository, IMapper mapper ,ProfileValidator validator)
         {
             _repository = repository;
+            _mapper = mapper;
             _validator = validator;
         }
-        public Task<ResponseModel<Profile>> AuthoriseProfile(int ProfileId)
+        public async Task<ResponseModel<Profile>> AuthoriseProfile(int profileId)
         {
-            throw new NotImplementedException();
+            ResponseModel<Profile> response = GenerateResponseModel<Profile>();
+
+            var profileDetails = await _repository.GetProfileDetails(profileId);
+
+            if (profileDetails.ResponseCode == ResponseConstants.R00)
+            {
+
+                if (profileDetails.ResponseData[0].ProfileStatus == SystemWideConstants.ProfileStatuses.Unauthorised)
+                {
+                    response = await _repository.AuthoriseProfile(profileId);
+                }
+                else
+                {
+                    response.ResponseMessage = ResponseConstants.INVALID_PROFILE_STATUS;
+                    
+                }
+                
+            }
+            else
+            {
+
+                response = profileDetails;
+
+            }
+
+            return response;
         }
 
         public async Task<ResponseModel<Profile>> CreateProfile(CreateProfileRequest request)
         {
-            //Default Failure
-            ResponseModel<Profile> response = new ResponseModel<Profile>
-            {
-                ResponseCode = ResponseConstants.R01
-            };
+            var response = GenerateResponseModel<Profile>();
 
             try
             {
@@ -73,22 +99,114 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
 
 
-        public Task<ResponseModel<Profile>> DeleteProfile(int ProfileId)
+        public async Task<ResponseModel<bool>> DeleteProfile(int profileId)
         {
-            throw new NotImplementedException();
+           var response = GenerateResponseModel<bool>();
+
+            try
+            {
+                var profileDetails = await _repository.GetProfileDetails(profileId);
+
+                if (profileDetails.ResponseCode == ResponseConstants.R00)
+                {
+                    response = await _repository.DeleteProfile(profileId);
+                }
+                else
+                {
+
+                    response = _mapper.Map<ResponseModel<bool>>(profileDetails);
+
+                }
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+
+                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseMessage = ex.Message;
+                return response;
+
+            }
         }
 
-        public Task<ResponseModel<List<Profile>>> GetListOfActiveProfiles()
+        
+
+        public async Task<ResponseModel<Profile>> GetListOfActiveProfiles()
         {
-            throw new NotImplementedException();
+            var response = GenerateResponseModel<Profile>();
+
+            
+
+            try
+            {
+
+                response = await _repository.GetListOfActiveProfiles();
+
+                var InactiveProfileFound = (response.ResponseData.FindAll(x => x.ProfileStatus != SystemWideConstants.ProfileStatuses.Active).Count > 0);
+
+                if (InactiveProfileFound)
+                {
+                    response.ResponseCode = ResponseConstants.R01;
+                    response.ResponseMessage = ResponseConstants.INACTIVE_PROFILE_FOUND;
+                }
+                else if(response.ResponseData.Count == 0 )
+                {
+                    response.ResponseMessage = ResponseConstants.RECORD_NOT_FOUND;
+                }
+
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+
+                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseMessage = ex.Message;
+                return response;
+
+            }
+
         }
 
-        public Task<ResponseModel<List<Profile>>> GetListofAuthorisedProfiles()
+        public async Task<ResponseModel<Profile>> GetUnauthorisedProfiles()
         {
-            throw new NotImplementedException();
+            var response = GenerateResponseModel<Profile>();
+
+
+
+            try
+            {
+
+                response = await _repository.GetUnauthorisedProfiles();
+
+                var InactiveProfileFound = (response.ResponseData.FindAll(x => x.ProfileStatus != SystemWideConstants.ProfileStatuses.Unauthorised).Count > 0);
+
+                if (InactiveProfileFound)
+                {
+                    response.ResponseCode = ResponseConstants.R01;
+                    response.ResponseMessage = ResponseConstants.AUTHORISED_PROFILE_FOUND;
+                }
+                else if (response.ResponseData.Count == 0)
+                {
+                    response.ResponseMessage = ResponseConstants.RECORD_NOT_FOUND;
+                }
+
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+
+                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseMessage = ex.Message;
+                return response;
+
+            }
         }
 
-        public Task<ResponseModel<List<Profile>>> GetListOfDependentsByProfile(int profileId)
+
+        public Task<ResponseModel<Profile>> GetListOfDependentsByProfile(int profileId)
         {
             throw new NotImplementedException();
         }
@@ -98,7 +216,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<List<Profile>>> GetOverAgeDependents()
+        public Task<ResponseModel<Profile>> GetOverAgeDependents()
         {
             throw new NotImplementedException();
         }
@@ -108,14 +226,25 @@ namespace Munharaunda.Application.Orchestration.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<List<Profile>>> GetUnauthorisedProfiles()
-        {
-            throw new NotImplementedException();
-        }
+
 
         public Task<ResponseModel<bool>> ValidateIdNumber(string IdNumber)
         {
             throw new NotImplementedException();
         }
+
+
+        #region Private Methods
+
+        private ResponseModel<T> GenerateResponseModel<T>()
+        {
+            return new ResponseModel<T>
+            {
+                ResponseCode = ResponseConstants.R01
+            };
+
+        }
+
+        #endregion
     }
 }

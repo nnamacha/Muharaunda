@@ -20,22 +20,22 @@ namespace Munharaunda.Resources.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<Profile>> DeleteProfile(int ProfileId)
+        public Task<ResponseModel<bool>> DeleteProfile(int ProfileId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<List<Profile>>> GetListOfActiveProfiles()
+        public Task<ResponseModel<Profile>> GetListOfActiveProfiles()
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<List<Profile>>> GetListofAuthorisedProfiles()
+        public Task<ResponseModel<Profile>> GetListofAuthorisedProfiles()
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<List<Profile>>> GetListOfDependentsByProfile(int profileId)
+        public Task<ResponseModel<Profile>> GetListOfDependentsByProfile(int profileId)
         {
             throw new NotImplementedException();
         }
@@ -45,7 +45,7 @@ namespace Munharaunda.Resources.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<List<Profile>>> GetOverAgeDependents()
+        public Task<ResponseModel<Profile>> GetOverAgeDependents()
         {
             throw new NotImplementedException();
         }
@@ -55,7 +55,7 @@ namespace Munharaunda.Resources.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<List<Profile>>> GetUnauthorisedProfiles()
+        public Task<ResponseModel<Profile>> GetUnauthorisedProfiles()
         {
             throw new NotImplementedException();
         }
