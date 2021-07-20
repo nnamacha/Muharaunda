@@ -431,7 +431,7 @@ namespace Munharaunda.Test
 
             _profileRepository.Setup(x => x.GetListOfDependentsByProfile(It.IsAny<int>())).ReturnsAsync(listOfProfiles);
 
-            var result = await profilesImplementation.GetListOfDependentsByProfile()
+            var result = await profilesImplementation.GetListOfDependentsByProfile(1);
 
             
         }
