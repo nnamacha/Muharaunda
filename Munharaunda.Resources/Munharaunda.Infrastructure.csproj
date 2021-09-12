@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Muharaunda.core\Munharaunda.Core.csproj" />
+    <ProjectReference Include="..\Muharaunda.core\Munharaunda.Domain.csproj" />
   </ItemGroup>
 
 </Project>

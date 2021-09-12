@@ -5,13 +5,13 @@ VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Munharaunda.Api", "Muharaunda.Api\Munharaunda.Api.csproj", "{3074142B-288D-4ACD-A12B-3ABB4FD5B4E4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Munharaunda.Core", "Muharaunda.core\Munharaunda.Core.csproj", "{C2528356-04B4-41EB-A5D2-306687A0A41A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Munharaunda.Domain", "Muharaunda.core\Munharaunda.Domain.csproj", "{C2528356-04B4-41EB-A5D2-306687A0A41A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Munharaunda.Application", "Munharaunda.Application\Munharaunda.Application.csproj", "{73A5E724-13A0-496E-9F2D-6D3AB1D24405}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Munharaunda.Test", "Munharaunda.Test\Munharaunda.Test.csproj", "{72F4F79F-F710-46B5-B7E5-AEA779A25556}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Munharaunda.Test", "Munharaunda.Test\Munharaunda.Test.csproj", "{72F4F79F-F710-46B5-B7E5-AEA779A25556}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Munharaunda.Resources", "Munharaunda.Resources\Munharaunda.Resources.csproj", "{56B86712-B152-4341-8ECE-124285735224}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Munharaunda.Infrastructure", "Munharaunda.Resources\Munharaunda.Infrastructure.csproj", "{56B86712-B152-4341-8ECE-124285735224}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

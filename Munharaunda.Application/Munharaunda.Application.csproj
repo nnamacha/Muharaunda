@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Muharaunda.core\Munharaunda.Core.csproj" />
-    <ProjectReference Include="..\Munharaunda.Resources\Munharaunda.Resources.csproj" />
+    <ProjectReference Include="..\Muharaunda.core\Munharaunda.Domain.csproj" />
+    <ProjectReference Include="..\Munharaunda.Resources\Munharaunda.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
