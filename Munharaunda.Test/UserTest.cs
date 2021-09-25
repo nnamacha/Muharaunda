@@ -322,6 +322,38 @@ namespace Munharaunda.Test
 
             Assert.Equal(Validation, isValid);
         }
+        
+        [Theory]
+        [InlineData(10, ProfileTypes.Dependent, true)]
+        [InlineData(10, ProfileTypes.Member, false)]
+        public void TestDependentProfileTypeValidation(int age, ProfileTypes profileType, bool Validation)
+        {
+            var dob = DateTime.Now.AddYears(age * -1);
+
+            var dependent = new CreateProfileRequest()
+            {
+                ProfileId = 2,
+                FirstName = "Marvelous",
+                Surname = "Namacha",
+                DateOfBirth = dob.ToString(),
+                IdentificationType = IdentificationTypes.Passport,
+                IdentificationNumber = "123458690",
+                MobileNumber = "+27846994000",
+                Email = "mnamacha@test.com",
+                IsNextOfKin = true,
+                ProfileType = profileType,
+                NextOfKin = 2,
+                ProfileStatus = ProfileStatuses.Active,
+                Address = "15-10 Test Road",
+                CreatedBy = 1
+            };
+
+            var validation = dependentValidator.Validate(dependent);            
+
+            var isValid = validation.IsValid;
+
+            Assert.Equal(Validation, isValid);
+        }
 
         [Theory]
         [InlineData(ResponseConstants.R00)]
