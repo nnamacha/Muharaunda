@@ -38,6 +38,8 @@ namespace Muharaunda.Core.Models
         public ProfileTypes ProfileType { get; set; }
         [Required]
         public ProfileStatuses ProfileStatus { get; set; }
+
+        public DateTime ActivationDate { get; set; }
         [Required]
         public string Address { get; set; }
         public string Image { get; set; }

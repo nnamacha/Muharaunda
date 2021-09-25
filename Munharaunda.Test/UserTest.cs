@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
@@ -7,6 +8,7 @@ using Munharaunda.Application.Validators.Implementations;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -23,12 +25,14 @@ namespace Munharaunda.Test
         private Mock<IProfileRespository> _profileRepository;
         private Mock<IAppSettings> _appSettings;
         private Mock<IMapper> _mapper;
-        private readonly ProfilesImplementation profilesImplementation;
+        private readonly Mock<IConfiguration> _configuration;
+        private readonly ProfileService profilesImplementation;
         private List<Profile> profiles = new List<Profile>();
         private List<Profile> activeProfiles = new List<Profile>();
         private List<Profile> unauthorisedProfiles;
         private List<Profile> dependentProfiles;
         private ProfileValidator validator;
+        private readonly DependentValidator dependentValidator;
         private ResponseModel<Profile> resultGetProfileDetails;
 
         public UserTest()
@@ -181,15 +185,30 @@ namespace Munharaunda.Test
 
 
             _profileRepository = new Mock<IProfileRespository>();
+
             _appSettings = new Mock<IAppSettings>();
+
             _mapper = new Mock<IMapper>();
+
+            _configuration = new Mock<IConfiguration>();
+
             _profileRepository.Setup(x => x.ValidateIdNumber(It.IsAny<string>())).ReturnsAsync(resultValidNumber);
+
             _profileRepository.Setup(x => x.GetProfileDetails(It.IsAny<int>())).ReturnsAsync(resultGetProfileDetails);
+
             _profileRepository.Setup(x => x.CreateProfile(It.IsAny<CreateProfileRequest>())).ReturnsAsync(userCreationRepoResponse);
+
             _appSettings.SetupGet(x => x.MinAgeInMonths).Returns(3);
+
             _appSettings.SetupGet(x => x.LengthForMobileNumber).Returns(10);
+
+            _appSettings.SetupGet(x => x.MaximumDependentAge).Returns(20);
+
             validator = new ProfileValidator(_appSettings.Object, _profileRepository.Object);
-            profilesImplementation = new ProfilesImplementation(_profileRepository.Object, _mapper.Object,validator);
+
+            dependentValidator = new DependentValidator(_appSettings.Object);
+
+            profilesImplementation = new ProfileService(_profileRepository.Object, _mapper.Object,validator, _appSettings.Object);
 
 
         }
@@ -266,6 +285,38 @@ namespace Munharaunda.Test
             _appSettings.SetupGet(x => x.LengthForMobileNumber).Returns(noOfCharacters);
 
             var validation = validator.Validate(ProfileRecord);
+
+            var isValid = validation.IsValid;
+
+            Assert.Equal(Validation, isValid);
+        }
+
+        [Theory]
+        [InlineData(10, true)]
+        [InlineData(30, false)]
+        public void TestDependentAgeValidation(int age, bool Validation)
+        {
+            var dob = DateTime.Now.AddYears(age * -1);
+
+            var dependent = new CreateProfileRequest()
+            {
+                ProfileId = 2,
+                FirstName = "Marvelous",
+                Surname = "Namacha",
+                DateOfBirth = dob.ToString(),
+                IdentificationType = IdentificationTypes.Passport,
+                IdentificationNumber = "123458690",
+                MobileNumber = "+27846994000",
+                Email = "mnamacha@test.com",
+                IsNextOfKin = true,
+                ProfileType = ProfileTypes.Dependent,
+                NextOfKin = 2,
+                ProfileStatus = ProfileStatuses.Active,
+                Address = "15-10 Test Road",
+                CreatedBy = 1
+            };
+
+            var validation = dependentValidator.Validate(dependent);            
 
             var isValid = validation.IsValid;
 

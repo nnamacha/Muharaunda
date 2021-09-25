@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Muharaunda.Core.Contracts;
+using Munharaunda.Application.Orchestration.Contracts;
+using Munharaunda.Application.Orchestration.Implementation;
 using Munharaunda.Application.Validators.Implementations;
 using Munharaunda.Resources.Implementation;
 using System;
@@ -17,6 +19,7 @@ namespace Munharaunda.Application
 
             services.AddTransient<IAppSettings>(a => appSettings);
             services.AddScoped<IProfileRespository>(r => profileRespository);
+            services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<ProfileValidator>(s => new ProfileValidator(appSettings, profileRespository));
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             return services;

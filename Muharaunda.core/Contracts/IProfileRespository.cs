@@ -23,7 +23,7 @@ namespace Muharaunda.Core.Contracts
         public Task<ResponseModel<Profile>> AuthoriseProfile(int ProfileId);
         public Task<ResponseModel<Profile>> GetListOfActiveProfiles();
 
-        public Task<ResponseModel<Profile>> GetOverAgeDependents();
+        
         public Task<ResponseModel<Profile>> GetListOfDependentsByProfile(int profileId);
         public Task<ResponseModel<Profile>> GetNextOfKindByProfile(int profileId);
 

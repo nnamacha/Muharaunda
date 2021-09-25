@@ -35,7 +35,7 @@ namespace Munharaunda.Resources.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<Profile>> GetListOfDependentsByProfile(int profileId)
+        public async Task<ResponseModel<Profile>> GetListOfDependentsByProfile(int profileId)
         {
             throw new NotImplementedException();
         }
@@ -45,10 +45,6 @@ namespace Munharaunda.Resources.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<Profile>> GetOverAgeDependents()
-        {
-            throw new NotImplementedException();
-        }
 
         public Task<ResponseModel<Profile>> GetProfileDetails(int ProfileId)
         {

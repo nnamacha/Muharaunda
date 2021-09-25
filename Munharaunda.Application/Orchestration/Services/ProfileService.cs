@@ -1,31 +1,30 @@
 ﻿using AutoMapper;
 using Muharaunda.Core.Constants;
 using Muharaunda.Core.Contracts;
-using Muharaunda.Core.Models;
-using Munharaunda.Application.Dtos;
 using Munharaunda.Application.Orchestration.Contracts;
 using Munharaunda.Application.Validators.Implementations;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Profile = Muharaunda.Core.Models.Profile;
 
 namespace Munharaunda.Application.Orchestration.Implementation
 {
-    public class ProfilesImplementation : IProfilesImplementation
+    public class ProfileService : IProfileService
     {
         private readonly IProfileRespository _repository;
         private readonly IMapper _mapper;
         private readonly ProfileValidator _validator;
+        private readonly IAppSettings _appSettings;
 
-        public ProfilesImplementation(IProfileRespository repository, IMapper mapper ,ProfileValidator validator)
+        public ProfileService(IProfileRespository repository, IMapper mapper, ProfileValidator validator, IAppSettings appSettings)
         {
             _repository = repository;
             _mapper = mapper;
             _validator = validator;
+            _appSettings = appSettings;
         }
         public async Task<ResponseModel<Profile>> AuthoriseProfile(int profileId)
         {
@@ -43,9 +42,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
                 else
                 {
                     response.ResponseMessage = ResponseConstants.INVALID_PROFILE_STATUS;
-                    
+
                 }
-                
+
             }
             else
             {
@@ -68,6 +67,10 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
                 if (requestValidation.IsValid)
                 {
+                    if (request.ProfileType == SystemWideConstants.ProfileTypes.Member)
+                    {
+                        request.ActivationDate = CalculateProfileActivationDate();
+                    }
                     response = await _repository.CreateProfile(request);
                 }
                 else
@@ -93,7 +96,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
             }
 
-            
+
 
         }
 
@@ -101,7 +104,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
         public async Task<ResponseModel<bool>> DeleteProfile(int profileId)
         {
-           var response = GenerateResponseModel<bool>();
+            var response = GenerateResponseModel<bool>();
 
             try
             {
@@ -130,13 +133,13 @@ namespace Munharaunda.Application.Orchestration.Implementation
             }
         }
 
-        
+
 
         public async Task<ResponseModel<Profile>> GetListOfActiveProfiles()
         {
             var response = GenerateResponseModel<Profile>();
 
-            
+
 
             try
             {
@@ -150,7 +153,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
                     response.ResponseCode = ResponseConstants.R01;
                     response.ResponseMessage = ResponseConstants.INACTIVE_PROFILE_FOUND;
                 }
-                else if(response.ResponseData.Count == 0 )
+                else if (response.ResponseData.Count == 0)
                 {
                     response.ResponseMessage = ResponseConstants.RECORD_NOT_FOUND;
                 }
@@ -206,20 +209,49 @@ namespace Munharaunda.Application.Orchestration.Implementation
         }
 
 
-        public Task<ResponseModel<Profile>> GetListOfDependentsByProfile(int profileId)
+        public async Task<ResponseModel<Profile>> GetListOfDependentsByProfile(int profileId)
         {
-            throw new NotImplementedException();
+            var response = GenerateResponseModel<Profile>();
+
+            try
+            {
+                response = await _repository.GetListOfDependentsByProfile(profileId);
+
+                return response;
+                
+            }
+            catch (Exception ex)
+            {
+
+                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseMessage = ex.Message;
+                return response;
+            }
+
+            
         }
 
-        public Task<ResponseModel<Profile>> GetNextOfKindByProfile(int profileId)
+        public async Task<ResponseModel<Profile>> GetNextOfKindByProfile(int profileId)
         {
-            throw new NotImplementedException();
+            var response = GenerateResponseModel<Profile>();
+
+            try
+            {
+                response = await _repository.GetNextOfKindByProfile(profileId);
+
+                return response;
+
+            }
+            catch (Exception ex)
+            {
+
+                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseMessage = ex.Message;
+                return response;
+            }
         }
 
-        public Task<ResponseModel<Profile>> GetOverAgeDependents()
-        {
-            throw new NotImplementedException();
-        }
+
 
         public Task<ResponseModel<Profile>> GetProfileDetails(int ProfileId)
         {
@@ -233,6 +265,15 @@ namespace Munharaunda.Application.Orchestration.Implementation
             throw new NotImplementedException();
         }
 
+        public DateTime CalculateProfileActivationDate()
+        {
+            return DateTime.Now.AddDays(_appSettings.NumberOfDaysToActivateProfile);
+        }
+
+        public async Task<ResponseModel<Profile>> GetNextOfKinAsync(int profileId)
+        {
+            return await _repository.GetNextOfKindByProfile(profileId);
+        }
 
         #region Private Methods
 

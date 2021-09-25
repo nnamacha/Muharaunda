@@ -12,14 +12,23 @@ namespace Munharaunda.Application
     {
         private readonly int minAgeInMonths;
         private readonly int lengthForMobileNumber;
+        private readonly int numberOfDaysToActivateProfile;
+        private readonly int maximumDependentAge;
 
         public AppSettings(IConfiguration configuration)
         {
-            minAgeInMonths = configuration.GetValue<int>("General:MinAgeInMonth");
-            lengthForMobileNumber = configuration.GetValue<int>("General:lengthForMobileNumber");
+            minAgeInMonths =int.Parse(configuration["General:MinAgeInMonth"]);
+            lengthForMobileNumber =int.Parse(configuration["General:LengthForMobileNumber"]);
+            numberOfDaysToActivateProfile = int.Parse(configuration["General:NumberOfDaysToActivateProfile"]);
+            maximumDependentAge = int.Parse(configuration["General:MaximumDependentAge"]);
         }
         public int MinAgeInMonths { get => minAgeInMonths; }
 
         public int LengthForMobileNumber { get => lengthForMobileNumber; }
+
+        public int NumberOfDaysToActivateProfile { get => numberOfDaysToActivateProfile; }
+
+        public int MaximumDependentAge  { get => maximumDependentAge;}
     }
+    
 }
