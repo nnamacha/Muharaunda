@@ -10,36 +10,36 @@ namespace Muharaunda.Api
     {
         public static void Main(string[] args)
         {
-            var configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
+            //var configuration = new ConfigurationBuilder()
+            //    .AddJsonFile("appsettings.json")
+            //    .Build();
 
-            Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(configuration)
-                //.WriteTo.File("C:\\Africa\\LogFile\\Munharaunda\\Log.txt")
-                .CreateLogger();
+            //Log.Logger = new LoggerConfiguration()
+            //    .ReadFrom.Configuration(configuration)
+            //    //.WriteTo.File("C:\\Africa\\LogFile\\Munharaunda\\Log.txt")
+            //    .CreateLogger();
 
             try
             {
-                Log.Information("Application starting up");
+                //Log.Information("Application starting up");
 
                 CreateHostBuilder(args).Build().Run();
             }
             catch (Exception ex)
             {
 
-                Log.Fatal(ex, "The application failed to start correctly");
+                throw;
             }
             finally
             {
-                Log.CloseAndFlush();
+                //Log.CloseAndFlush();
             }
 
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .UseSerilog()
+                //.UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

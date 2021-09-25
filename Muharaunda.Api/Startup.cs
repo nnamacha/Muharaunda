@@ -26,7 +26,8 @@ namespace Muharaunda.Api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Muharaunda.Api", Version = "v1" });
             });
-            services.AppApplication(Configuration);
+            services.AddApplication(Configuration);
+            services.AddResources();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,7 +40,7 @@ namespace Muharaunda.Api
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Muharaunda.Api v1"));
             }
 
-            app.UseSerilogRequestLogging();
+            //app.UseSerilogRequestLogging();
             
             app.UseHttpsRedirection();
 

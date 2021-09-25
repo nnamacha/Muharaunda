@@ -10,22 +10,22 @@ namespace Munharaunda.Resources.Implementation
 {
     public class ProfileRespository : IProfileRespository
     {
-        public Task<ResponseModel<Profile>> AuthoriseProfile(int ProfileId)
+        public Task<ResponseModel<Profile>> AuthoriseProfileAsync(int ProfileId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<Profile>> CreateProfile(CreateProfileRequest request)
+        public Task<ResponseModel<Profile>> CreateProfileAsync(CreateProfileRequest request)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<bool>> DeleteProfile(int ProfileId)
+        public Task<ResponseModel<bool>> DeleteProfileAsync(int ProfileId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<Profile>> GetListOfActiveProfiles()
+        public Task<ResponseModel<Profile>> GetListOfActiveProfilesAsync()
         {
             throw new NotImplementedException();
         }
@@ -35,23 +35,23 @@ namespace Munharaunda.Resources.Implementation
             throw new NotImplementedException();
         }
 
-        public async Task<ResponseModel<Profile>> GetListOfDependentsByProfile(int profileId)
+        public Task<ResponseModel<Profile>> GetListOfDependentsByProfileAsync(int profileId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<Profile>> GetNextOfKindByProfile(int profileId)
+        public Task<ResponseModel<Profile>> GetNextOfKindByProfileAsync(int profileId)
         {
             throw new NotImplementedException();
         }
 
 
-        public Task<ResponseModel<Profile>> GetProfileDetails(int ProfileId)
+        public Task<ResponseModel<Profile>> GetProfileDetailsAsync(int ProfileId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<Profile>> GetUnauthorisedProfiles()
+        public Task<ResponseModel<Profile>> GetUnauthorisedProfilesAsync()
         {
             throw new NotImplementedException();
         }

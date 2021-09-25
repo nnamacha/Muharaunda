@@ -23,7 +23,7 @@ namespace Munharaunda.Application.Validators.Implementations
 
         private async Task<bool> IsValidProfile(int profileId)
         {
-            var response = await _profileRespository.GetProfileDetails(profileId);
+            var response = await _profileRespository.GetProfileDetailsAsync(profileId);
 
             return response.ResponseCode == ResponseConstants.R00;
         }

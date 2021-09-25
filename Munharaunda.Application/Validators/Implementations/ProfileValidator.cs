@@ -27,12 +27,12 @@ namespace Munharaunda.Application.Validators.Implementations
                 .Must(IsValidDateOfBirth)
                 .WithMessage($"Invalid Dependent or Member must be old than {_appSettings.MinAgeInMonths} months");
 
-            RuleFor(x => x.IdentificationNumber)
-                .MustAsync(async (IdentificationNumber, cancellation) =>
-                {
-                    return await isUniqueID(IdentificationNumber);
-                })
-                .WithMessage($"Another profile has the same ID number");
+            //RuleFor(x => x.IdentificationNumber)
+            //    .MustAsync(async (IdentificationNumber, cancellation) =>
+            //    {
+            //        return await isUniqueID(IdentificationNumber);
+            //    })
+            //    .WithMessage($"Another profile has the same ID number");
 
             RuleFor(x => x.MobileNumber)
                 .Must(IsValidMobileNumber)

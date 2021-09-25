@@ -11,7 +11,7 @@ namespace Munharaunda.Application
 {
     public static class ApplicationDependencyInjectionExtension
     {
-        public static IServiceCollection AppApplication(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
         {
             AppSettings appSettings = new AppSettings(configuration);
 
@@ -22,6 +22,13 @@ namespace Munharaunda.Application
             services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<ProfileValidator>(s => new ProfileValidator(appSettings, profileRespository));
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            return services;
+        }
+
+        public static IServiceCollection AddResources(this IServiceCollection services)
+        {
+            
+            services.AddScoped<IProfileRespository,MongoDBRepository>();
             return services;
         }
     }

@@ -194,9 +194,9 @@ namespace Munharaunda.Test
 
             _profileRepository.Setup(x => x.ValidateIdNumber(It.IsAny<string>())).ReturnsAsync(resultValidNumber);
 
-            _profileRepository.Setup(x => x.GetProfileDetails(It.IsAny<int>())).ReturnsAsync(resultGetProfileDetails);
+            _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(resultGetProfileDetails);
 
-            _profileRepository.Setup(x => x.CreateProfile(It.IsAny<CreateProfileRequest>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>())).ReturnsAsync(userCreationRepoResponse);
 
             _appSettings.SetupGet(x => x.MinAgeInMonths).Returns(3);
 
@@ -228,7 +228,7 @@ namespace Munharaunda.Test
 
             var profile = new ProfileNextOfKin();
 
-            _profileRepository.Setup(x => x.GetProfileDetails(It.IsAny<int>())).ReturnsAsync(result);
+            _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(result);
 
             var validation = validator.Validate(profile);
 
@@ -365,9 +365,9 @@ namespace Munharaunda.Test
                 ResponseCode = repoResponse,
             };
 
-            _profileRepository.Setup(x => x.CreateProfile(It.IsAny<CreateProfileRequest>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>())).ReturnsAsync(userCreationRepoResponse);
 
-            var result = await profilesImplementation.CreateProfile(ProfileRecord);
+            var result = await profilesImplementation.CreateProfileAsync(ProfileRecord);
 
             Assert.Equal(result.ResponseCode, repoResponse);
 
@@ -383,9 +383,9 @@ namespace Munharaunda.Test
             };
 
 
-            _profileRepository.Setup(x => x.DeleteProfile(It.IsAny<int>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.DeleteProfileAsync(It.IsAny<int>())).ReturnsAsync(userCreationRepoResponse);
 
-            var result = await profilesImplementation.DeleteProfile(1);
+            var result = await profilesImplementation.DeleteProfileAsync(1);
 
             Assert.Equal(result.ResponseCode, repoResponse);
         }
@@ -403,11 +403,11 @@ namespace Munharaunda.Test
 
             resultGetProfileDetails.ResponseData.Add(ProfileRecord);
 
-            _profileRepository.Setup(x => x.AuthoriseProfile(It.IsAny<int>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.AuthoriseProfileAsync(It.IsAny<int>())).ReturnsAsync(userCreationRepoResponse);
 
-            _profileRepository.Setup(x => x.GetProfileDetails(It.IsAny<int>())).ReturnsAsync(resultGetProfileDetails);
+            _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(resultGetProfileDetails);
 
-            var result = await profilesImplementation.AuthoriseProfile(1);
+            var result = await profilesImplementation.AuthoriseProfileAsync(1);
 
             Assert.Equal(result.ResponseCode, repoResponse);
         }
@@ -429,14 +429,14 @@ namespace Munharaunda.Test
 
             resultGetProfileDetails.ResponseData.Add(ProfileRecord);
 
-           _profileRepository.Setup(x => x.AuthoriseProfile(It.IsAny<int>())).ReturnsAsync(userCreationRepoResponse);
+           _profileRepository.Setup(x => x.AuthoriseProfileAsync(It.IsAny<int>())).ReturnsAsync(userCreationRepoResponse);
 
-            _profileRepository.Setup(x => x.GetProfileDetails(It.IsAny<int>())).ReturnsAsync(resultGetProfileDetails);
+            _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(resultGetProfileDetails);
 
-            var result = await profilesImplementation.AuthoriseProfile(1);
+            var result = await profilesImplementation.AuthoriseProfileAsync(1);
 
             Assert.Equal(result.ResponseCode, repoResponse);
-            _profileRepository.Verify(m => m.AuthoriseProfile(It.IsAny<int>()), Times.Exactly(count));
+            _profileRepository.Verify(m => m.AuthoriseProfileAsync(It.IsAny<int>()), Times.Exactly(count));
         }
 
         [Theory]
@@ -458,9 +458,9 @@ namespace Munharaunda.Test
                 listOfProfiles.ResponseData = profiles;
             }
 
-            _profileRepository.Setup(x => x.GetListOfActiveProfiles()).ReturnsAsync(listOfProfiles);
+            _profileRepository.Setup(x => x.GetListOfActiveProfilesAsync()).ReturnsAsync(listOfProfiles);
 
-            var result = await profilesImplementation.GetListOfActiveProfiles();
+            var result = await profilesImplementation.GetListOfActiveProfilesAsync();
 
             Assert.Equal(repoResponse, result.ResponseCode);
 
@@ -485,9 +485,9 @@ namespace Munharaunda.Test
                 listOfProfiles.ResponseData = profiles;
             }
 
-            _profileRepository.Setup(x => x.GetUnauthorisedProfiles()).ReturnsAsync(listOfProfiles);
+            _profileRepository.Setup(x => x.GetUnauthorisedProfilesAsync()).ReturnsAsync(listOfProfiles);
 
-            var result = await profilesImplementation.GetUnauthorisedProfiles();
+            var result = await profilesImplementation.GetUnauthorisedProfilesAsync();
 
             Assert.Equal(repoResponse, result.ResponseCode);
 
@@ -512,9 +512,9 @@ namespace Munharaunda.Test
                 listOfProfiles.ResponseData = profiles;
             }
 
-            _profileRepository.Setup(x => x.GetListOfDependentsByProfile(It.IsAny<int>())).ReturnsAsync(listOfProfiles);
+            _profileRepository.Setup(x => x.GetListOfDependentsByProfileAsync(It.IsAny<int>())).ReturnsAsync(listOfProfiles);
 
-            var result = await profilesImplementation.GetListOfDependentsByProfile(1);
+            var result = await profilesImplementation.GetListOfDependentsByProfileAsync(1);
 
             
         }

@@ -18,7 +18,7 @@ namespace Munharaunda.Application
         public AppSettings(IConfiguration configuration)
         {
             minAgeInMonths =int.Parse(configuration["General:MinAgeInMonth"]);
-            lengthForMobileNumber =int.Parse(configuration["General:LengthForMobileNumber"]);
+            lengthForMobileNumber =int.Parse(configuration["General:MobileNumberLength"]);
             numberOfDaysToActivateProfile = int.Parse(configuration["General:NumberOfDaysToActivateProfile"]);
             maximumDependentAge = int.Parse(configuration["General:MaximumDependentAge"]);
         }
