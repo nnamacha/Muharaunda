@@ -130,7 +130,7 @@ namespace Munharaunda.Resources.Implementation
                 var profiles = await mongoDb.GetCollection<Profile>("Profile").Find(filter).ToListAsync();
 
 
-                response.ResponseData = (List<ProfileBase>)profiles.Cast<ProfileBase>();
+                response.ResponseData = _mapper.Map<List<ProfileBase>>(profiles);
             }
             catch (Exception ex)
             {

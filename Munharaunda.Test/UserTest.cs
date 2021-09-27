@@ -5,18 +5,16 @@ using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
 using Munharaunda.Application.Orchestration.Implementation;
 using Munharaunda.Application.Validators.Implementations;
-using Munharaunda.Application;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using static Muharaunda.Core.Constants.SystemWideConstants;
 using Profile = Muharaunda.Core.Models.Profile;
-using Munharaunda.Domain.Contracts;
-using System.Linq;
 
 namespace Munharaunda.Test
 {
@@ -37,7 +35,7 @@ namespace Munharaunda.Test
         private ProfileValidator validator;
         private readonly DependentValidator dependentValidator;
         private ResponseModel<ProfileBase> resultGetProfileDetails;
-        
+
 
         public UserTest()
         {
@@ -60,7 +58,7 @@ namespace Munharaunda.Test
 
             };
 
-            
+
 
             profiles.Add(new CreateProfileRequest()
             {
@@ -91,7 +89,7 @@ namespace Munharaunda.Test
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
                 Email = "mnamacha@test.com",
-               
+
                 ProfileType = ProfileTypes.Member,
                 NextOfKin = 2,
                 ProfileStatus = ProfileStatuses.Unauthorised,
@@ -110,7 +108,7 @@ namespace Munharaunda.Test
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
                 Email = "mnamacha@test.com",
-                
+
                 ProfileType = ProfileTypes.Member,
                 NextOfKin = 2,
                 ProfileStatus = ProfileStatuses.Terminated,
@@ -130,7 +128,7 @@ namespace Munharaunda.Test
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
                 Email = "mnamacha@test.com",
-                
+
                 ProfileType = ProfileTypes.Member,
                 NextOfKin = 2,
                 ProfileStatus = ProfileStatuses.Flagged,
@@ -150,7 +148,7 @@ namespace Munharaunda.Test
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
                 Email = "mnamacha@test.com",
-                
+
                 ProfileType = ProfileTypes.Dependent,
                 NextOfKin = 2,
                 ProfileStatus = ProfileStatuses.Flagged,
@@ -212,7 +210,7 @@ namespace Munharaunda.Test
 
             dependentValidator = new DependentValidator(_appSettings.Object);
 
-            profilesImplementation = new ProfileService(_profileRepository.Object, _mapper.Object,validator, _appSettings.Object);
+            profilesImplementation = new ProfileService(_profileRepository.Object, _mapper.Object, validator, _appSettings.Object);
 
 
         }
@@ -319,13 +317,13 @@ namespace Munharaunda.Test
                 CreatedBy = 1
             };
 
-            var validation = dependentValidator.Validate(dependent);            
+            var validation = dependentValidator.Validate(dependent);
 
             var isValid = validation.IsValid;
 
             Assert.Equal(Validation, isValid);
         }
-        
+
         [Theory]
         [InlineData(10, ProfileTypes.Dependent, true)]
         [InlineData(10, ProfileTypes.Member, false)]
@@ -343,7 +341,7 @@ namespace Munharaunda.Test
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
                 Email = "mnamacha@test.com",
-               
+
                 ProfileType = profileType,
                 NextOfKin = 2,
                 ProfileStatus = ProfileStatuses.Active,
@@ -351,7 +349,7 @@ namespace Munharaunda.Test
                 CreatedBy = 1
             };
 
-            var validation = dependentValidator.Validate(dependent);            
+            var validation = dependentValidator.Validate(dependent);
 
             var isValid = validation.IsValid;
 
@@ -385,7 +383,7 @@ namespace Munharaunda.Test
             {
                 ResponseCode = repoResponse,
             };
-            
+
             var DeleteProfileAsyncRepoResponse = new ResponseModel<bool>
             {
                 ResponseCode = repoResponse,
@@ -423,11 +421,11 @@ namespace Munharaunda.Test
         }
 
         [Theory]
-        [InlineData(ResponseConstants.R00,ProfileStatuses.Unauthorised,1)]
-        [InlineData(ResponseConstants.R01,ProfileStatuses.Terminated,0)]
-        [InlineData(ResponseConstants.R01,ProfileStatuses.Active,0)]
-        [InlineData(ResponseConstants.R01,ProfileStatuses.Flagged,0)]
-        public async Task TestAuthoriseProfileSuccessfulWhenStatusUnauthorisedOnly(string repoResponse,ProfileStatuses profileStatus, int count)
+        [InlineData(ResponseConstants.R00, ProfileStatuses.Unauthorised, 1)]
+        [InlineData(ResponseConstants.R01, ProfileStatuses.Terminated, 0)]
+        [InlineData(ResponseConstants.R01, ProfileStatuses.Active, 0)]
+        [InlineData(ResponseConstants.R01, ProfileStatuses.Flagged, 0)]
+        public async Task TestAuthoriseProfileSuccessfulWhenStatusUnauthorisedOnly(string repoResponse, ProfileStatuses profileStatus, int count)
         {
 
             var userCreationRepoResponse = new ResponseModel<ProfileBase>
@@ -439,7 +437,7 @@ namespace Munharaunda.Test
 
             resultGetProfileDetails.ResponseData.Add(ProfileRecord);
 
-           _profileRepository.Setup(x => x.AuthoriseProfileAsync(It.IsAny<int>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.AuthoriseProfileAsync(It.IsAny<int>())).ReturnsAsync(userCreationRepoResponse);
 
             _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(resultGetProfileDetails);
 
@@ -448,25 +446,25 @@ namespace Munharaunda.Test
             Assert.Equal(result.ResponseCode, repoResponse);
             _profileRepository.Verify(m => m.AuthoriseProfileAsync(It.IsAny<int>()), Times.Exactly(count));
         }
-        
+
         [Theory]
-        [InlineData(ResponseConstants.R00,ProfileStatuses.Unauthorised)]
-        [InlineData(ResponseConstants.R01,ProfileStatuses.Active)]
-        
-        public async Task TestCreateProfileAutoAuthorizationFlag(string repoResponse,ProfileStatuses profileStatus)
+        [InlineData(ResponseConstants.R00, ProfileStatuses.Unauthorised)]
+        [InlineData(ResponseConstants.R01, ProfileStatuses.Active)]
+
+        public async Task TestCreateProfileAutoAuthorizationFlag(string repoResponse, ProfileStatuses profileStatus)
         {
 
             var userCreationRepoResponse = new ResponseModel<ProfileBase>
             {
                 ResponseCode = repoResponse,
-                
+
             };
 
             ProfileRecord.ProfileStatus = profileStatus;
             userCreationRepoResponse.ResponseData.Add(ProfileRecord);
             _appSettings.SetupGet(x => x.ProfileCreationAutoAuthorisation).Returns(true);
 
-           _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>())).ReturnsAsync(userCreationRepoResponse);
 
             _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(userCreationRepoResponse);
 
@@ -475,13 +473,13 @@ namespace Munharaunda.Test
             var result = await profilesImplementation.AuthoriseProfileAsync(1);
 
             Assert.Equal(result.ResponseCode, repoResponse);
-                
+
         }
 
         [Theory]
         [InlineData(ResponseConstants.R00)]
         [InlineData(ResponseConstants.R01)]
-        public async  Task TestGetListOfActiveProfiles(string repoResponse)
+        public async Task TestGetListOfActiveProfiles(string repoResponse)
         {
             var listOfProfiles = new ResponseModel<ProfileBase>()
             {
@@ -503,12 +501,12 @@ namespace Munharaunda.Test
 
             Assert.Equal(repoResponse, result.ResponseCode);
 
-        } 
-        
+        }
+
         [Theory]
         [InlineData(ResponseConstants.R00)]
         [InlineData(ResponseConstants.R01)]
-        public async  Task TestGetListOfUnauthorisedProfiles(string repoResponse)
+        public async Task TestGetListOfUnauthorisedProfiles(string repoResponse)
         {
             var listOfProfiles = new ResponseModel<ProfileBase>()
             {
@@ -517,11 +515,11 @@ namespace Munharaunda.Test
 
             if (repoResponse == ResponseConstants.R00)
             {
-                listOfProfiles.ResponseData = unauthorisedProfiles ;
+                listOfProfiles.ResponseData = unauthorisedProfiles;
             }
             else
             {
-                listOfProfiles.ResponseData = profiles ;
+                listOfProfiles.ResponseData = profiles;
             }
 
             _profileRepository.Setup(x => x.GetUnauthorisedProfilesAsync()).ReturnsAsync(listOfProfiles);
@@ -555,7 +553,7 @@ namespace Munharaunda.Test
 
             var result = await profilesImplementation.GetListOfDependentsByProfileAsync(1);
 
-            
+
         }
 
 

@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 using Muharaunda.Core.Constants;
 using Muharaunda.Core.Contracts;
+using Muharaunda.Core.Models;
 using Munharaunda.Application.Orchestration.Contracts;
 using Munharaunda.Application.Validators.Implementations;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
 using Munharaunda.Core.Utilities;
-using Munharaunda.Domain.Contracts;
 using System;
 using System.Threading.Tasks;
 using Profile = Muharaunda.Core.Models.Profile;
@@ -84,7 +84,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
                         request.ActivationDate = CalculateProfileActivationDate();
                     }
 
-                    
+
 
                     request.Created = DateTime.Now.ToLocalTime();
 
@@ -239,7 +239,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
                 response = await _repository.GetListOfDependentsByProfileAsync(profileId);
 
                 return response;
-                
+
             }
             catch (Exception ex)
             {
@@ -249,7 +249,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
                 return response;
             }
 
-            
+
         }
 
         public async Task<ResponseModel<Profile>> GetNextOfKindByProfileAsync(int profileId)

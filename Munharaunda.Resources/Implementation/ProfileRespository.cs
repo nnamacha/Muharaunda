@@ -2,9 +2,7 @@
 using Muharaunda.Core.Models;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
-using Munharaunda.Domain.Contracts;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Munharaunda.Resources.Implementation
@@ -62,6 +60,6 @@ namespace Munharaunda.Resources.Implementation
             throw new NotImplementedException();
         }
 
-   
+
     }
 }
