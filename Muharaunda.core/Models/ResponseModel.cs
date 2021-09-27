@@ -16,11 +16,11 @@ namespace Munharaunda.Core.Models
             this.ResponseMessage = ResponseConstants.R00Message;
         }
 
-        public List<T> ResponseData { get; set; }
+        public List<T> ResponseData { get; set; } = new List<T>();
 
         public string ResponseCode { get; set; }
 
-        public List<string> Errors { get; set; }
+        public List<string> Errors { get; set; } = new List<string>();
 
         public string ResponseMessage { get; set; }
     }

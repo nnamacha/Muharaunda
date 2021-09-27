@@ -7,6 +7,7 @@ using Munharaunda.Core.Constants;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
 using Munharaunda.Core.Utilities;
+using Munharaunda.Domain.Contracts;
 using System;
 using System.Threading.Tasks;
 using Profile = Muharaunda.Core.Models.Profile;
@@ -27,9 +28,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
             _validator = validator;
             _appSettings = appSettings;
         }
-        public async Task<ResponseModel<Profile>> AuthoriseProfileAsync(int profileId)
+        public async Task<ResponseModel<ProfileBase>> AuthoriseProfileAsync(int profileId)
         {
-            ResponseModel<Profile> response = CommonUtilites.GenerateResponseModel<Profile>();
+            ResponseModel<ProfileBase> response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
             var profileDetails = await _repository.GetProfileDetailsAsync(profileId);
 
@@ -42,6 +43,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
                 }
                 else
                 {
+                    response.ResponseCode = ResponseConstants.R01;
                     response.ResponseMessage = ResponseConstants.INVALID_PROFILE_STATUS;
 
                 }
@@ -57,12 +59,21 @@ namespace Munharaunda.Application.Orchestration.Implementation
             return response;
         }
 
-        public async Task<ResponseModel<Profile>> CreateProfileAsync(CreateProfileRequest request)
+        public async Task<ResponseModel<ProfileBase>> CreateProfileAsync(CreateProfileRequest request)
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
             try
             {
+                if (_appSettings.ProfileCreationAutoAuthorisation)
+                {
+                    request.ProfileStatus = SystemWideConstants.ProfileStatuses.Active;
+                }
+                else
+                {
+                    request.ProfileStatus = SystemWideConstants.ProfileStatuses.Unauthorised;
+                }
+
                 var requestValidation = _validator.Validate(request);
 
 
@@ -72,6 +83,11 @@ namespace Munharaunda.Application.Orchestration.Implementation
                     {
                         request.ActivationDate = CalculateProfileActivationDate();
                     }
+
+                    
+
+                    request.Created = DateTime.Now.ToLocalTime();
+
                     response = await _repository.CreateProfileAsync(request);
                 }
                 else
@@ -105,20 +121,24 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
         public async Task<ResponseModel<bool>> DeleteProfileAsync(int profileId)
         {
+            var GetProfileResponse = CommonUtilites.GenerateResponseModel<ProfileBase>();
             var response = CommonUtilites.GenerateResponseModel<bool>();
+
 
             try
             {
-                var profileDetails = await _repository.GetProfileDetailsAsync(profileId);
+                GetProfileResponse = await _repository.GetProfileDetailsAsync(profileId);
 
-                if (profileDetails.ResponseCode == ResponseConstants.R00)
+                if (GetProfileResponse.ResponseCode == ResponseConstants.R00)
                 {
                     response = await _repository.DeleteProfileAsync(profileId);
                 }
                 else
                 {
 
-                    response = _mapper.Map<ResponseModel<bool>>(profileDetails);
+                    response.ResponseCode = GetProfileResponse.ResponseCode;
+                    response.ResponseMessage = GetProfileResponse.ResponseMessage;
+                    response.ResponseData.Add(false);
 
                 }
 
@@ -136,9 +156,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
 
 
-        public async Task<ResponseModel<Profile>> GetListOfActiveProfilesAsync()
+        public async Task<ResponseModel<ProfileBase>> GetListOfActiveProfilesAsync()
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
 
 
@@ -173,9 +193,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
         }
 
-        public async Task<ResponseModel<Profile>> GetUnauthorisedProfilesAsync()
+        public async Task<ResponseModel<ProfileBase>> GetUnauthorisedProfilesAsync()
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
 
 
@@ -254,7 +274,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
 
 
-        public Task<ResponseModel<Profile>> GetProfileDetailsAsync(int ProfileId)
+        public Task<ResponseModel<ProfileBase>> GetProfileDetailsAsync(int ProfileId)
         {
             throw new NotImplementedException();
         }
@@ -271,11 +291,16 @@ namespace Munharaunda.Application.Orchestration.Implementation
             return DateTime.Now.AddDays(_appSettings.NumberOfDaysToActivateProfile);
         }
 
+        Task<ResponseModel<ProfileBase>> IProfileRespository.GetListOfActiveProfilesAsync()
+        {
+            throw new NotImplementedException();
+        }
+
 
 
         #region Private Methods
 
-        
+
 
         #endregion
     }

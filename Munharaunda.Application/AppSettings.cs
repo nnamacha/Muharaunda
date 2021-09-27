@@ -14,6 +14,7 @@ namespace Munharaunda.Application
         private readonly int lengthForMobileNumber;
         private readonly int numberOfDaysToActivateProfile;
         private readonly int maximumDependentAge;
+        private readonly bool profileCreationAutoAuthorisation;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -21,6 +22,7 @@ namespace Munharaunda.Application
             lengthForMobileNumber =int.Parse(configuration["General:MobileNumberLength"]);
             numberOfDaysToActivateProfile = int.Parse(configuration["General:NumberOfDaysToActivateProfile"]);
             maximumDependentAge = int.Parse(configuration["General:MaximumDependentAge"]);
+            profileCreationAutoAuthorisation = configuration.GetValue<bool>("General:ProfileCreationAutoAuthorisation");
         }
         public int MinAgeInMonths { get => minAgeInMonths; }
 
@@ -29,6 +31,8 @@ namespace Munharaunda.Application
         public int NumberOfDaysToActivateProfile { get => numberOfDaysToActivateProfile; }
 
         public int MaximumDependentAge  { get => maximumDependentAge;}
+
+        public bool ProfileCreationAutoAuthorisation => profileCreationAutoAuthorisation;
     }
     
 }

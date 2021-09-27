@@ -2,6 +2,7 @@
 using Muharaunda.Core.Models;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
+using Munharaunda.Domain.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,12 +11,12 @@ namespace Munharaunda.Resources.Implementation
 {
     public class ProfileRespository : IProfileRespository
     {
-        public Task<ResponseModel<Profile>> AuthoriseProfileAsync(int ProfileId)
+        public Task<ResponseModel<ProfileBase>> AuthoriseProfileAsync(int ProfileId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<Profile>> CreateProfileAsync(CreateProfileRequest request)
+        public Task<ResponseModel<ProfileBase>> CreateProfileAsync(CreateProfileRequest request)
         {
             throw new NotImplementedException();
         }
@@ -25,7 +26,7 @@ namespace Munharaunda.Resources.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<Profile>> GetListOfActiveProfilesAsync()
+        public Task<ResponseModel<ProfileBase>> GetListOfActiveProfilesAsync()
         {
             throw new NotImplementedException();
         }
@@ -46,12 +47,12 @@ namespace Munharaunda.Resources.Implementation
         }
 
 
-        public Task<ResponseModel<Profile>> GetProfileDetailsAsync(int ProfileId)
+        public Task<ResponseModel<ProfileBase>> GetProfileDetailsAsync(int ProfileId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<Profile>> GetUnauthorisedProfilesAsync()
+        public Task<ResponseModel<ProfileBase>> GetUnauthorisedProfilesAsync()
         {
             throw new NotImplementedException();
         }
@@ -60,5 +61,7 @@ namespace Munharaunda.Resources.Implementation
         {
             throw new NotImplementedException();
         }
+
+   
     }
 }

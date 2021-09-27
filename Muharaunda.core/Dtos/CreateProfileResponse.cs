@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Munharaunda.Application.Dtos
 {
-    public class CreateUserResponse
+    public class CreateProfileResponse
     {
         public bool UserCreated { get; set; }
         public string ResponseCode { get; set; }

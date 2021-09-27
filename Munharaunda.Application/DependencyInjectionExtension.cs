@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 using Muharaunda.Core.Contracts;
 using Munharaunda.Application.Orchestration.Contracts;
 using Munharaunda.Application.Orchestration.Implementation;
@@ -9,7 +10,7 @@ using System;
 
 namespace Munharaunda.Application
 {
-    public static class ApplicationDependencyInjectionExtension
+    public static class DependencyInjectionExtension
     {
         public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
         {
@@ -25,9 +26,10 @@ namespace Munharaunda.Application
             return services;
         }
 
-        public static IServiceCollection AddResources(this IServiceCollection services)
+        public static IServiceCollection AddResources(this IServiceCollection services, IConfiguration configuration)
         {
-            
+            var settings = MongoClientSettings.FromConnectionString(configuration.GetConnectionString("MongoDB"));
+            services.AddScoped<IMongoClient>(s => new MongoClient(settings));
             services.AddScoped<IProfileRespository,MongoDBRepository>();
             return services;
         }

@@ -12,10 +12,8 @@ namespace Munharaunda.Core.Utilities
     {
         public static ResponseModel<T> GenerateResponseModel<T>()
         {
-            return new ResponseModel<T>
-            {
-                ResponseCode = ResponseConstants.R01
-            };
+            return new ResponseModel<T>();
+            
 
         }
     }

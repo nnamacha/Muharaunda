@@ -1,13 +1,15 @@
 ﻿using FluentValidation;
+using Muharaunda.Core.Constants;
 using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
+using Munharaunda.Core.Dtos;
 using System;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace Munharaunda.Application.Validators.Implementations
 {
-    public class ProfileValidator : AbstractValidator<Profile>
+    public class ProfileValidator : AbstractValidator<CreateProfileRequest>
     {
         private readonly IAppSettings _appSettings;
         private readonly IProfileRespository _profileRepository;
@@ -38,11 +40,26 @@ namespace Munharaunda.Application.Validators.Implementations
                 .Must(IsValidMobileNumber)
                 .WithMessage("Invalid Mobile Number");
 
+            RuleFor(x => x.ProfileStatus)
+                .Must(IsValidateProfileStatus);
+
             RuleFor(x => x.Address).NotNull();
 
             RuleFor(x => x.CreatedBy).NotNull();
 
 
+        }
+
+        private bool IsValidateProfileStatus(SystemWideConstants.ProfileStatuses status )
+        {
+            if (_appSettings.ProfileCreationAutoAuthorisation)
+            {
+                return status == SystemWideConstants.ProfileStatuses.Active;
+            }
+            else
+            {
+                return status == SystemWideConstants.ProfileStatuses.Unauthorised;
+            }
         }
 
         private async Task<bool> isUniqueID(string idNumber)

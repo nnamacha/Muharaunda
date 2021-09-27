@@ -5,6 +5,7 @@ using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
 using Munharaunda.Application.Orchestration.Implementation;
 using Munharaunda.Application.Validators.Implementations;
+using Munharaunda.Application;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
@@ -14,6 +15,8 @@ using System.Threading.Tasks;
 using Xunit;
 using static Muharaunda.Core.Constants.SystemWideConstants;
 using Profile = Muharaunda.Core.Models.Profile;
+using Munharaunda.Domain.Contracts;
+using System.Linq;
 
 namespace Munharaunda.Test
 {
@@ -27,13 +30,14 @@ namespace Munharaunda.Test
         private Mock<IMapper> _mapper;
         private readonly Mock<IConfiguration> _configuration;
         private readonly ProfileService profilesImplementation;
-        private List<Profile> profiles = new List<Profile>();
-        private List<Profile> activeProfiles = new List<Profile>();
-        private List<Profile> unauthorisedProfiles;
-        private List<Profile> dependentProfiles;
+        private List<ProfileBase> profiles = new List<ProfileBase>();
+        private List<ProfileBase> activeProfiles = new List<ProfileBase>();
+        private List<ProfileBase> unauthorisedProfiles;
+        private List<ProfileBase> dependentProfiles;
         private ProfileValidator validator;
         private readonly DependentValidator dependentValidator;
-        private ResponseModel<Profile> resultGetProfileDetails;
+        private ResponseModel<ProfileBase> resultGetProfileDetails;
+        
 
         public UserTest()
         {
@@ -47,7 +51,6 @@ namespace Munharaunda.Test
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
                 Email = "nnamacha@gmail.com",
-                IsNextOfKin = true,
                 ProfileType = ProfileTypes.Admin,
                 NextOfKin = 2,
                 ProfileStatus = ProfileStatuses.Active,
@@ -69,7 +72,7 @@ namespace Munharaunda.Test
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
                 Email = "mnamacha@test.com",
-                IsNextOfKin = true,
+                //IsNextOfKin = true,
                 ProfileType = ProfileTypes.Member,
                 NextOfKin = 2,
                 ProfileStatus = ProfileStatuses.Active,
@@ -88,7 +91,7 @@ namespace Munharaunda.Test
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
                 Email = "mnamacha@test.com",
-                IsNextOfKin = true,
+               
                 ProfileType = ProfileTypes.Member,
                 NextOfKin = 2,
                 ProfileStatus = ProfileStatuses.Unauthorised,
@@ -107,7 +110,7 @@ namespace Munharaunda.Test
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
                 Email = "mnamacha@test.com",
-                IsNextOfKin = true,
+                
                 ProfileType = ProfileTypes.Member,
                 NextOfKin = 2,
                 ProfileStatus = ProfileStatuses.Terminated,
@@ -127,7 +130,7 @@ namespace Munharaunda.Test
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
                 Email = "mnamacha@test.com",
-                IsNextOfKin = true,
+                
                 ProfileType = ProfileTypes.Member,
                 NextOfKin = 2,
                 ProfileStatus = ProfileStatuses.Flagged,
@@ -147,7 +150,7 @@ namespace Munharaunda.Test
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
                 Email = "mnamacha@test.com",
-                IsNextOfKin = true,
+                
                 ProfileType = ProfileTypes.Dependent,
                 NextOfKin = 2,
                 ProfileStatus = ProfileStatuses.Flagged,
@@ -159,6 +162,7 @@ namespace Munharaunda.Test
 
 
             activeProfiles = profiles.FindAll(x => x.ProfileStatus == ProfileStatuses.Active);
+
             unauthorisedProfiles = profiles.FindAll(x => x.ProfileStatus == ProfileStatuses.Unauthorised);
             dependentProfiles = profiles.FindAll(x => x.ProfileType == ProfileTypes.Dependent);
 
@@ -169,14 +173,14 @@ namespace Munharaunda.Test
 
             };
 
-            resultGetProfileDetails = new ResponseModel<Muharaunda.Core.Models.Profile>
+            resultGetProfileDetails = new ResponseModel<ProfileBase>
             {
                 ResponseCode = ResponseConstants.R00,
-                ResponseData = new List<Profile>()
+                ResponseData = new List<ProfileBase>()
 
             };
 
-            var userCreationRepoResponse = new ResponseModel<Profile>
+            var userCreationRepoResponse = new ResponseModel<ProfileBase>
             {
                 ResponseCode = ResponseConstants.R00,
             };
@@ -218,7 +222,7 @@ namespace Munharaunda.Test
 
         public void TestNextOfKinValidation(bool valid, string expected)
         {
-            var result = new ResponseModel<Profile>
+            var result = new ResponseModel<ProfileBase>
             {
                 ResponseCode = expected,
 
@@ -308,7 +312,6 @@ namespace Munharaunda.Test
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
                 Email = "mnamacha@test.com",
-                IsNextOfKin = true,
                 ProfileType = ProfileTypes.Dependent,
                 NextOfKin = 2,
                 ProfileStatus = ProfileStatuses.Active,
@@ -340,7 +343,7 @@ namespace Munharaunda.Test
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
                 Email = "mnamacha@test.com",
-                IsNextOfKin = true,
+               
                 ProfileType = profileType,
                 NextOfKin = 2,
                 ProfileStatus = ProfileStatuses.Active,
@@ -360,11 +363,12 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R01)]
         public async Task TestProfileCreation(string repoResponse)
         {
-            var userCreationRepoResponse = new ResponseModel<Profile>
+            var userCreationRepoResponse = new ResponseModel<ProfileBase>
             {
                 ResponseCode = repoResponse,
             };
 
+            _appSettings.SetupGet(x => x.ProfileCreationAutoAuthorisation).Returns(true);
             _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>())).ReturnsAsync(userCreationRepoResponse);
 
             var result = await profilesImplementation.CreateProfileAsync(ProfileRecord);
@@ -377,13 +381,19 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R01)]
         public async Task TestProfileDelete(string repoResponse)
         {
-            var userCreationRepoResponse = new ResponseModel<bool>
+            var GetProfileDetailsRepoResponse = new ResponseModel<ProfileBase>
+            {
+                ResponseCode = repoResponse,
+            };
+            
+            var DeleteProfileAsyncRepoResponse = new ResponseModel<bool>
             {
                 ResponseCode = repoResponse,
             };
 
+            _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(GetProfileDetailsRepoResponse);
 
-            _profileRepository.Setup(x => x.DeleteProfileAsync(It.IsAny<int>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.DeleteProfileAsync(It.IsAny<int>())).ReturnsAsync(DeleteProfileAsyncRepoResponse);
 
             var result = await profilesImplementation.DeleteProfileAsync(1);
 
@@ -394,7 +404,7 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R01)]
         public async Task TestAuthoriseProfile(string repoResponse)
         {
-            var userCreationRepoResponse = new ResponseModel<Profile>
+            var userCreationRepoResponse = new ResponseModel<ProfileBase>
             {
                 ResponseCode = repoResponse,
             };
@@ -420,7 +430,7 @@ namespace Munharaunda.Test
         public async Task TestAuthoriseProfileSuccessfulWhenStatusUnauthorisedOnly(string repoResponse,ProfileStatuses profileStatus, int count)
         {
 
-            var userCreationRepoResponse = new ResponseModel<Profile>
+            var userCreationRepoResponse = new ResponseModel<ProfileBase>
             {
                 ResponseCode = ResponseConstants.R00,
             };
@@ -438,24 +448,53 @@ namespace Munharaunda.Test
             Assert.Equal(result.ResponseCode, repoResponse);
             _profileRepository.Verify(m => m.AuthoriseProfileAsync(It.IsAny<int>()), Times.Exactly(count));
         }
+        
+        [Theory]
+        [InlineData(ResponseConstants.R00,ProfileStatuses.Unauthorised)]
+        [InlineData(ResponseConstants.R01,ProfileStatuses.Active)]
+        
+        public async Task TestCreateProfileAutoAuthorizationFlag(string repoResponse,ProfileStatuses profileStatus)
+        {
+
+            var userCreationRepoResponse = new ResponseModel<ProfileBase>
+            {
+                ResponseCode = repoResponse,
+                
+            };
+
+            ProfileRecord.ProfileStatus = profileStatus;
+            userCreationRepoResponse.ResponseData.Add(ProfileRecord);
+            _appSettings.SetupGet(x => x.ProfileCreationAutoAuthorisation).Returns(true);
+
+           _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>())).ReturnsAsync(userCreationRepoResponse);
+
+            _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(userCreationRepoResponse);
+
+            _profileRepository.Setup(x => x.AuthoriseProfileAsync(It.IsAny<int>())).ReturnsAsync(userCreationRepoResponse);
+
+            var result = await profilesImplementation.AuthoriseProfileAsync(1);
+
+            Assert.Equal(result.ResponseCode, repoResponse);
+                
+        }
 
         [Theory]
         [InlineData(ResponseConstants.R00)]
         [InlineData(ResponseConstants.R01)]
         public async  Task TestGetListOfActiveProfiles(string repoResponse)
         {
-            var listOfProfiles = new ResponseModel<Profile>()
+            var listOfProfiles = new ResponseModel<ProfileBase>()
             {
-                ResponseData = new List<Profile>()
+                ResponseData = new List<ProfileBase>()
             };
 
             if (repoResponse == ResponseConstants.R00)
             {
-                listOfProfiles.ResponseData = activeProfiles;
+                listOfProfiles.ResponseData = activeProfiles.Cast<ProfileBase>().ToList();
             }
             else
             {
-                listOfProfiles.ResponseData = profiles;
+                listOfProfiles.ResponseData = profiles.Cast<ProfileBase>().ToList();
             }
 
             _profileRepository.Setup(x => x.GetListOfActiveProfilesAsync()).ReturnsAsync(listOfProfiles);
@@ -471,18 +510,18 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R01)]
         public async  Task TestGetListOfUnauthorisedProfiles(string repoResponse)
         {
-            var listOfProfiles = new ResponseModel<Profile>()
+            var listOfProfiles = new ResponseModel<ProfileBase>()
             {
-                ResponseData = new List<Profile>()
+                ResponseData = new List<ProfileBase>()
             };
 
             if (repoResponse == ResponseConstants.R00)
             {
-                listOfProfiles.ResponseData = unauthorisedProfiles;
+                listOfProfiles.ResponseData = unauthorisedProfiles ;
             }
             else
             {
-                listOfProfiles.ResponseData = profiles;
+                listOfProfiles.ResponseData = profiles ;
             }
 
             _profileRepository.Setup(x => x.GetUnauthorisedProfilesAsync()).ReturnsAsync(listOfProfiles);
@@ -505,11 +544,11 @@ namespace Munharaunda.Test
 
             if (repoResponse == ResponseConstants.R00)
             {
-                listOfProfiles.ResponseData = dependentProfiles;
+                listOfProfiles.ResponseData = dependentProfiles.Cast<Profile>().ToList(); ;
             }
             else
             {
-                listOfProfiles.ResponseData = profiles;
+                listOfProfiles.ResponseData = profiles.Cast<Profile>().ToList(); ;
             }
 
             _profileRepository.Setup(x => x.GetListOfDependentsByProfileAsync(It.IsAny<int>())).ReturnsAsync(listOfProfiles);

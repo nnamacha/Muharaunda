@@ -12,5 +12,6 @@ namespace Muharaunda.Core.Contracts
         public int LengthForMobileNumber { get; }
         public int NumberOfDaysToActivateProfile { get; }
         public int MaximumDependentAge { get;  }
+        public bool ProfileCreationAutoAuthorisation { get; }
     }
 }

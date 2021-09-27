@@ -3,6 +3,7 @@ using Muharaunda.Core.Models;
 using Munharaunda.Application.Orchestration.Contracts;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
+using Munharaunda.Domain.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,12 @@ namespace Munharaunda.Api.Controllers
             return new string[] { "value1", "value2" };
         }
 
+        [HttpGet("Unauthorised")]
+        public async Task<ResponseModel<ProfileBase>> GetUnauthorisedProfiles()
+        {
+            return await _profileService.GetUnauthorisedProfilesAsync();
+        }
+
         // GET api/<ProfileController>/5
         [HttpGet("{id}")]
         public string Get(int id)
@@ -38,7 +45,7 @@ namespace Munharaunda.Api.Controllers
 
         // POST api/<ProfileController>
         [HttpPost]
-        public async Task<ResponseModel<Profile>> Post([FromBody] CreateProfileRequest profile)
+        public async Task<ResponseModel<ProfileBase>> Post([FromBody] CreateProfileRequest profile)
         {
             return await _profileService.CreateProfileAsync(profile);
         }
@@ -51,8 +58,9 @@ namespace Munharaunda.Api.Controllers
 
         // DELETE api/<ProfileController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ResponseModel<bool>> Delete(int id)
         {
+            return await _profileService.DeleteProfileAsync(id);
         }
     }
 }

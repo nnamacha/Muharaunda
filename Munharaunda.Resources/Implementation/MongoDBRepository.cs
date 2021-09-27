@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
@@ -9,36 +10,44 @@ using Munharaunda.Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Profile = Muharaunda.Core.Models.Profile;
 
 namespace Munharaunda.Resources.Implementation
 {
-    public class MongoDBRepository: IProfileRespository
+    public class MongoDBRepository : IProfileRespository
     {
-        private readonly IConfiguration _configuration;
-        private IMongoDatabase mongoDb;
 
-        public MongoDBRepository(IConfiguration configuration)
+        private readonly IMongoDatabase mongoDb;
+        private readonly IMapper _mapper;
+
+        public MongoDBRepository(IMongoClient client, IMapper mapper)
         {
-            _configuration = configuration;
-            var settings = MongoClientSettings.FromConnectionString(_configuration.GetConnectionString("MongoDB"));
-            var client = new MongoClient(settings);
+
             mongoDb = client.GetDatabase("KnowledgeBank");
+            _mapper = mapper;
         }
 
-        public Task<ResponseModel<Profile>> AuthoriseProfileAsync(int ProfileId)
+        public Task<ResponseModel<ProfileBase>> AuthoriseProfileAsync(int ProfileId)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<ResponseModel<Profile>> CreateProfileAsync(CreateProfileRequest request)
+        public async Task<ResponseModel<ProfileBase>> CreateProfileAsync(CreateProfileRequest request)
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
             try
             {
-                await mongoDb.GetCollection<Profile>("Profile").InsertOneAsync(request);
+                var currentProfilesCount = mongoDb.GetCollection<CreateProfileRequest>("Profile").AsQueryable().Count();
+
+                request.ProfileId = currentProfilesCount++;
+
+
+
+
+
+                await mongoDb.GetCollection<CreateProfileRequest>("Profile").InsertOneAsync(request);
             }
             catch (Exception ex)
             {
@@ -50,20 +59,31 @@ namespace Munharaunda.Resources.Implementation
             return response;
         }
 
-        public Task<ResponseModel<bool>> DeleteProfileAsync(int ProfileId)
+        public async Task<ResponseModel<bool>> DeleteProfileAsync(int profileId)
         {
-            throw new NotImplementedException();
+            var response = CommonUtilites.GenerateResponseModel<bool>();
+
+            try
+            {
+                var filter = Builders<Muharaunda.Core.Models.Profile>.Filter.Eq("ProfileId", profileId);
+
+                await mongoDb.GetCollection<Profile>("Profile").DeleteOneAsync(filter);
+
+                response.ResponseData.Add(true);
+            }
+            catch (Exception ex)
+            {
+
+                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseMessage = ex.Message;
+            }
+
+            return response;
         }
 
-        private IMongoDatabase GetClient()
-        {
-            var settings = MongoClientSettings.FromConnectionString(_configuration.GetConnectionString("MongoDB"));
-            var client = new MongoClient(settings);
-            IMongoDatabase database = client.GetDatabase("KnowledgeBank");
-            return database;
-        }
 
-        public Task<ResponseModel<Profile>> GetListOfActiveProfilesAsync()
+
+        public async Task<ResponseModel<ProfileBase>> GetListOfActiveProfilesAsync()
         {
             throw new NotImplementedException();
         }
@@ -78,14 +98,48 @@ namespace Munharaunda.Resources.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<Profile>> GetProfileDetailsAsync(int ProfileId)
+        public async Task<ResponseModel<ProfileBase>> GetProfileDetailsAsync(int profileId)
         {
-            throw new NotImplementedException();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
+            try
+            {
+                var filter = Builders<Profile>.Filter.Eq("ProfileId", profileId);
+
+                var profile = _mapper.Map<ProfileBase>(await mongoDb.GetCollection<Profile>("Profile").FindAsync(filter).Result.FirstOrDefaultAsync());
+
+
+                response.ResponseData.Add(profile);
+            }
+            catch (Exception ex)
+            {
+
+                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseMessage = ex.Message;
+            }
+
+            return response;
         }
 
-        public Task<ResponseModel<Profile>> GetUnauthorisedProfilesAsync()
+        public async Task<ResponseModel<ProfileBase>> GetUnauthorisedProfilesAsync()
         {
-            throw new NotImplementedException();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
+            try
+            {
+                var filter = Builders<Profile>.Filter.Eq("ProfileStatus", 3);
+
+                var profiles = await mongoDb.GetCollection<Profile>("Profile").Find(filter).ToListAsync();
+
+
+                response.ResponseData = (List<ProfileBase>)profiles.Cast<ProfileBase>();
+            }
+            catch (Exception ex)
+            {
+
+                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseMessage = ex.Message;
+            }
+
+            return response;
         }
 
         public async Task<ResponseModel<bool>> ValidateIdNumber(string IdNumber)
@@ -95,5 +149,7 @@ namespace Munharaunda.Resources.Implementation
 
             return response;
         }
+
+
     }
 }
