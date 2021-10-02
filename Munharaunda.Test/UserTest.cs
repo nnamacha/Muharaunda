@@ -253,6 +253,7 @@ namespace Munharaunda.Test
             };
 
             _profileRepository.Setup(x => x.ValidateIdNumber(It.IsAny<string>())).ReturnsAsync(resultValidNumber);
+            _appSettings.SetupGet(x => x.ProfileCreationAutoAuthorisation).Returns(true);
 
 
 
@@ -269,7 +270,7 @@ namespace Munharaunda.Test
         [InlineData(100000, false)]
         public void TestProfileAgeValidation(int months, bool Validation)
         {
-
+            _appSettings.SetupGet(x => x.ProfileCreationAutoAuthorisation).Returns(true);
             _appSettings.SetupGet(x => x.MinAgeInMonths).Returns(months);
             var validation = validator.Validate(ProfileRecord);
 
@@ -283,7 +284,7 @@ namespace Munharaunda.Test
         [InlineData(3, false)]
         public void TestMobileNumberValidation(int noOfCharacters, bool Validation)
         {
-
+            _appSettings.SetupGet(x => x.ProfileCreationAutoAuthorisation).Returns(true);
             _appSettings.SetupGet(x => x.LengthForMobileNumber).Returns(noOfCharacters);
 
             var validation = validator.Validate(ProfileRecord);
@@ -398,13 +399,19 @@ namespace Munharaunda.Test
             Assert.Equal(result.ResponseCode, repoResponse);
         }
         [Theory]
-        [InlineData(ResponseConstants.R00)]
-        [InlineData(ResponseConstants.R01)]
-        public async Task TestAuthoriseProfile(string repoResponse)
+        [InlineData(ResponseConstants.R00,true, ResponseConstants.R00)]
+        [InlineData(ResponseConstants.R00,false, ResponseConstants.R01)]
+        [InlineData(ResponseConstants.R01,true, ResponseConstants.R01)]
+        [InlineData(ResponseConstants.R01,false, ResponseConstants.R01)]
+        public async Task TestAuthoriseProfile(string repoResponse,bool authorised, string expected)
         {
-            var userCreationRepoResponse = new ResponseModel<ProfileBase>
+            var userCreationRepoResponse = new ResponseModel<bool>
             {
                 ResponseCode = repoResponse,
+                ResponseData = new List<bool>()
+                {
+                    authorised
+                }
             };
 
             ProfileRecord.ProfileStatus = ProfileStatuses.Unauthorised;
@@ -417,7 +424,7 @@ namespace Munharaunda.Test
 
             var result = await profilesImplementation.AuthoriseProfileAsync(1);
 
-            Assert.Equal(result.ResponseCode, repoResponse);
+            Assert.Equal(result.ResponseCode, expected);
         }
 
         [Theory]
@@ -428,9 +435,13 @@ namespace Munharaunda.Test
         public async Task TestAuthoriseProfileSuccessfulWhenStatusUnauthorisedOnly(string repoResponse, ProfileStatuses profileStatus, int count)
         {
 
-            var userCreationRepoResponse = new ResponseModel<ProfileBase>
+            var userCreationRepoResponse = new ResponseModel<bool>
             {
                 ResponseCode = ResponseConstants.R00,
+                ResponseData = new List<bool>
+                {
+                    true
+                }
             };
 
             ProfileRecord.ProfileStatus = profileStatus;
@@ -454,21 +465,39 @@ namespace Munharaunda.Test
         public async Task TestCreateProfileAutoAuthorizationFlag(string repoResponse, ProfileStatuses profileStatus)
         {
 
+            var getProfileRepoResponse = new ResponseModel<ProfileBase>
+            {
+                ResponseCode = ResponseConstants.R00,
+
+
+            };
             var userCreationRepoResponse = new ResponseModel<ProfileBase>
             {
                 ResponseCode = repoResponse,
 
             };
+            
+            var userAuthorisationRepoResponse = new ResponseModel<bool>
+            {
+                ResponseCode = ResponseConstants.R00,
+                ResponseData = new List<bool>()
+                {
+                    true
+                }
+
+
+            };
 
             ProfileRecord.ProfileStatus = profileStatus;
             userCreationRepoResponse.ResponseData.Add(ProfileRecord);
+            getProfileRepoResponse.ResponseData.Add(ProfileRecord);
             _appSettings.SetupGet(x => x.ProfileCreationAutoAuthorisation).Returns(true);
 
             _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>())).ReturnsAsync(userCreationRepoResponse);
 
-            _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(getProfileRepoResponse);
 
-            _profileRepository.Setup(x => x.AuthoriseProfileAsync(It.IsAny<int>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.AuthoriseProfileAsync(It.IsAny<int>())).ReturnsAsync(userAuthorisationRepoResponse);
 
             var result = await profilesImplementation.AuthoriseProfileAsync(1);
 
@@ -535,18 +564,18 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R01)]
         public async Task TestGetListOfDependentsByProfile(string repoResponse)
         {
-            var listOfProfiles = new ResponseModel<Profile>()
+            var listOfProfiles = new ResponseModel<ProfileBase>()
             {
-                ResponseData = new List<Profile>()
+                ResponseData = new List<ProfileBase>()
             };
 
             if (repoResponse == ResponseConstants.R00)
             {
-                listOfProfiles.ResponseData = dependentProfiles.Cast<Profile>().ToList(); ;
+                listOfProfiles.ResponseData = dependentProfiles.Cast<ProfileBase>().ToList(); ;
             }
             else
             {
-                listOfProfiles.ResponseData = profiles.Cast<Profile>().ToList(); ;
+                listOfProfiles.ResponseData = profiles.Cast<ProfileBase>().ToList(); ;
             }
 
             _profileRepository.Setup(x => x.GetListOfDependentsByProfileAsync(It.IsAny<int>())).ReturnsAsync(listOfProfiles);

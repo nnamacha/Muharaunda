@@ -9,7 +9,9 @@ namespace Munharaunda.Resources.Implementation
 {
     public class ProfileRespository : IProfileRespository
     {
-        public Task<ResponseModel<ProfileBase>> AuthoriseProfileAsync(int ProfileId)
+
+
+        public Task<ResponseModel<bool>> AuthoriseProfileAsync(int ProfileId)
         {
             throw new NotImplementedException();
         }
@@ -34,15 +36,6 @@ namespace Munharaunda.Resources.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<Profile>> GetListOfDependentsByProfileAsync(int profileId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ResponseModel<Profile>> GetNextOfKindByProfileAsync(int profileId)
-        {
-            throw new NotImplementedException();
-        }
 
 
         public Task<ResponseModel<ProfileBase>> GetProfileDetailsAsync(int ProfileId)
@@ -60,6 +53,14 @@ namespace Munharaunda.Resources.Implementation
             throw new NotImplementedException();
         }
 
+        public Task<ResponseModel<ProfileBase>> GetListOfDependentsByProfileAsync(int profileId)
+        {
+            throw new NotImplementedException();
+        }
 
+        public Task<ResponseModel<ProfileBase>> GetNextOfKindByProfileAsync(int profileId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

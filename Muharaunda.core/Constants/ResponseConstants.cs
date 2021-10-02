@@ -20,6 +20,7 @@
         public const string INVALID_PROFILE_STATUS = "Invalid Profile status";
         public const string INACTIVE_PROFILE_FOUND = "Inactive profile found";
         public const string AUTHORISED_PROFILE_FOUND = "Authorised profile found";
+        public const string PROFILE_AUTHORISATION_FAILED = "Failed to authorise profile";
 
     }
 }

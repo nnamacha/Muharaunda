@@ -22,8 +22,7 @@ namespace Munharaunda.Resources.Implementation
         private readonly IMongoDatabase mongoDb;
         private readonly IMapper _mapper;
         private readonly FilterDefinitionBuilder<Profile> filterBuilder;
-
-          
+        private readonly UpdateDefinitionBuilder<Profile> updateBuilder;
 
         public MongoDBRepository(IMongoClient client, IMapper mapper)
         {
@@ -33,18 +32,23 @@ namespace Munharaunda.Resources.Implementation
             _mapper = mapper;
 
             filterBuilder = Builders<Profile>.Filter;
+
+            updateBuilder = Builders<Profile>.Update;
         }
 
-        public ResponseModel<bool> AuthoriseProfile(int ProfileId)
+        public async Task<ResponseModel<bool>> AuthoriseProfileAsync(int profileId)
         {
             var response = CommonUtilites.GenerateResponseModel<bool>();
+
             try
             {
-                var updateBuilder = Builders<Profile>.Update;
+                var filter = filterBuilder.Eq("ProfileId", profileId);
 
-                updateBuilder.Set(u => u.ProfileStatus, ProfileStatuses.Active);
+                var update = updateBuilder.Set(u => u.ProfileStatus, ProfileStatuses.Active);
 
-                response.ResponseData.Add(true);
+                var result = await mongoDb.GetCollection<Profile>("Profile").UpdateOneAsync(filter, update);
+
+                response.ResponseData.Add(result.MatchedCount == 1);
 
 
             }
@@ -68,10 +72,6 @@ namespace Munharaunda.Resources.Implementation
                 var currentProfilesCount = mongoDb.GetCollection<CreateProfileRequest>("Profile").AsQueryable().Count();
 
                 request.ProfileId = currentProfilesCount++;
-
-
-
-
 
                 await mongoDb.GetCollection<CreateProfileRequest>("Profile").InsertOneAsync(request);
             }

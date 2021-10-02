@@ -28,9 +28,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
             _validator = validator;
             _appSettings = appSettings;
         }
-        public async Task<ResponseModel<ProfileBase>> AuthoriseProfileAsync(int profileId)
+        public async Task<ResponseModel<bool>> AuthoriseProfileAsync(int profileId)
         {
-            ResponseModel<ProfileBase> response = CommonUtilites.GenerateResponseModel<ProfileBase>();
+            ResponseModel<bool> response = CommonUtilites.GenerateResponseModel<bool>();
 
             var profileDetails = await _repository.GetProfileDetailsAsync(profileId);
 
@@ -40,6 +40,12 @@ namespace Munharaunda.Application.Orchestration.Implementation
                 if (profileDetails.ResponseData[0].ProfileStatus == SystemWideConstants.ProfileStatuses.Unauthorised)
                 {
                     response = await _repository.AuthoriseProfileAsync(profileId);
+
+                    if (!response.ResponseData[0] && response.ResponseCode == ResponseConstants.R00)
+                    {
+                        response.ResponseCode = ResponseConstants.R01;
+                        response.ResponseMessage = ResponseConstants.PROFILE_AUTHORISATION_FAILED;
+                    }
                 }
                 else
                 {
@@ -52,7 +58,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
             else
             {
 
-                response = profileDetails;
+                response.ResponseData.Add(false);
 
             }
 
@@ -84,8 +90,6 @@ namespace Munharaunda.Application.Orchestration.Implementation
                         request.ActivationDate = CalculateProfileActivationDate();
                     }
 
-
-
                     request.Created = DateTime.Now.ToLocalTime();
 
                     response = await _repository.CreateProfileAsync(request);
@@ -116,8 +120,6 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
 
         }
-
-
 
         public async Task<ResponseModel<bool>> DeleteProfileAsync(int profileId)
         {
@@ -154,13 +156,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
             }
         }
 
-
-
         public async Task<ResponseModel<ProfileBase>> GetListOfActiveProfilesAsync()
         {
             var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
-
-
 
             try
             {
@@ -197,8 +195,6 @@ namespace Munharaunda.Application.Orchestration.Implementation
         {
             var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
-
-
             try
             {
 
@@ -230,9 +226,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
         }
 
 
-        public async Task<ResponseModel<Profile>> GetListOfDependentsByProfileAsync(int profileId)
+        public async Task<ResponseModel<ProfileBase>> GetListOfDependentsByProfileAsync(int profileId)
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
             try
             {
@@ -252,9 +248,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
         }
 
-        public async Task<ResponseModel<Profile>> GetNextOfKindByProfileAsync(int profileId)
+        public async Task<ResponseModel<ProfileBase>> GetNextOfKindByProfileAsync(int profileId)
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
             try
             {
@@ -274,26 +270,51 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
 
 
-        public Task<ResponseModel<ProfileBase>> GetProfileDetailsAsync(int ProfileId)
+        public async Task<ResponseModel<ProfileBase>> GetProfileDetailsAsync(int profileId)
         {
-            throw new NotImplementedException();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
+
+            try
+            {
+                response = await _repository.GetProfileDetailsAsync(profileId);
+
+                return response;
+
+            }
+            catch (Exception ex)
+            {
+
+                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseMessage = ex.Message;
+                return response;
+            }
         }
 
 
 
-        public Task<ResponseModel<bool>> ValidateIdNumber(string IdNumber)
+        public async Task<ResponseModel<bool>> ValidateIdNumber(string idNumber)
         {
-            throw new NotImplementedException();
+            var response = CommonUtilites.GenerateResponseModel<bool>();
+
+            try
+            {
+                response = await _repository.ValidateIdNumber(idNumber);
+
+                return response;
+
+            }
+            catch (Exception ex)
+            {
+
+                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseMessage = ex.Message;
+                return response;
+            }
         }
 
         public DateTime CalculateProfileActivationDate()
         {
             return DateTime.Now.AddDays(_appSettings.NumberOfDaysToActivateProfile);
-        }
-
-        Task<ResponseModel<ProfileBase>> IProfileRespository.GetListOfActiveProfilesAsync()
-        {
-            throw new NotImplementedException();
         }
 
 

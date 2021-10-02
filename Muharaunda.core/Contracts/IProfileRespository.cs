@@ -14,7 +14,7 @@ namespace Muharaunda.Core.Contracts
         public Task<ResponseModel<bool>> DeleteProfileAsync(int ProfileId);
         public Task<ResponseModel<ProfileBase>> GetProfileDetailsAsync(int ProfileId);
 
-        public ResponseModel<bool> AuthoriseProfile(int ProfileId);
+        public Task<ResponseModel<bool>> AuthoriseProfileAsync(int ProfileId);
         public Task<ResponseModel<ProfileBase>> GetListOfActiveProfilesAsync();
 
         public Task<ResponseModel<ProfileBase>> GetListOfDependentsByProfileAsync(int profileId);
