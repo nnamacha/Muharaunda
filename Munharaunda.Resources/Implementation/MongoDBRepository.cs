@@ -110,17 +110,17 @@ namespace Munharaunda.Resources.Implementation
 
 
 
-        public async Task<ResponseModel<ProfileBase>> GetListOfActiveProfilesAsync()
+        public async Task<ResponseModel<Profile>> GetListOfActiveProfilesAsync()
         {
-            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
+            var response = CommonUtilites.GenerateResponseModel<Profile>();
             try
             {
                 var filter = filterBuilder.Eq("ProfileStatus", 0);
 
-                var profile = _mapper.Map<ProfileBase>(await mongoDb.GetCollection<Profile>("Profile").FindAsync(filter).Result.ToListAsync());
+                var profile = await mongoDb.GetCollection<Profile>("Profile").FindAsync(filter).Result.ToListAsync();
 
 
-                response.ResponseData.Add(profile);
+                response.ResponseData = profile;
             }
             catch (Exception ex)
             {
@@ -132,19 +132,19 @@ namespace Munharaunda.Resources.Implementation
             return response;
         }
 
-        public async Task<ResponseModel<ProfileBase>> GetListOfDependentsByProfileAsync(int profileId)
+        public async Task<ResponseModel<Profile>> GetListOfDependentsByProfileAsync(int profileId)
         {
-            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
+            var response = CommonUtilites.GenerateResponseModel<Profile>();
             try
             {
                 
 
                 var filter = filterBuilder.Where(u => u.ProfileType == ProfileTypes.Dependent && u.NextOfKin == profileId);
 
-                var profile = _mapper.Map<ProfileBase>(await mongoDb.GetCollection<Profile>("Profile").FindAsync(filter).Result.ToListAsync());
+                var profiles = await mongoDb.GetCollection<Profile>("Profile").FindAsync(filter).Result.ToListAsync();
 
 
-                response.ResponseData.Add(profile);
+                response.ResponseData = profiles;
             }
             catch (Exception ex)
             {
@@ -156,19 +156,19 @@ namespace Munharaunda.Resources.Implementation
             return response;
         }
 
-        public async Task<ResponseModel<ProfileBase>> GetNextOfKindByProfileAsync(int profileId)
+        public async Task<ResponseModel<Profile>> GetNextOfKindByProfileAsync(int profileId)
         {
-            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
+            var response = CommonUtilites.GenerateResponseModel<Profile>();
             try
             {
 
 
                 var filter = filterBuilder.Eq("NextOfKind", profileId);
 
-                var profile = _mapper.Map<ProfileBase>(await mongoDb.GetCollection<Profile>("Profile").FindAsync(filter).Result.ToListAsync());
+                var profiles = await mongoDb.GetCollection<Profile>("Profile").FindAsync(filter).Result.ToListAsync();
 
 
-                response.ResponseData.Add(profile);
+                response.ResponseData = profiles;
             }
             catch (Exception ex)
             {
@@ -180,14 +180,14 @@ namespace Munharaunda.Resources.Implementation
             return response;
         }
 
-        public async Task<ResponseModel<ProfileBase>> GetProfileDetailsAsync(int profileId)
+        public async Task<ResponseModel<Profile>> GetProfileDetailsAsync(int profileId)
         {
-            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
+            var response = CommonUtilites.GenerateResponseModel<Profile>();
             try
             {
                 var filter = Builders<Profile>.Filter.Eq("ProfileId", profileId);
 
-                var profile = _mapper.Map<ProfileBase>(await mongoDb.GetCollection<Profile>("Profile").FindAsync(filter).Result.FirstOrDefaultAsync());
+                var profile = await mongoDb.GetCollection<Profile>("Profile").FindAsync(filter).Result.FirstOrDefaultAsync();
 
 
                 response.ResponseData.Add(profile);
@@ -202,9 +202,9 @@ namespace Munharaunda.Resources.Implementation
             return response;
         }
 
-        public async Task<ResponseModel<ProfileBase>> GetUnauthorisedProfilesAsync()
+        public async Task<ResponseModel<Profile>> GetUnauthorisedProfilesAsync()
         {
-            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
+            var response = CommonUtilites.GenerateResponseModel<Profile>();
             try
             {
                 var filter = Builders<Profile>.Filter.Eq("ProfileStatus", 3);
@@ -212,7 +212,7 @@ namespace Munharaunda.Resources.Implementation
                 var profiles = await mongoDb.GetCollection<Profile>("Profile").Find(filter).ToListAsync();
 
 
-                response.ResponseData = _mapper.Map<List<ProfileBase>>(profiles);
+                response.ResponseData = profiles;
             }
             catch (Exception ex)
             {
@@ -222,6 +222,41 @@ namespace Munharaunda.Resources.Implementation
             }
 
             return response;
+        }
+
+        public async Task<ResponseModel<bool>> UpdateProfileAsync(Profile profile)
+        {
+            var response = CommonUtilites.GenerateResponseModel<bool>();
+            try
+            {
+                var filter = Builders<Profile>.Filter.Eq(u => u.ProfileId, profile.ProfileId);
+
+                var update = updateBuilder.Set(u => u.ProfileStatus, ProfileStatuses.Active);
+
+                var result = await mongoDb.GetCollection<Profile>("Profile").ReplaceOneAsync(filter, profile);
+
+                if (result.IsAcknowledged && result.ModifiedCount == 1)
+                {
+                    response.ResponseData.Add(true);
+                }
+                else
+                {
+                    response.ResponseCode = ResponseConstants.R01;
+                    response.ResponseMessage = ResponseConstants.PROFILE_UPDATE_FAILED;
+                    response.ResponseData.Add(false);
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseMessage = ex.Message;
+            }
+
+            return response;
+
+
         }
 
         public async Task<ResponseModel<bool>> ValidateIdNumber(string IdNumber)

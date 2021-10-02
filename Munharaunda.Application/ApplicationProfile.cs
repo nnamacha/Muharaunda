@@ -8,7 +8,8 @@ namespace Munharaunda.Application
         public ApplicationProfile()
         {
             CreateMap<CreateProfileRequest, Muharaunda.Core.Models.Profile>().ReverseMap();
-            CreateMap<ProfileBase, Muharaunda.Core.Models.Profile>();
+            CreateMap<ProfileBase, Muharaunda.Core.Models.Profile>().ReverseMap();
+            CreateMap<object, ProfileBase>().ReverseMap();
 
         }
     }

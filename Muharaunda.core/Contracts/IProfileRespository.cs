@@ -10,17 +10,19 @@ namespace Muharaunda.Core.Contracts
         #region Profile Related
 
         public Task<ResponseModel<ProfileBase>> CreateProfileAsync(CreateProfileRequest request);
-        public Task<ResponseModel<ProfileBase>> GetUnauthorisedProfilesAsync();
+        public Task<ResponseModel<Profile>> GetUnauthorisedProfilesAsync();
         public Task<ResponseModel<bool>> DeleteProfileAsync(int ProfileId);
-        public Task<ResponseModel<ProfileBase>> GetProfileDetailsAsync(int ProfileId);
+        public Task<ResponseModel<Profile>> GetProfileDetailsAsync(int ProfileId);
 
         public Task<ResponseModel<bool>> AuthoriseProfileAsync(int ProfileId);
-        public Task<ResponseModel<ProfileBase>> GetListOfActiveProfilesAsync();
+        public Task<ResponseModel<Profile>> GetListOfActiveProfilesAsync();
 
-        public Task<ResponseModel<ProfileBase>> GetListOfDependentsByProfileAsync(int profileId);
-        public Task<ResponseModel<ProfileBase>> GetNextOfKindByProfileAsync(int profileId);
+        public Task<ResponseModel<Profile>> GetListOfDependentsByProfileAsync(int profileId);
+        public Task<ResponseModel<Profile>> GetNextOfKindByProfileAsync(int profileId);
 
         public Task<ResponseModel<bool>> ValidateIdNumber(string IdNumber);
+
+        public Task<ResponseModel<bool>> UpdateProfileAsync(Profile profile);
 
         #endregion
 

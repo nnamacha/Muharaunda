@@ -16,7 +16,7 @@ namespace Munharaunda.Application
         {
             AppSettings appSettings = new AppSettings(configuration);
 
-            ProfileRespository profileRespository = new ProfileRespository();
+            SqlProfileRespository profileRespository = new SqlProfileRespository();
 
             services.AddTransient<IAppSettings>(a => appSettings);
             services.AddScoped<IProfileRespository>(r => profileRespository);

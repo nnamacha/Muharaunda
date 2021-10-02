@@ -22,22 +22,22 @@ namespace Munharaunda.Api.Controllers
         }
         // GET: api/<ProfileController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<ResponseModel<Profile>> Get()
         {
-            return new string[] { "value1", "value2" };
+            return await _profileService.GetListOfActiveProfilesAsync();
         }
 
         [HttpGet("Unauthorised")]
-        public async Task<ResponseModel<ProfileBase>> GetUnauthorisedProfiles()
+        public async Task<ResponseModel<Profile>> GetUnauthorisedProfiles()
         {
             return await _profileService.GetUnauthorisedProfilesAsync();
         }
 
         // GET api/<ProfileController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<ResponseModel<Profile>> Get(int id)
         {
-            return "value";
+            return await _profileService.GetProfileDetailsAsync(id);
         }
 
         // POST api/<ProfileController>
@@ -47,10 +47,11 @@ namespace Munharaunda.Api.Controllers
             return await _profileService.CreateProfileAsync(profile);
         }
 
-        // PUT api/<ProfileController>/5
+        // PUT api/<ProfileController>/
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ResponseModel<bool>> Put([FromBody] Profile profile)
         {
+            return await _profileService.UpdateProfileAsync(profile);
         }
 
         // DELETE api/<ProfileController>/5

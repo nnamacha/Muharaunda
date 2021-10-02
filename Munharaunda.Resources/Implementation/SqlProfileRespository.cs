@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Munharaunda.Resources.Implementation
 {
-    public class ProfileRespository : IProfileRespository
+    public class SqlProfileRespository : IProfileRespository
     {
 
 
@@ -26,7 +26,7 @@ namespace Munharaunda.Resources.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<ProfileBase>> GetListOfActiveProfilesAsync()
+        public Task<ResponseModel<Profile>> GetListOfActiveProfilesAsync()
         {
             throw new NotImplementedException();
         }
@@ -38,12 +38,12 @@ namespace Munharaunda.Resources.Implementation
 
 
 
-        public Task<ResponseModel<ProfileBase>> GetProfileDetailsAsync(int ProfileId)
+        public Task<ResponseModel<Profile>> GetProfileDetailsAsync(int ProfileId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<ProfileBase>> GetUnauthorisedProfilesAsync()
+        public Task<ResponseModel<Profile>> GetUnauthorisedProfilesAsync()
         {
             throw new NotImplementedException();
         }
@@ -53,12 +53,22 @@ namespace Munharaunda.Resources.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<ProfileBase>> GetListOfDependentsByProfileAsync(int profileId)
+        public Task<ResponseModel<Profile>> GetListOfDependentsByProfileAsync(int profileId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<ProfileBase>> GetNextOfKindByProfileAsync(int profileId)
+        public Task<ResponseModel<Profile>> GetNextOfKindByProfileAsync(int profileId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ResponseModel<Profile>> UpdateProfileAsync(Profile profile)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<ResponseModel<bool>> IProfileRespository.UpdateProfileAsync(Profile profile)
         {
             throw new NotImplementedException();
         }

@@ -28,13 +28,13 @@ namespace Munharaunda.Test
         private Mock<IMapper> _mapper;
         private readonly Mock<IConfiguration> _configuration;
         private readonly ProfileService profilesImplementation;
-        private List<ProfileBase> profiles = new List<ProfileBase>();
-        private List<ProfileBase> activeProfiles = new List<ProfileBase>();
-        private List<ProfileBase> unauthorisedProfiles;
-        private List<ProfileBase> dependentProfiles;
+        private List<Profile> profiles = new List<Profile>();
+        private List<Profile> activeProfiles = new List<Profile>();
+        private List<Profile> unauthorisedProfiles;
+        private List<Profile> dependentProfiles;
         private ProfileValidator validator;
         private readonly DependentValidator dependentValidator;
-        private ResponseModel<ProfileBase> resultGetProfileDetails;
+        private ResponseModel<Profile> resultGetProfileDetails;
 
 
         public UserTest()
@@ -60,7 +60,7 @@ namespace Munharaunda.Test
 
 
 
-            profiles.Add(new CreateProfileRequest()
+            profiles.Add(new Profile()
             {
                 ProfileId = 2,
                 FirstName = "Marvelous",
@@ -79,7 +79,7 @@ namespace Munharaunda.Test
 
 
             });
-            profiles.Add(new CreateProfileRequest()
+            profiles.Add(new Profile()
             {
                 ProfileId = 3,
                 FirstName = "Patick",
@@ -98,7 +98,7 @@ namespace Munharaunda.Test
 
 
             });
-            profiles.Add(new CreateProfileRequest()
+            profiles.Add(new Profile()
             {
                 ProfileId = 4,
                 FirstName = "Leon",
@@ -118,7 +118,7 @@ namespace Munharaunda.Test
 
             });
 
-            profiles.Add(new CreateProfileRequest()
+            profiles.Add(new Profile()
             {
                 ProfileId = 5,
                 FirstName = "Nick",
@@ -138,7 +138,7 @@ namespace Munharaunda.Test
 
             });
 
-            profiles.Add(new CreateProfileRequest()
+            profiles.Add(new Profile()
             {
                 ProfileId = 6,
                 FirstName = "Nick",
@@ -171,10 +171,10 @@ namespace Munharaunda.Test
 
             };
 
-            resultGetProfileDetails = new ResponseModel<ProfileBase>
+            resultGetProfileDetails = new ResponseModel<Profile>
             {
                 ResponseCode = ResponseConstants.R00,
-                ResponseData = new List<ProfileBase>()
+                ResponseData = new List<Profile>()
 
             };
 
@@ -220,7 +220,7 @@ namespace Munharaunda.Test
 
         public void TestNextOfKinValidation(bool valid, string expected)
         {
-            var result = new ResponseModel<ProfileBase>
+            var result = new ResponseModel<Profile>
             {
                 ResponseCode = expected,
 
@@ -380,7 +380,7 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R01)]
         public async Task TestProfileDelete(string repoResponse)
         {
-            var GetProfileDetailsRepoResponse = new ResponseModel<ProfileBase>
+            var GetProfileDetailsRepoResponse = new ResponseModel<Profile>
             {
                 ResponseCode = repoResponse,
             };
@@ -414,6 +414,24 @@ namespace Munharaunda.Test
                 }
             };
 
+            var ProfileRecord = new Profile()
+            {
+                ProfileId = 1,
+                FirstName = "Nicholas",
+                Surname = "Namacha",
+                DateOfBirth = "24-Aug-1982",
+                IdentificationType = IdentificationTypes.Passport,
+                IdentificationNumber = "123458690",
+                MobileNumber = "+27846994000",
+                Email = "nnamacha@gmail.com",
+                ProfileType = ProfileTypes.Admin,
+                NextOfKin = 2,
+                ProfileStatus = ProfileStatuses.Active,
+                Address = "15-10 Test Road",
+                CreatedBy = 1
+
+
+            };
             ProfileRecord.ProfileStatus = ProfileStatuses.Unauthorised;
 
             resultGetProfileDetails.ResponseData.Add(ProfileRecord);
@@ -444,6 +462,24 @@ namespace Munharaunda.Test
                 }
             };
 
+            var ProfileRecord = new Profile()
+            {
+                ProfileId = 1,
+                FirstName = "Nicholas",
+                Surname = "Namacha",
+                DateOfBirth = "24-Aug-1982",
+                IdentificationType = IdentificationTypes.Passport,
+                IdentificationNumber = "123458690",
+                MobileNumber = "+27846994000",
+                Email = "nnamacha@gmail.com",
+                ProfileType = ProfileTypes.Admin,
+                NextOfKin = 2,
+                ProfileStatus = ProfileStatuses.Active,
+                Address = "15-10 Test Road",
+                CreatedBy = 1
+
+
+            };
             ProfileRecord.ProfileStatus = profileStatus;
 
             resultGetProfileDetails.ResponseData.Add(ProfileRecord);
@@ -465,7 +501,7 @@ namespace Munharaunda.Test
         public async Task TestCreateProfileAutoAuthorizationFlag(string repoResponse, ProfileStatuses profileStatus)
         {
 
-            var getProfileRepoResponse = new ResponseModel<ProfileBase>
+            var getProfileRepoResponse = new ResponseModel<Profile>
             {
                 ResponseCode = ResponseConstants.R00,
 
@@ -484,6 +520,25 @@ namespace Munharaunda.Test
                 {
                     true
                 }
+
+
+            };
+
+            var ProfileRecord = new Profile()
+            {
+                ProfileId = 1,
+                FirstName = "Nicholas",
+                Surname = "Namacha",
+                DateOfBirth = "24-Aug-1982",
+                IdentificationType = IdentificationTypes.Passport,
+                IdentificationNumber = "123458690",
+                MobileNumber = "+27846994000",
+                Email = "nnamacha@gmail.com",
+                ProfileType = ProfileTypes.Admin,
+                NextOfKin = 2,
+                ProfileStatus = ProfileStatuses.Active,
+                Address = "15-10 Test Road",
+                CreatedBy = 1
 
 
             };
@@ -510,18 +565,18 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R01)]
         public async Task TestGetListOfActiveProfiles(string repoResponse)
         {
-            var listOfProfiles = new ResponseModel<ProfileBase>()
+            var listOfProfiles = new ResponseModel<Profile>()
             {
-                ResponseData = new List<ProfileBase>()
+                ResponseData = new List<Profile>()
             };
 
             if (repoResponse == ResponseConstants.R00)
             {
-                listOfProfiles.ResponseData = activeProfiles.Cast<ProfileBase>().ToList();
+                listOfProfiles.ResponseData = activeProfiles.ToList();
             }
             else
             {
-                listOfProfiles.ResponseData = profiles.Cast<ProfileBase>().ToList();
+                listOfProfiles.ResponseData = profiles.ToList();
             }
 
             _profileRepository.Setup(x => x.GetListOfActiveProfilesAsync()).ReturnsAsync(listOfProfiles);
@@ -537,9 +592,9 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R01)]
         public async Task TestGetListOfUnauthorisedProfiles(string repoResponse)
         {
-            var listOfProfiles = new ResponseModel<ProfileBase>()
+            var listOfProfiles = new ResponseModel<Profile>()
             {
-                ResponseData = new List<ProfileBase>()
+                ResponseData = new List<Profile>()
             };
 
             if (repoResponse == ResponseConstants.R00)
@@ -564,18 +619,18 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R01)]
         public async Task TestGetListOfDependentsByProfile(string repoResponse)
         {
-            var listOfProfiles = new ResponseModel<ProfileBase>()
+            var listOfProfiles = new ResponseModel<Profile>()
             {
-                ResponseData = new List<ProfileBase>()
+                ResponseData = new List<Profile>()
             };
 
             if (repoResponse == ResponseConstants.R00)
             {
-                listOfProfiles.ResponseData = dependentProfiles.Cast<ProfileBase>().ToList(); ;
+                listOfProfiles.ResponseData = dependentProfiles.ToList(); ;
             }
             else
             {
-                listOfProfiles.ResponseData = profiles.Cast<ProfileBase>().ToList(); ;
+                listOfProfiles.ResponseData = profiles.ToList(); ;
             }
 
             _profileRepository.Setup(x => x.GetListOfDependentsByProfileAsync(It.IsAny<int>())).ReturnsAsync(listOfProfiles);
@@ -583,6 +638,41 @@ namespace Munharaunda.Test
             var result = await profilesImplementation.GetListOfDependentsByProfileAsync(1);
 
 
+        }
+
+        [Theory]
+        [InlineData(ResponseConstants.R00)]
+        [InlineData(ResponseConstants.R01)]
+        public async Task TestUpdatingProfile(string repoResponse)
+        {
+            var response = new ResponseModel<bool>()
+            {
+                ResponseCode = repoResponse
+            };
+
+            var profileRecord = new Profile()
+            {
+                ProfileId = 1,
+                FirstName = "Nicholas",
+                Surname = "Namacha",
+                DateOfBirth = "24-Aug-1982",
+                IdentificationType = IdentificationTypes.Passport,
+                IdentificationNumber = "123458690",
+                MobileNumber = "+27846994000",
+                Email = "nnamacha@gmail.com",
+                ProfileType = ProfileTypes.Admin,
+                NextOfKin = 2,
+                ProfileStatus = ProfileStatuses.Active,
+                Address = "15-10 Test Road",
+                CreatedBy = 1
+
+
+            };
+            _profileRepository.Setup(x => x.UpdateProfileAsync(It.IsAny<Profile>())).ReturnsAsync(response);
+
+            var result = await profilesImplementation.UpdateProfileAsync(profileRecord);
+
+            Assert.Equal(repoResponse, result.ResponseCode);
         }
 
 
