@@ -67,6 +67,7 @@ namespace Munharaunda.Application.Orchestration.Services
                                 response.ResponseData = createdFuneral.ResponseData;
                             }
                         }
+                        
 
                     }
                     else
@@ -82,17 +83,26 @@ namespace Munharaunda.Application.Orchestration.Services
                     }
 
                 }
+                else
+                {
+                    response.ResponseCode = ResponseConstants.R01;
+                    response.ResponseMessage = ResponseConstants.PROFILE_NOT_FOUND;
 
-                return response;
+                }
+
+
+                
             }
             catch (Exception ex)
             {
 
                 response.ResponseCode = ResponseConstants.R99;
                 response.ResponseMessage = ex.Message;
-                return response;
+                
 
             }
+
+            return response;
         }
 
         public Task<ResponseModel<bool>> DeleteFuneralAsync(int FuneralId)
@@ -100,10 +110,7 @@ namespace Munharaunda.Application.Orchestration.Services
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<Funeral>> GetFuneralDetailsAsync(int FuneralId)
-        {
-            throw new NotImplementedException();
-        }
+
 
         public Task<ResponseModel<Funeral>> GetFuneralDetailsByFuneralIdAsync(int funeralId)
         {
