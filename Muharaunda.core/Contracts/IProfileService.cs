@@ -3,7 +3,7 @@ using System;
 
 namespace Munharaunda.Application.Orchestration.Contracts
 {
-    public interface IProfileService : IProfileRespository
+    public interface IProfileService : IProfile
     {
 
         DateTime CalculateProfileActivationDate();

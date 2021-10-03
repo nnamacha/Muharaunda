@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using Muharaunda.Core.Constants;
 using Muharaunda.Core.Contracts;
-using Muharaunda.Core.Models;
 using Munharaunda.Core.Dtos;
 using System;
 using System.Net.Mail;
@@ -12,9 +11,9 @@ namespace Munharaunda.Application.Validators.Implementations
     public class ProfileValidator : AbstractValidator<CreateProfileRequest>
     {
         private readonly IAppSettings _appSettings;
-        private readonly IProfileRespository _profileRepository;
+        private readonly IProfile _profileRepository;
 
-        public ProfileValidator(IAppSettings appSettings, IProfileRespository profileRepository)
+        public ProfileValidator(IAppSettings appSettings, IProfile profileRepository)
         {
             _appSettings = appSettings;
             _profileRepository = profileRepository;
@@ -50,7 +49,7 @@ namespace Munharaunda.Application.Validators.Implementations
 
         }
 
-        private bool IsValidateProfileStatus(SystemWideConstants.ProfileStatuses status )
+        private bool IsValidateProfileStatus(SystemWideConstants.ProfileStatuses status)
         {
             if (_appSettings.ProfileCreationAutoAuthorisation)
             {
@@ -111,6 +110,7 @@ namespace Munharaunda.Application.Validators.Implementations
             else
                 return mobileNumber.Length == _appSettings.LengthForMobileNumber;
         }
+
 
 
     }

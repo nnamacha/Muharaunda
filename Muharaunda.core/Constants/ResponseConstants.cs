@@ -22,6 +22,8 @@
         public const string AUTHORISED_PROFILE_FOUND = "Authorised profile found";
         public const string PROFILE_AUTHORISATION_FAILED = "Failed to authorise profile";
         public const string PROFILE_UPDATE_FAILED = "Failed to update profile";
-
+        public const string PROFILE_NOT_UNIQUE = "Profile is not unique";
+        public const string FUNERAL_NOT_UNIQUE = "funeral is not unique";
+        public const string CREATE_FUNERAL_REQUEST_INVALID = "Create funeral request invalid";
     }
 }

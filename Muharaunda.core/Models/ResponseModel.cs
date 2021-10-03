@@ -1,9 +1,5 @@
 ﻿using Munharaunda.Core.Constants;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Munharaunda.Core.Models
 {
@@ -11,7 +7,7 @@ namespace Munharaunda.Core.Models
     {
         public ResponseModel()
         {
-           
+
             this.ResponseCode = ResponseConstants.R00;
             this.ResponseMessage = ResponseConstants.R00Message;
         }

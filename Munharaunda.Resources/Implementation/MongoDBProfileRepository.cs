@@ -1,14 +1,11 @@
-﻿using AutoMapper;
-using Microsoft.Extensions.Configuration;
-using MongoDB.Driver;
-using Muharaunda.Core.Contracts;
+﻿using MongoDB.Driver;
 using Muharaunda.Core.Models;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
 using Munharaunda.Core.Utilities;
+using Munharaunda.Domain.Contracts;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static Muharaunda.Core.Constants.SystemWideConstants;
@@ -16,20 +13,19 @@ using Profile = Muharaunda.Core.Models.Profile;
 
 namespace Munharaunda.Resources.Implementation
 {
-    public class MongoDBRepository : IProfileRespository
+    public class MongoDBProfileRepository : IProfileRepository
     {
 
         private readonly IMongoDatabase mongoDb;
-        private readonly IMapper _mapper;
         private readonly FilterDefinitionBuilder<Profile> filterBuilder;
         private readonly UpdateDefinitionBuilder<Profile> updateBuilder;
 
-        public MongoDBRepository(IMongoClient client, IMapper mapper)
+        public MongoDBProfileRepository(IMongoClient client)
         {
 
             mongoDb = client.GetDatabase("KnowledgeBank");
 
-            _mapper = mapper;
+
 
             filterBuilder = Builders<Profile>.Filter;
 
@@ -63,12 +59,20 @@ namespace Munharaunda.Resources.Implementation
             return response;
         }
 
-        public async Task<ResponseModel<ProfileBase>> CreateProfileAsync(CreateProfileRequest request)
+        public async Task<ResponseModel<ProfileBase>> CreateProfileAsync(CreateProfileRequest request, bool checkUnique = false)
         {
             var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
             try
             {
+                if (checkUnique && !await CheckPersonIsUnique(request))
+                {
+                    response.ResponseCode = ResponseConstants.R01;
+
+                    response.ResponseMessage = ResponseConstants.PROFILE_NOT_UNIQUE;
+
+                    return response;
+                }
                 var currentProfilesCount = mongoDb.GetCollection<CreateProfileRequest>("Profile").AsQueryable().Count();
 
                 request.ProfileId = currentProfilesCount++;
@@ -79,10 +83,20 @@ namespace Munharaunda.Resources.Implementation
             {
 
                 response.ResponseCode = ResponseConstants.R99;
+
                 response.ResponseMessage = ex.Message;
             }
 
             return response;
+        }
+
+        public async Task<bool> CheckPersonIsUnique(CreateProfileRequest request)
+        {
+            var filter = filterBuilder.Where(u => u.FirstName == request.FirstName && u.Surname == request.Surname && u.DateOfBirth == request.DateOfBirth);
+
+            var profiles = await mongoDb.GetCollection<Profile>("Profile").FindAsync(filter).Result.ToListAsync();
+
+            return profiles.Count == 0;
         }
 
         public async Task<ResponseModel<bool>> DeleteProfileAsync(int profileId)
@@ -126,6 +140,7 @@ namespace Munharaunda.Resources.Implementation
             {
 
                 response.ResponseCode = ResponseConstants.R99;
+
                 response.ResponseMessage = ex.Message;
             }
 
@@ -137,7 +152,7 @@ namespace Munharaunda.Resources.Implementation
             var response = CommonUtilites.GenerateResponseModel<Profile>();
             try
             {
-                
+
 
                 var filter = filterBuilder.Where(u => u.ProfileType == ProfileTypes.Dependent && u.NextOfKin == profileId);
 
@@ -150,6 +165,7 @@ namespace Munharaunda.Resources.Implementation
             {
 
                 response.ResponseCode = ResponseConstants.R99;
+
                 response.ResponseMessage = ex.Message;
             }
 
@@ -174,6 +190,7 @@ namespace Munharaunda.Resources.Implementation
             {
 
                 response.ResponseCode = ResponseConstants.R99;
+
                 response.ResponseMessage = ex.Message;
             }
 
@@ -196,6 +213,7 @@ namespace Munharaunda.Resources.Implementation
             {
 
                 response.ResponseCode = ResponseConstants.R99;
+
                 response.ResponseMessage = ex.Message;
             }
 
@@ -218,6 +236,7 @@ namespace Munharaunda.Resources.Implementation
             {
 
                 response.ResponseCode = ResponseConstants.R99;
+
                 response.ResponseMessage = ex.Message;
             }
 
@@ -242,7 +261,9 @@ namespace Munharaunda.Resources.Implementation
                 else
                 {
                     response.ResponseCode = ResponseConstants.R01;
+
                     response.ResponseMessage = ResponseConstants.PROFILE_UPDATE_FAILED;
+
                     response.ResponseData.Add(false);
                 }
 
@@ -251,6 +272,7 @@ namespace Munharaunda.Resources.Implementation
             {
 
                 response.ResponseCode = ResponseConstants.R99;
+
                 response.ResponseMessage = ex.Message;
             }
 
@@ -262,6 +284,7 @@ namespace Munharaunda.Resources.Implementation
         public async Task<ResponseModel<bool>> ValidateIdNumber(string IdNumber)
         {
             var response = CommonUtilites.GenerateResponseModel<bool>();
+
             var filter = Builders<Profile>.Filter.Eq("IdentificationNumber", IdNumber);
 
             var profilesCount = await mongoDb.GetCollection<Profile>("Profile").Find(filter).CountDocumentsAsync();
@@ -272,6 +295,40 @@ namespace Munharaunda.Resources.Implementation
             return response;
         }
 
+        public async Task<ResponseModel<bool>> UpdateProfileStatusAsync(int profileId, ProfileStatuses newStatus)
+        {
+            var response = CommonUtilites.GenerateResponseModel<bool>();
+            try
+            {
+                var filter = Builders<Profile>.Filter.Eq(u => u.ProfileId, profileId);
 
+                var update = updateBuilder.Set(u => u.ProfileStatus, newStatus);
+
+                var result = await mongoDb.GetCollection<Profile>("Profile").UpdateOneAsync(filter, update);
+
+                if (result.IsAcknowledged && result.ModifiedCount == 1)
+                {
+                    response.ResponseData.Add(true);
+                }
+                else
+                {
+                    response.ResponseCode = ResponseConstants.R01;
+
+                    response.ResponseMessage = ResponseConstants.PROFILE_UPDATE_FAILED;
+
+                    response.ResponseData.Add(false);
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                response.ResponseCode = ResponseConstants.R99;
+
+                response.ResponseMessage = ex.Message;
+            }
+
+            return response;
+        }
     }
 }

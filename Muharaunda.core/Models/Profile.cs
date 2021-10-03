@@ -21,7 +21,7 @@ namespace Muharaunda.Core.Models
         public string _id { get; set; }
         public int UpdatedBy { get; set; }
         public DateTime Updated { get; set; }
-     
+
 
     }
 }

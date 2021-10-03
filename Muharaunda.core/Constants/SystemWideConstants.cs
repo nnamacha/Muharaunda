@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Muharaunda.Core.Constants
+﻿namespace Muharaunda.Core.Constants
 {
     public static class SystemWideConstants
     {
@@ -22,7 +16,8 @@ namespace Muharaunda.Core.Constants
             Active,
             Flagged,
             Terminated,
-            Unauthorised
+            Unauthorised,
+            Deceased
         }
         public enum IdentificationTypes
         {

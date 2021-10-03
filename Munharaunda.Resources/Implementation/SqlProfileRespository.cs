@@ -1,4 +1,5 @@
-﻿using Muharaunda.Core.Contracts;
+﻿using Muharaunda.Core.Constants;
+using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Munharaunda.Resources.Implementation
 {
-    public class SqlProfileRespository : IProfileRespository
+    public class SqlProfileRespository : IProfile
     {
 
 
@@ -16,7 +17,7 @@ namespace Munharaunda.Resources.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<ProfileBase>> CreateProfileAsync(CreateProfileRequest request)
+        public Task<ResponseModel<ProfileBase>> CreateProfileAsync(CreateProfileRequest request, bool checkUnique = false)
         {
             throw new NotImplementedException();
         }
@@ -68,7 +69,12 @@ namespace Munharaunda.Resources.Implementation
             throw new NotImplementedException();
         }
 
-        Task<ResponseModel<bool>> IProfileRespository.UpdateProfileAsync(Profile profile)
+        Task<ResponseModel<bool>> IProfile.UpdateProfileAsync(Profile profile)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ResponseModel<bool>> UpdateProfileStatusAsync(int profileId, SystemWideConstants.ProfileStatuses newStatus)
         {
             throw new NotImplementedException();
         }

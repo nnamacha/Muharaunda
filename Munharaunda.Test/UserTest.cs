@@ -8,6 +8,7 @@ using Munharaunda.Application.Validators.Implementations;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
+using Munharaunda.Domain.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace Munharaunda.Test
     public class UserTest
     {
         private CreateProfileRequest ProfileRecord;
-        private Mock<IProfileRespository> _profileRepository;
+        private Mock<IProfileRepository> _profileRepository;
         private Mock<IAppSettings> _appSettings;
         private Mock<IMapper> _mapper;
         private readonly Mock<IConfiguration> _configuration;
@@ -186,7 +187,7 @@ namespace Munharaunda.Test
 
 
 
-            _profileRepository = new Mock<IProfileRespository>();
+            _profileRepository = new Mock<IProfileRepository>();
 
             _appSettings = new Mock<IAppSettings>();
 
@@ -198,7 +199,7 @@ namespace Munharaunda.Test
 
             _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(resultGetProfileDetails);
 
-            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
 
             _appSettings.SetupGet(x => x.MinAgeInMonths).Returns(3);
 
@@ -368,13 +369,15 @@ namespace Munharaunda.Test
             };
 
             _appSettings.SetupGet(x => x.ProfileCreationAutoAuthorisation).Returns(true);
-            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
 
             var result = await profilesImplementation.CreateProfileAsync(ProfileRecord);
 
             Assert.Equal(result.ResponseCode, repoResponse);
 
         }
+
+
         [Theory]
         [InlineData(ResponseConstants.R00)]
         [InlineData(ResponseConstants.R01)]
@@ -399,11 +402,11 @@ namespace Munharaunda.Test
             Assert.Equal(result.ResponseCode, repoResponse);
         }
         [Theory]
-        [InlineData(ResponseConstants.R00,true, ResponseConstants.R00)]
-        [InlineData(ResponseConstants.R00,false, ResponseConstants.R01)]
-        [InlineData(ResponseConstants.R01,true, ResponseConstants.R01)]
-        [InlineData(ResponseConstants.R01,false, ResponseConstants.R01)]
-        public async Task TestAuthoriseProfile(string repoResponse,bool authorised, string expected)
+        [InlineData(ResponseConstants.R00, true, ResponseConstants.R00)]
+        [InlineData(ResponseConstants.R00, false, ResponseConstants.R01)]
+        [InlineData(ResponseConstants.R01, true, ResponseConstants.R01)]
+        [InlineData(ResponseConstants.R01, false, ResponseConstants.R01)]
+        public async Task TestAuthoriseProfile(string repoResponse, bool authorised, string expected)
         {
             var userCreationRepoResponse = new ResponseModel<bool>
             {
@@ -512,7 +515,7 @@ namespace Munharaunda.Test
                 ResponseCode = repoResponse,
 
             };
-            
+
             var userAuthorisationRepoResponse = new ResponseModel<bool>
             {
                 ResponseCode = ResponseConstants.R00,
@@ -548,7 +551,7 @@ namespace Munharaunda.Test
             getProfileRepoResponse.ResponseData.Add(ProfileRecord);
             _appSettings.SetupGet(x => x.ProfileCreationAutoAuthorisation).Returns(true);
 
-            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
 
             _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(getProfileRepoResponse);
 

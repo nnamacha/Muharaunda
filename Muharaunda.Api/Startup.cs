@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Munharaunda.Application;
-using Serilog;
 namespace Muharaunda.Api
 {
     public class Startup
@@ -27,8 +26,6 @@ namespace Muharaunda.Api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Muharaunda.Api", Version = "v1" });
             });
-
-            services.AddApplication(Configuration);
 
             services.AddResources(Configuration);
         }

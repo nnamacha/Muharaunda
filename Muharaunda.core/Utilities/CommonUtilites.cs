@@ -1,10 +1,4 @@
-﻿using Munharaunda.Core.Constants;
-using Munharaunda.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Munharaunda.Core.Models;
 
 namespace Munharaunda.Core.Utilities
 {
@@ -13,7 +7,7 @@ namespace Munharaunda.Core.Utilities
         public static ResponseModel<T> GenerateResponseModel<T>()
         {
             return new ResponseModel<T>();
-            
+
 
         }
     }

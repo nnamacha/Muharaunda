@@ -16,12 +16,12 @@ namespace Munharaunda.Application.Orchestration.Implementation
 {
     public class ProfileService : IProfileService
     {
-        private readonly IProfileRespository _repository;
+        private readonly IProfile _repository;
         private readonly IMapper _mapper;
         private readonly ProfileValidator _validator;
         private readonly IAppSettings _appSettings;
 
-        public ProfileService(IProfileRespository repository, IMapper mapper, ProfileValidator validator, IAppSettings appSettings)
+        public ProfileService(IProfile repository, IMapper mapper, ProfileValidator validator, IAppSettings appSettings)
         {
             _repository = repository;
             _mapper = mapper;
@@ -65,7 +65,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
             return response;
         }
 
-        public async Task<ResponseModel<ProfileBase>> CreateProfileAsync(CreateProfileRequest request)
+        public async Task<ResponseModel<ProfileBase>> CreateProfileAsync(CreateProfileRequest request, bool checkUnique = false)
         {
             var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
@@ -92,7 +92,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
                     request.Created = DateTime.Now.ToLocalTime();
 
-                    response = await _repository.CreateProfileAsync(request);
+                    response = await _repository.CreateProfileAsync(request, checkUnique);
                 }
                 else
                 {
@@ -321,9 +321,16 @@ namespace Munharaunda.Application.Orchestration.Implementation
         {
             ResponseModel<bool> response = CommonUtilites.GenerateResponseModel<bool>();
 
-            return await _repository.UpdateProfileAsync(profile);           
+            return await _repository.UpdateProfileAsync(profile);
 
-            
+
+        }
+
+        public async Task<ResponseModel<bool>> UpdateProfileStatusAsync(int profileId, SystemWideConstants.ProfileStatuses newStatus)
+        {
+            ResponseModel<bool> response = CommonUtilites.GenerateResponseModel<bool>();
+
+            return await _repository.UpdateProfileStatusAsync(profileId,newStatus);
         }
 
 

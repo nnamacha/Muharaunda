@@ -1,10 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Muharaunda.Core.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Munharaunda.Application
 {
@@ -18,8 +13,8 @@ namespace Munharaunda.Application
 
         public AppSettings(IConfiguration configuration)
         {
-            minAgeInMonths =int.Parse(configuration["General:MinAgeInMonth"]);
-            lengthForMobileNumber =int.Parse(configuration["General:MobileNumberLength"]);
+            minAgeInMonths = int.Parse(configuration["General:MinAgeInMonth"]);
+            lengthForMobileNumber = int.Parse(configuration["General:MobileNumberLength"]);
             numberOfDaysToActivateProfile = int.Parse(configuration["General:NumberOfDaysToActivateProfile"]);
             maximumDependentAge = int.Parse(configuration["General:MaximumDependentAge"]);
             profileCreationAutoAuthorisation = configuration.GetValue<bool>("General:ProfileCreationAutoAuthorisation");
@@ -30,9 +25,9 @@ namespace Munharaunda.Application
 
         public int NumberOfDaysToActivateProfile { get => numberOfDaysToActivateProfile; }
 
-        public int MaximumDependentAge  { get => maximumDependentAge;}
+        public int MaximumDependentAge { get => maximumDependentAge; }
 
         public bool ProfileCreationAutoAuthorisation => profileCreationAutoAuthorisation;
     }
-    
+
 }

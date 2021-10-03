@@ -8,9 +8,9 @@ namespace Munharaunda.Application.Validators.Implementations
 {
     public class NextOfKinValidator : AbstractValidator<ProfileNextOfKin>
     {
-        private readonly IProfileRespository _profileRespository;
+        private readonly IProfile _profileRespository;
 
-        public NextOfKinValidator(IProfileRespository profileRespository)
+        public NextOfKinValidator(IProfile profileRespository)
         {
             RuleFor(x => x.NextOfKinProfileId)
                 .MustAsync(async (NextOfKinProfileId, cancellation) =>

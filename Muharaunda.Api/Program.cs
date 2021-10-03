@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Serilog;
 using System;
 
 namespace Muharaunda.Api
@@ -10,7 +8,7 @@ namespace Muharaunda.Api
     {
         public static void Main(string[] args)
         {
-            
+
 
             //Log.Logger = new LoggerConfiguration()
             //    .ReadFrom.Configuration(configuration)
@@ -23,7 +21,7 @@ namespace Muharaunda.Api
 
                 CreateHostBuilder(args).Build().Run();
             }
-            catch (Exception ex)
+            catch (Exception )
             {
 
                 throw;
