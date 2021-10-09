@@ -1,5 +1,6 @@
 ﻿using Muharaunda.Core.Models;
 using Munharaunda.Core.Dtos;
+using Munharaunda.Domain.Models;
 
 namespace Munharaunda.Application
 {
@@ -10,6 +11,7 @@ namespace Munharaunda.Application
             CreateMap<CreateProfileRequest, Muharaunda.Core.Models.Profile>().ReverseMap();
             CreateMap<ProfileBase, Muharaunda.Core.Models.Profile>().ReverseMap();
             CreateMap<object, ProfileBase>().ReverseMap();
+            CreateMap<CreateProfileRequest, CosmosProfile>();
 
         }
     }

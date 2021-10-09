@@ -26,5 +26,6 @@
         public const string FUNERAL_NOT_UNIQUE = "funeral is not unique";
         public const string CREATE_FUNERAL_REQUEST_INVALID = "Create funeral request invalid";
         public const string PROFILE_NOT_FOUND = "Profile Not Found";
+        public const string PROFILE_NOT_CREATED = "Failed to create profile record";
     }
 }
