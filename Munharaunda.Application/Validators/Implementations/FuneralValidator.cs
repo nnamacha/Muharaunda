@@ -38,9 +38,9 @@ namespace Munharaunda.Application.Validators.Implementations
             return (profileType == ProfileTypes.Admin || profileType == ProfileTypes.Member);
         }
 
-        private bool isActiveProfile(ProfileStatuses status)
+        private bool isActiveProfile(Statuses status)
         {
-            return status == ProfileStatuses.Active;
+            return status == Statuses.Active;
         }
     }
 }

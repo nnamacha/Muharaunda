@@ -52,7 +52,7 @@ namespace Munharaunda.Test
                 Email = "nnamacha@gmail.com",
                 ProfileType = ProfileTypes.Admin,
                 NextOfKin = 2,
-                ProfileStatus = ProfileStatuses.Active,
+                ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
                 CreatedBy = 1
 
@@ -74,7 +74,7 @@ namespace Munharaunda.Test
                 //IsNextOfKin = true,
                 ProfileType = ProfileTypes.Member,
                 NextOfKin = 2,
-                ProfileStatus = ProfileStatuses.Active,
+                ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
                 CreatedBy = 1
 
@@ -93,7 +93,7 @@ namespace Munharaunda.Test
 
                 ProfileType = ProfileTypes.Member,
                 NextOfKin = 2,
-                ProfileStatus = ProfileStatuses.Unauthorised,
+                ProfileStatus = Statuses.Unauthorised,
                 Address = "15-10 Test Road",
                 CreatedBy = 1
 
@@ -112,7 +112,7 @@ namespace Munharaunda.Test
 
                 ProfileType = ProfileTypes.Member,
                 NextOfKin = 2,
-                ProfileStatus = ProfileStatuses.Terminated,
+                ProfileStatus = Statuses.Terminated,
                 Address = "15-10 Test Road",
                 CreatedBy = 1
 
@@ -132,7 +132,7 @@ namespace Munharaunda.Test
 
                 ProfileType = ProfileTypes.Member,
                 NextOfKin = 2,
-                ProfileStatus = ProfileStatuses.Flagged,
+                ProfileStatus = Statuses.Flagged,
                 Address = "15-10 Test Road",
                 CreatedBy = 1
 
@@ -152,7 +152,7 @@ namespace Munharaunda.Test
 
                 ProfileType = ProfileTypes.Dependent,
                 NextOfKin = 2,
-                ProfileStatus = ProfileStatuses.Flagged,
+                ProfileStatus = Statuses.Flagged,
                 Address = "15-10 Test Road",
                 CreatedBy = 1
 
@@ -160,9 +160,9 @@ namespace Munharaunda.Test
             });
 
 
-            activeProfiles = profiles.FindAll(x => x.ProfileStatus == ProfileStatuses.Active);
+            activeProfiles = profiles.FindAll(x => x.ProfileStatus == Statuses.Active);
 
-            unauthorisedProfiles = profiles.FindAll(x => x.ProfileStatus == ProfileStatuses.Unauthorised);
+            unauthorisedProfiles = profiles.FindAll(x => x.ProfileStatus == Statuses.Unauthorised);
             dependentProfiles = profiles.FindAll(x => x.ProfileType == ProfileTypes.Dependent);
 
             var resultValidNumber = new ResponseModel<bool>
@@ -217,7 +217,7 @@ namespace Munharaunda.Test
         }
         [Theory]
         [InlineData(true, ResponseConstants.R00)]
-        [InlineData(false, ResponseConstants.R01)]
+        [InlineData(false, ResponseConstants.R400)]
 
         public void TestNextOfKinValidation(bool valid, string expected)
         {
@@ -314,7 +314,7 @@ namespace Munharaunda.Test
                 Email = "mnamacha@test.com",
                 ProfileType = ProfileTypes.Dependent,
                 NextOfKin = 2,
-                ProfileStatus = ProfileStatuses.Active,
+                ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
                 CreatedBy = 1
             };
@@ -346,7 +346,7 @@ namespace Munharaunda.Test
 
                 ProfileType = profileType,
                 NextOfKin = 2,
-                ProfileStatus = ProfileStatuses.Active,
+                ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
                 CreatedBy = 1
             };
@@ -360,7 +360,7 @@ namespace Munharaunda.Test
 
         [Theory]
         [InlineData(ResponseConstants.R00)]
-        [InlineData(ResponseConstants.R01)]
+        [InlineData(ResponseConstants.R400)]
         public async Task TestProfileCreation(string repoResponse)
         {
             var userCreationRepoResponse = new ResponseModel<ProfileBase>
@@ -380,7 +380,7 @@ namespace Munharaunda.Test
 
         [Theory]
         [InlineData(ResponseConstants.R00)]
-        [InlineData(ResponseConstants.R01)]
+        [InlineData(ResponseConstants.R400)]
         public async Task TestProfileDelete(string repoResponse)
         {
             var GetProfileDetailsRepoResponse = new ResponseModel<Profile>
@@ -403,9 +403,9 @@ namespace Munharaunda.Test
         }
         [Theory]
         [InlineData(ResponseConstants.R00, true, ResponseConstants.R00)]
-        [InlineData(ResponseConstants.R00, false, ResponseConstants.R01)]
-        [InlineData(ResponseConstants.R01, true, ResponseConstants.R01)]
-        [InlineData(ResponseConstants.R01, false, ResponseConstants.R01)]
+        [InlineData(ResponseConstants.R00, false, ResponseConstants.R400)]
+        [InlineData(ResponseConstants.R400, true, ResponseConstants.R400)]
+        [InlineData(ResponseConstants.R400, false, ResponseConstants.R400)]
         public async Task TestAuthoriseProfile(string repoResponse, bool authorised, string expected)
         {
             var userCreationRepoResponse = new ResponseModel<bool>
@@ -429,13 +429,13 @@ namespace Munharaunda.Test
                 Email = "nnamacha@gmail.com",
                 ProfileType = ProfileTypes.Admin,
                 NextOfKin = 2,
-                ProfileStatus = ProfileStatuses.Active,
+                ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
                 CreatedBy = 1
 
 
             };
-            ProfileRecord.ProfileStatus = ProfileStatuses.Unauthorised;
+            ProfileRecord.ProfileStatus = Statuses.Unauthorised;
 
             resultGetProfileDetails.ResponseData.Add(ProfileRecord);
 
@@ -449,11 +449,11 @@ namespace Munharaunda.Test
         }
 
         [Theory]
-        [InlineData(ResponseConstants.R00, ProfileStatuses.Unauthorised, 1)]
-        [InlineData(ResponseConstants.R01, ProfileStatuses.Terminated, 0)]
-        [InlineData(ResponseConstants.R01, ProfileStatuses.Active, 0)]
-        [InlineData(ResponseConstants.R01, ProfileStatuses.Flagged, 0)]
-        public async Task TestAuthoriseProfileSuccessfulWhenStatusUnauthorisedOnly(string repoResponse, ProfileStatuses profileStatus, int count)
+        [InlineData(ResponseConstants.R00, Statuses.Unauthorised, 1)]
+        [InlineData(ResponseConstants.R400, Statuses.Terminated, 0)]
+        [InlineData(ResponseConstants.R400, Statuses.Active, 0)]
+        [InlineData(ResponseConstants.R400, Statuses.Flagged, 0)]
+        public async Task TestAuthoriseProfileSuccessfulWhenStatusUnauthorisedOnly(string repoResponse, Statuses profileStatus, int count)
         {
 
             var userCreationRepoResponse = new ResponseModel<bool>
@@ -477,7 +477,7 @@ namespace Munharaunda.Test
                 Email = "nnamacha@gmail.com",
                 ProfileType = ProfileTypes.Admin,
                 NextOfKin = 2,
-                ProfileStatus = ProfileStatuses.Active,
+                ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
                 CreatedBy = 1
 
@@ -498,10 +498,10 @@ namespace Munharaunda.Test
         }
 
         [Theory]
-        [InlineData(ResponseConstants.R00, ProfileStatuses.Unauthorised)]
-        [InlineData(ResponseConstants.R01, ProfileStatuses.Active)]
+        [InlineData(ResponseConstants.R00, Statuses.Unauthorised)]
+        [InlineData(ResponseConstants.R400, Statuses.Active)]
 
-        public async Task TestCreateProfileAutoAuthorizationFlag(string repoResponse, ProfileStatuses profileStatus)
+        public async Task TestCreateProfileAutoAuthorizationFlag(string repoResponse, Statuses profileStatus)
         {
 
             var getProfileRepoResponse = new ResponseModel<Profile>
@@ -539,7 +539,7 @@ namespace Munharaunda.Test
                 Email = "nnamacha@gmail.com",
                 ProfileType = ProfileTypes.Admin,
                 NextOfKin = 2,
-                ProfileStatus = ProfileStatuses.Active,
+                ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
                 CreatedBy = 1
 
@@ -565,7 +565,7 @@ namespace Munharaunda.Test
 
         [Theory]
         [InlineData(ResponseConstants.R00)]
-        [InlineData(ResponseConstants.R01)]
+        [InlineData(ResponseConstants.R400)]
         public async Task TestGetListOfActiveProfiles(string repoResponse)
         {
             var listOfProfiles = new ResponseModel<Profile>()
@@ -592,7 +592,7 @@ namespace Munharaunda.Test
 
         [Theory]
         [InlineData(ResponseConstants.R00)]
-        [InlineData(ResponseConstants.R01)]
+        [InlineData(ResponseConstants.R400)]
         public async Task TestGetListOfUnauthorisedProfiles(string repoResponse)
         {
             var listOfProfiles = new ResponseModel<Profile>()
@@ -619,7 +619,7 @@ namespace Munharaunda.Test
 
         [Theory]
         [InlineData(ResponseConstants.R00)]
-        [InlineData(ResponseConstants.R01)]
+        [InlineData(ResponseConstants.R400)]
         public async Task TestGetListOfDependentsByProfile(string repoResponse)
         {
             var listOfProfiles = new ResponseModel<Profile>()
@@ -645,7 +645,7 @@ namespace Munharaunda.Test
 
         [Theory]
         [InlineData(ResponseConstants.R00)]
-        [InlineData(ResponseConstants.R01)]
+        [InlineData(ResponseConstants.R400)]
         public async Task TestUpdatingProfile(string repoResponse)
         {
             var response = new ResponseModel<bool>()
@@ -665,7 +665,7 @@ namespace Munharaunda.Test
                 Email = "nnamacha@gmail.com",
                 ProfileType = ProfileTypes.Admin,
                 NextOfKin = 2,
-                ProfileStatus = ProfileStatuses.Active,
+                ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
                 CreatedBy = 1
 

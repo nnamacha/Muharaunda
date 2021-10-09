@@ -58,7 +58,7 @@ namespace Munharaunda.Application.Orchestration.Services
 
                         if (response.ResponseCode == ResponseConstants.R00)
                         {
-                            await _profileRepository.UpdateProfileStatusAsync(request.ProfileId, Muharaunda.Core.Constants.SystemWideConstants.ProfileStatuses.Deceased);
+                            await _profileRepository.UpdateProfileStatusAsync(request.ProfileId, Muharaunda.Core.Constants.SystemWideConstants.Statuses.Deceased);
 
                             var createdFuneral = await _funeralRepository.GetFuneralDetailsByProfileIdAsync(request.ProfileId);
 
@@ -67,7 +67,7 @@ namespace Munharaunda.Application.Orchestration.Services
                                 response.ResponseData = createdFuneral.ResponseData;
                             }
                         }
-                        
+
 
                     }
                     else
@@ -85,36 +85,37 @@ namespace Munharaunda.Application.Orchestration.Services
                 }
                 else
                 {
-                    response.ResponseCode = ResponseConstants.R01;
+                    response.ResponseCode = ResponseConstants.R404;
                     response.ResponseMessage = ResponseConstants.PROFILE_NOT_FOUND;
 
                 }
 
 
-                
+
             }
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
                 response.ResponseMessage = ex.Message;
-                
+
 
             }
 
             return response;
         }
 
-        public Task<ResponseModel<bool>> DeleteFuneralAsync(int FuneralId)
+        public async Task<ResponseModel<bool>> DeleteFuneralAsync(int profileId)
         {
-            throw new NotImplementedException();
+            return await _funeralRepository.DeleteFuneralAsync(profileId);
         }
 
 
 
-        public Task<ResponseModel<Funeral>> GetFuneralDetailsByFuneralIdAsync(int funeralId)
+        public async Task<ResponseModel<Funeral>> GetFuneralDetailsByFuneralIdAsync(int funeralId)
         {
-            throw new NotImplementedException();
+            return await _funeralRepository.GetFuneralDetailsByFuneralIdAsync(funeralId);
+            
         }
 
         public async Task<ResponseModel<Funeral>> GetFuneralDetailsByProfileIdAsync(int profileId)
@@ -122,14 +123,48 @@ namespace Munharaunda.Application.Orchestration.Services
             return await _funeralRepository.GetFuneralDetailsByProfileIdAsync(profileId);
         }
 
-        public Task<ResponseModel<Funeral>> GetListOfActiveFuneralsAsync()
+        public async Task<ResponseModel<Funeral>> GetListOfActiveFuneralsAsync()
         {
-            throw new NotImplementedException();
+            var response = CommonUtilites.GenerateResponseModel<Funeral>();
+
+            try
+            {
+
+                response = await _funeralRepository.GetListOfActiveFuneralsAsync();
+
+                if (response.ResponseData.Count == 0)
+                {
+                    response.ResponseCode = ResponseConstants.R404;
+                }
+
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+
+                response.ResponseCode = ResponseConstants.R500;
+                response.ResponseMessage = ex.Message;
+                return response;
+
+            }
         }
 
-        public Task<ResponseModel<bool>> UpdateFuneralAsync(Funeral Funeral)
+        public async  Task<ResponseModel<bool>> UpdateFuneralAsync(Funeral funeral)
         {
-            throw new NotImplementedException();
+            var response = CommonUtilites.GenerateResponseModel<bool>();
+
+            funeral.Updated = DateTime.Now;
+
+            response = await _funeralRepository.UpdateFuneralAsync(funeral);
+
+            if (response.ResponseCode == ResponseConstants.R00 && response.ResponseData[0] == false)
+            {
+                response.ResponseCode = ResponseConstants.R400;
+            }
+
+            return response;
+
         }
     }
 }

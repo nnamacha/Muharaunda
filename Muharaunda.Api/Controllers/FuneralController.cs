@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Muharaunda.Core.Models;
+using Munharaunda.Core.Constants;
 using Munharaunda.Core.Models;
+using Munharaunda.Core.Utilities;
 using Munharaunda.Domain.Contracts;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,35 +23,56 @@ namespace Munharaunda.Api.Controllers
         }
         // GET: api/<FuneralController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            var result = await _funeralService.GetListOfActiveFuneralsAsync();            
+
+            return CommonUtilites.GenerateResponse(result);
         }
 
-        // GET api/<FuneralController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+               
+        // GET api/<FuneralController>/Profile/5
+        [HttpGet("Profile/{id}")]
+        public async Task<IActionResult> GetFuneralDetailsByProfileId(int id)
         {
-            return "value";
+            var funeral =  await _funeralService.GetFuneralDetailsByProfileIdAsync(id);
+
+            return CommonUtilites.GenerateResponse(funeral);
+
         }
+
+
 
         // POST api/<FuneralController>
         [HttpPost]
-        public async Task<ResponseModel<Funeral>> Post([FromBody] Funeral funeral)
+        public async Task<IActionResult> Post([FromBody] Funeral funeral)
         {
-            return await _funeralService.CreateFuneralAsync(funeral);
+            var result =  await _funeralService.CreateFuneralAsync(funeral);
+
+            return CommonUtilites.GenerateResponse(result);
         }
 
         // PUT api/<FuneralController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> Put([FromBody] Funeral funeral)
         {
+            var result = await _funeralService.UpdateFuneralAsync(funeral);
+
+            return CommonUtilites.GenerateResponse(result);
         }
+        
+       
 
         // DELETE api/<FuneralController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
+            var result = await _funeralService.DeleteFuneralAsync(id);
+
+            return CommonUtilites.GenerateResponse(result);
         }
+
+
+        
     }
 }

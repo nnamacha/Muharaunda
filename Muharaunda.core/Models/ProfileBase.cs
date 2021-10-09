@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Muharaunda.Core.Contracts;
+using Munharaunda.Domain.Models;
+using System;
 using static Muharaunda.Core.Constants.SystemWideConstants;
 
 namespace Muharaunda.Core.Models
 {
-    public class ProfileBase
+    public class ProfileBase:IAudit
     {
         public int ProfileId { get; set; }
         public string FirstName { get; set; }
@@ -26,7 +28,7 @@ namespace Muharaunda.Core.Models
 
         public ProfileTypes ProfileType { get; set; }
 
-        public ProfileStatuses ProfileStatus { get; set; }
+        public Statuses ProfileStatus { get; set; }
 
         public DateTime ActivationDate { get; set; }
 
@@ -37,5 +39,7 @@ namespace Muharaunda.Core.Models
         public DateTime Created { get; set; }
         public int ApprovedBy { get; set; }
         public DateTime Approved { get; set; }
+        public int UpdatedBy { get ; set ; }
+        public DateTime Updated { get ; set ; }
     }
 }

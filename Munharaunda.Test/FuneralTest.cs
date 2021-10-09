@@ -41,7 +41,7 @@ namespace Munharaunda.Test
                 Email = "nnamacha@gmail.com",
                 ProfileType = ProfileTypes.Admin,
                 NextOfKin = 2,
-                ProfileStatus = ProfileStatuses.Active,
+                ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
                 CreatedBy = 1
 
@@ -69,7 +69,7 @@ namespace Munharaunda.Test
         }
 
         [Theory]
-        [InlineData(ResponseConstants.R01, 0)]
+        [InlineData(ResponseConstants.R400, 0)]
         [InlineData(ResponseConstants.R00, 1)]
         public async Task TestFuneralCreationWhenNoProfileFound(string responseCode, int runtimes)
         {
@@ -93,7 +93,7 @@ namespace Munharaunda.Test
 
             getProfileResponse.ResponseData.Add(profileRecord);
             _funeralRepository.Setup(x => x.CreateFuneralAsync(It.IsAny<Funeral>())).ReturnsAsync(createFuneralResponse);
-            _profileRepository.Setup(x => x.UpdateProfileStatusAsync(It.IsAny<int>(), It.IsAny<ProfileStatuses>())).ReturnsAsync(updateProfileStatusResponse);
+            _profileRepository.Setup(x => x.UpdateProfileStatusAsync(It.IsAny<int>(), It.IsAny<Statuses>())).ReturnsAsync(updateProfileStatusResponse);
             _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(getProfileResponse);
             _funeralRepository.Setup(x => x.GetFuneralDetailsByProfileIdAsync(It.IsAny<int>())).ReturnsAsync(getFuneralDetailsByProfileId);
 

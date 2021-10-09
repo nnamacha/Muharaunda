@@ -40,7 +40,7 @@ namespace Munharaunda.Resources.Implementation
             {
                 var filter = filterBuilder.Eq("ProfileId", profileId);
 
-                var update = updateBuilder.Set(u => u.ProfileStatus, ProfileStatuses.Active);
+                var update = updateBuilder.Set(u => u.ProfileStatus, Statuses.Active);
 
                 var result = await mongoDb.GetCollection<Profile>("Profile").UpdateOneAsync(filter, update);
 
@@ -51,7 +51,7 @@ namespace Munharaunda.Resources.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
                 response.ResponseMessage = ex.Message;
                 response.ResponseData.Add(false);
             }
@@ -67,7 +67,7 @@ namespace Munharaunda.Resources.Implementation
             {
                 if (checkUnique && !await CheckPersonIsUnique(request))
                 {
-                    response.ResponseCode = ResponseConstants.R01;
+                    response.ResponseCode = ResponseConstants.R400;
 
                     response.ResponseMessage = ResponseConstants.PROFILE_NOT_UNIQUE;
 
@@ -82,7 +82,7 @@ namespace Munharaunda.Resources.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
 
                 response.ResponseMessage = ex.Message;
             }
@@ -114,7 +114,7 @@ namespace Munharaunda.Resources.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
 
                 response.ResponseMessage = ex.Message;
             }
@@ -139,7 +139,7 @@ namespace Munharaunda.Resources.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
 
                 response.ResponseMessage = ex.Message;
             }
@@ -164,7 +164,7 @@ namespace Munharaunda.Resources.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
 
                 response.ResponseMessage = ex.Message;
             }
@@ -189,7 +189,7 @@ namespace Munharaunda.Resources.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
 
                 response.ResponseMessage = ex.Message;
             }
@@ -212,7 +212,7 @@ namespace Munharaunda.Resources.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
 
                 response.ResponseMessage = ex.Message;
             }
@@ -235,7 +235,7 @@ namespace Munharaunda.Resources.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
 
                 response.ResponseMessage = ex.Message;
             }
@@ -250,7 +250,7 @@ namespace Munharaunda.Resources.Implementation
             {
                 var filter = Builders<Profile>.Filter.Eq(u => u.ProfileId, profile.ProfileId);
 
-                var update = updateBuilder.Set(u => u.ProfileStatus, ProfileStatuses.Active);
+                var update = updateBuilder.Set(u => u.ProfileStatus, Statuses.Active);
 
                 var result = await mongoDb.GetCollection<Profile>("Profile").ReplaceOneAsync(filter, profile);
 
@@ -260,7 +260,7 @@ namespace Munharaunda.Resources.Implementation
                 }
                 else
                 {
-                    response.ResponseCode = ResponseConstants.R01;
+                    response.ResponseCode = ResponseConstants.R400;
 
                     response.ResponseMessage = ResponseConstants.PROFILE_UPDATE_FAILED;
 
@@ -271,7 +271,7 @@ namespace Munharaunda.Resources.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
 
                 response.ResponseMessage = ex.Message;
             }
@@ -295,7 +295,7 @@ namespace Munharaunda.Resources.Implementation
             return response;
         }
 
-        public async Task<ResponseModel<bool>> UpdateProfileStatusAsync(int profileId, ProfileStatuses newStatus)
+        public async Task<ResponseModel<bool>> UpdateProfileStatusAsync(int profileId, Statuses newStatus)
         {
             var response = CommonUtilites.GenerateResponseModel<bool>();
             try
@@ -312,7 +312,7 @@ namespace Munharaunda.Resources.Implementation
                 }
                 else
                 {
-                    response.ResponseCode = ResponseConstants.R01;
+                    response.ResponseCode = ResponseConstants.R400;
 
                     response.ResponseMessage = ResponseConstants.PROFILE_UPDATE_FAILED;
 
@@ -323,7 +323,7 @@ namespace Munharaunda.Resources.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
 
                 response.ResponseMessage = ex.Message;
             }

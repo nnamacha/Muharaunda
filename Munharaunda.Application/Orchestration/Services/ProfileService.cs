@@ -37,19 +37,19 @@ namespace Munharaunda.Application.Orchestration.Implementation
             if (profileDetails.ResponseCode == ResponseConstants.R00)
             {
 
-                if (profileDetails.ResponseData[0].ProfileStatus == SystemWideConstants.ProfileStatuses.Unauthorised)
+                if (profileDetails.ResponseData[0].ProfileStatus == SystemWideConstants.Statuses.Unauthorised)
                 {
                     response = await _repository.AuthoriseProfileAsync(profileId);
 
                     if (!response.ResponseData[0] && response.ResponseCode == ResponseConstants.R00)
                     {
-                        response.ResponseCode = ResponseConstants.R01;
+                        response.ResponseCode = ResponseConstants.R400;
                         response.ResponseMessage = ResponseConstants.PROFILE_AUTHORISATION_FAILED;
                     }
                 }
                 else
                 {
-                    response.ResponseCode = ResponseConstants.R01;
+                    response.ResponseCode = ResponseConstants.R400;
                     response.ResponseMessage = ResponseConstants.INVALID_PROFILE_STATUS;
 
                 }
@@ -73,11 +73,11 @@ namespace Munharaunda.Application.Orchestration.Implementation
             {
                 if (_appSettings.ProfileCreationAutoAuthorisation)
                 {
-                    request.ProfileStatus = SystemWideConstants.ProfileStatuses.Active;
+                    request.ProfileStatus = SystemWideConstants.Statuses.Active;
                 }
                 else
                 {
-                    request.ProfileStatus = SystemWideConstants.ProfileStatuses.Unauthorised;
+                    request.ProfileStatus = SystemWideConstants.Statuses.Unauthorised;
                 }
 
                 var requestValidation = _validator.Validate(request);
@@ -111,7 +111,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
                 response.ResponseMessage = ex.Message;
                 return response;
 
@@ -149,7 +149,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
                 response.ResponseMessage = ex.Message;
                 return response;
 
@@ -165,11 +165,11 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
                 response = await _repository.GetListOfActiveProfilesAsync();
 
-                var InactiveProfileFound = (response.ResponseData.FindAll(x => x.ProfileStatus != SystemWideConstants.ProfileStatuses.Active).Count > 0);
+                var InactiveProfileFound = (response.ResponseData.FindAll(x => x.ProfileStatus != SystemWideConstants.Statuses.Active).Count > 0);
 
                 if (InactiveProfileFound)
                 {
-                    response.ResponseCode = ResponseConstants.R01;
+                    response.ResponseCode = ResponseConstants.R400;
                     response.ResponseMessage = ResponseConstants.INACTIVE_PROFILE_FOUND;
                 }
                 else if (response.ResponseData.Count == 0)
@@ -183,7 +183,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
                 response.ResponseMessage = ex.Message;
                 return response;
 
@@ -200,11 +200,11 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
                 response = await _repository.GetUnauthorisedProfilesAsync();
 
-                var InactiveProfileFound = (response.ResponseData.FindAll(x => x.ProfileStatus != SystemWideConstants.ProfileStatuses.Unauthorised).Count > 0);
+                var InactiveProfileFound = (response.ResponseData.FindAll(x => x.ProfileStatus != SystemWideConstants.Statuses.Unauthorised).Count > 0);
 
                 if (InactiveProfileFound)
                 {
-                    response.ResponseCode = ResponseConstants.R01;
+                    response.ResponseCode = ResponseConstants.R400;
                     response.ResponseMessage = ResponseConstants.AUTHORISED_PROFILE_FOUND;
                 }
                 else if (response.ResponseData.Count == 0)
@@ -218,7 +218,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
                 response.ResponseMessage = ex.Message;
                 return response;
 
@@ -240,7 +240,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
                 response.ResponseMessage = ex.Message;
                 return response;
             }
@@ -262,7 +262,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
                 response.ResponseMessage = ex.Message;
                 return response;
             }
@@ -284,7 +284,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
                 response.ResponseMessage = ex.Message;
                 return response;
             }
@@ -306,7 +306,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
                 response.ResponseMessage = ex.Message;
                 return response;
             }
@@ -326,7 +326,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
         }
 
-        public async Task<ResponseModel<bool>> UpdateProfileStatusAsync(int profileId, SystemWideConstants.ProfileStatuses newStatus)
+        public async Task<ResponseModel<bool>> UpdateProfileStatusAsync(int profileId, SystemWideConstants.Statuses newStatus)
         {
             ResponseModel<bool> response = CommonUtilites.GenerateResponseModel<bool>();
 

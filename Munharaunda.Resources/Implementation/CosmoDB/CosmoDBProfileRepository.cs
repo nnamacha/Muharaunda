@@ -64,7 +64,7 @@ namespace Munharaunda.Infrastructure.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
                 response.ResponseMessage = ex.Message;
             }
 
@@ -107,7 +107,7 @@ namespace Munharaunda.Infrastructure.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<bool>> UpdateProfileStatusAsync(int profileId, SystemWideConstants.ProfileStatuses newStatus)
+        public Task<ResponseModel<bool>> UpdateProfileStatusAsync(int profileId, SystemWideConstants.Statuses newStatus)
         {
             throw new NotImplementedException();
         }

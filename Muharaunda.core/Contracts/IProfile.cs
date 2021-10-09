@@ -24,7 +24,7 @@ namespace Muharaunda.Core.Contracts
         public Task<ResponseModel<bool>> ValidateIdNumber(string IdNumber);
 
         public Task<ResponseModel<bool>> UpdateProfileAsync(Profile profile);
-        public Task<ResponseModel<bool>> UpdateProfileStatusAsync(int profileId, ProfileStatuses newStatus);
+        public Task<ResponseModel<bool>> UpdateProfileStatusAsync(int profileId, Statuses newStatus);
 
         #endregion
 

@@ -11,13 +11,14 @@
 
         }
 
-        public enum ProfileStatuses
+        public enum Statuses
         {
             Active,
             Flagged,
             Terminated,
             Unauthorised,
-            Deceased
+            Deceased,
+            Closed
         }
         public enum IdentificationTypes
         {

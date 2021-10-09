@@ -75,7 +75,8 @@ namespace Munharaunda.Application
 
             services.AddScoped<IFuneralService, FuneralService>();
 
-            
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 
             return services;
         }

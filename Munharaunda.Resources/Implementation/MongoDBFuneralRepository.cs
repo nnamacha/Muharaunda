@@ -38,7 +38,7 @@ namespace Munharaunda.Infrastructure.Implementation
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
                 response.ResponseMessage = ex.Message;
             }
 
@@ -50,9 +50,36 @@ namespace Munharaunda.Infrastructure.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<bool>> DeleteFuneralAsync(int FuneralId)
+        public async Task<ResponseModel<bool>> DeleteFuneralAsync(int profileId)
         {
-            throw new NotImplementedException();
+            var response = CommonUtilites.GenerateResponseModel<bool>();
+
+            try
+            {
+                var filter = Builders<Funeral>.Filter.Eq("Profile.ProfileId", profileId);
+
+                var result = await mongoDb.GetCollection<Funeral>("Funeral").DeleteOneAsync(filter);
+
+                if (result.DeletedCount == 1)
+                {
+                    response.ResponseData.Add(true);
+                }
+                else
+                {
+                    throw new Exception($"Database failed to delete funeral for Profile id {profileId}");
+                }
+
+                
+            }
+            catch (Exception ex)
+            {
+
+                response.ResponseCode = ResponseConstants.R500;
+
+                response.ResponseMessage = ex.Message;
+            }
+
+            return response;
         }
 
         public async Task<ResponseModel<Funeral>> GetFuneralDetailsByProfileIdAsync(int profileId)
@@ -64,13 +91,20 @@ namespace Munharaunda.Infrastructure.Implementation
 
                 var funeral = await mongoDb.GetCollection<Funeral>("Funeral").FindAsync(filter).Result.FirstOrDefaultAsync();
 
-
-                response.ResponseData.Add(funeral);
+                if (funeral != null)
+                {
+                    response.ResponseData.Add(funeral);
+                }
+                else
+                {
+                    response.ResponseCode = ResponseConstants.R404;
+                }
+               
             }
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
 
                 response.ResponseMessage = ex.Message;
             }
@@ -87,13 +121,16 @@ namespace Munharaunda.Infrastructure.Implementation
 
                 var funeral = await mongoDb.GetCollection<Funeral>("Funeral").FindAsync(filter).Result.FirstOrDefaultAsync();
 
-
-                response.ResponseData.Add(funeral);
+                if (funeral != null)
+                {
+                    response.ResponseData.Add(funeral);
+                }
+                
             }
             catch (Exception ex)
             {
 
-                response.ResponseCode = ResponseConstants.R99;
+                response.ResponseCode = ResponseConstants.R500;
 
                 response.ResponseMessage = ex.Message;
             }
@@ -106,9 +143,31 @@ namespace Munharaunda.Infrastructure.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<bool>> UpdateFuneralAsync(Funeral Funeral)
+        public async Task<ResponseModel<bool>> UpdateFuneralAsync(Funeral funeral)
         {
-            throw new NotImplementedException();
+            var response = CommonUtilites.GenerateResponseModel<bool>();
+            try
+            {
+                var filter = Builders<Funeral>.Filter.Eq(u => u.FuneralId, funeral.FuneralId);                
+
+                var result = await mongoDb.GetCollection<Funeral>("Funeral").ReplaceOneAsync(filter, funeral);
+
+                if (result.IsAcknowledged && result.ModifiedCount == 1)
+                {
+                    response.ResponseData.Add(true);
+                }
+                
+
+            }
+            catch (Exception ex)
+            {
+
+                response.ResponseCode = ResponseConstants.R500;
+
+                response.ResponseMessage = ex.Message;
+            }
+
+            return response;
         }
     }
 }

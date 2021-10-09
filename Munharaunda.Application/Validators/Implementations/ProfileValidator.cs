@@ -49,15 +49,15 @@ namespace Munharaunda.Application.Validators.Implementations
 
         }
 
-        private bool IsValidateProfileStatus(SystemWideConstants.ProfileStatuses status)
+        private bool IsValidateProfileStatus(SystemWideConstants.Statuses status)
         {
             if (_appSettings.ProfileCreationAutoAuthorisation)
             {
-                return status == SystemWideConstants.ProfileStatuses.Active;
+                return status == SystemWideConstants.Statuses.Active;
             }
             else
             {
-                return status == SystemWideConstants.ProfileStatuses.Unauthorised;
+                return status == SystemWideConstants.Statuses.Unauthorised;
             }
         }
 

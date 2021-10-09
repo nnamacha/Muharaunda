@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Munharaunda.Domain.Models;
 using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -19,8 +20,7 @@ namespace Muharaunda.Core.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string _id { get; set; }
-        public int UpdatedBy { get; set; }
-        public DateTime Updated { get; set; }
+
 
 
     }
