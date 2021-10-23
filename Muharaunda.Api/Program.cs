@@ -41,7 +41,7 @@ namespace Muharaunda.Api
                         config.ConfigureKeyVault();
                     else
                         config.WriteConfigurationSources();
-                    var keyVaultEndpoint = new Uri(Environment.GetEnvironmentVariable("KEYVAULT_URL"));
+                    var keyVaultEndpoint = new Uri(Environment.GetEnvironmentVariable("KEYVAULT_ENDPOINT"));
                     config.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
