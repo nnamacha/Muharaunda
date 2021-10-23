@@ -19,6 +19,7 @@ env:
   API_IMPORT_SPECIFICATION_PATH: Muharaunda.Api/publish/swagger.json
   API_IMPORT_DLL: Muharaunda.Api/publish/Munharaunda.Api.dll
   API_IMPORT_VERSION: v1
+  KEYVAULT_ENDPOINT: https://munharaunda.vault.azure.net/
 jobs:
   build:
     runs-on: windows-latest
