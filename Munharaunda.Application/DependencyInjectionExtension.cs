@@ -20,7 +20,7 @@ namespace Munharaunda.Application
 
         public static IServiceCollection AddResources(this IServiceCollection services, IConfiguration configuration)
         {
-            AppSettings appSettings = new(configuration);
+            AppSettings appSettings = new AppSettings(configuration);
 
             services.AddTransient<IAppSettings>(a => appSettings);
 
