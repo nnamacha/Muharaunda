@@ -31,9 +31,9 @@ namespace Munharaunda.Application
 
             services.AddScoped<IMongoClient>(s => mongoClient);
 
-            MongoDBProfileRepository profileRepository = new MongoDBProfileRepository(mongoClient);
+            MongoDBProfileRepository profileRepository = new(mongoClient);
 
-            MongoDBFuneralRepository funeralRespository = new MongoDBFuneralRepository(mongoClient);
+            MongoDBFuneralRepository funeralRespository = new(mongoClient);
 
             #endregion
 

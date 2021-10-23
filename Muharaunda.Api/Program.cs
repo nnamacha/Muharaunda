@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Munharaunda.Api.Extensions;
 using System;
+using Azure.Identity;
+using Microsoft.Extensions.Configuration;
 
 namespace Muharaunda.Api
 {
@@ -10,14 +13,11 @@ namespace Muharaunda.Api
         {
 
 
-            //Log.Logger = new LoggerConfiguration()
-            //    .ReadFrom.Configuration(configuration)
-            //    //.WriteTo.File("C:\\Africa\\LogFile\\Munharaunda\\Log.txt")
-            //    .CreateLogger();
+           
 
             try
             {
-                //Log.Information("Application starting up");
+                ;
 
                 CreateHostBuilder(args).Build().Run();
             }
@@ -35,7 +35,15 @@ namespace Muharaunda.Api
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                //.UseSerilog()
+                .ConfigureAppConfiguration((context, config) =>
+                {
+                    if (context.HostingEnvironment.IsProduction())
+                        config.ConfigureKeyVault();
+                    else
+                        config.WriteConfigurationSources();
+                    var keyVaultEndpoint = new Uri(Environment.GetEnvironmentVariable("KEYVAULT_URL"));
+                    config.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

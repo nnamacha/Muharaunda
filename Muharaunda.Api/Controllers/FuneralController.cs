@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web.Resource;
 using Muharaunda.Core.Models;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Models;
@@ -11,20 +13,25 @@ using System.Threading.Tasks;
 
 namespace Munharaunda.Api.Controllers
 {
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class FuneralController : ControllerBase
     {
         private readonly IFuneralService _funeralService;
+        static readonly string[] scopeRequiredByApi = new string[] { "test1" };
 
         public FuneralController(IFuneralService funeralService)
         {
             _funeralService = funeralService;
+
         }
         // GET: api/<FuneralController>
         [HttpGet]
+        //[AllowAnonymous]
         public async Task<IActionResult> Get()
         {
+           // //HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
             var result = await _funeralService.GetListOfActiveFuneralsAsync();            
 
             return CommonUtilites.GenerateResponse(result);
@@ -35,6 +42,7 @@ namespace Munharaunda.Api.Controllers
         [HttpGet("Profile/{id}")]
         public async Task<IActionResult> GetFuneralDetailsByProfileId(int id)
         {
+            //HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
             var funeral =  await _funeralService.GetFuneralDetailsByProfileIdAsync(id);
 
             return CommonUtilites.GenerateResponse(funeral);
@@ -47,6 +55,7 @@ namespace Munharaunda.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Funeral funeral)
         {
+            //HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
             var result =  await _funeralService.CreateFuneralAsync(funeral);
 
             return CommonUtilites.GenerateResponse(result);
@@ -56,6 +65,7 @@ namespace Munharaunda.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put([FromBody] Funeral funeral)
         {
+            //HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
             var result = await _funeralService.UpdateFuneralAsync(funeral);
 
             return CommonUtilites.GenerateResponse(result);
@@ -67,6 +77,7 @@ namespace Munharaunda.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            //HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
             var result = await _funeralService.DeleteFuneralAsync(id);
 
             return CommonUtilites.GenerateResponse(result);

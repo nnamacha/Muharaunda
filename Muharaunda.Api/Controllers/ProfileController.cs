@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Muharaunda.Core.Models;
 using Munharaunda.Application.Orchestration.Contracts;
 using Munharaunda.Core.Dtos;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace Munharaunda.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProfileController : ControllerBase
