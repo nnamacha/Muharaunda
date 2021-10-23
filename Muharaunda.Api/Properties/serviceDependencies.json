@@ -5,7 +5,7 @@
     },
     "secrets1": {
       "type": "secrets",
-      "connectionId": "KEYVAULT_URL"
+      "connectionId": "KEYVAULT_ENDPOINT"
     }
   }
 }
