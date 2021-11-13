@@ -3,17 +3,20 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using Muharaunda.Core.Contracts;
+using Muharaunda.Domain.Models;
+using Munharaunda.Application;
 using Munharaunda.Application.Orchestration.Contracts;
 using Munharaunda.Application.Orchestration.Implementation;
 using Munharaunda.Application.Orchestration.Services;
 using Munharaunda.Application.Validators.Implementations;
 using Munharaunda.Domain.Contracts;
+using Munharaunda.Domain.Models;
 using Munharaunda.Infrastructure.Implementation;
 using Munharaunda.Infrastructure.Implementation.CosmoDB;
 using Munharaunda.Resources.Implementation;
 using System;
 
-namespace Munharaunda.Application
+namespace Munharaunda.Api.Extensions
 {
     public static class DependencyInjectionExtension
     {
@@ -25,39 +28,39 @@ namespace Munharaunda.Application
             services.AddTransient<IAppSettings>(a => appSettings);
 
             #region MongoDB Definition
-            var settings = MongoClientSettings.FromConnectionString(configuration.GetConnectionString("MongoDB"));
+            //var settings = MongoClientSettings.FromConnectionString(configuration.GetConnectionString("MongoDB"));
 
-            var mongoClient = new MongoClient(settings);
+            //var mongoClient = new MongoClient(settings);
 
-            services.AddScoped<IMongoClient>(s => mongoClient);
+            //services.AddScoped<IMongoClient>(s => mongoClient);
 
-            MongoDBProfileRepository profileRepository = new(mongoClient);
+            //MongoDBProfileRepository profileRepository = new(mongoClient);
 
-            MongoDBFuneralRepository funeralRespository = new(mongoClient);
+            //MongoDBFuneralRepository funeralRespository = new(mongoClient);
 
             #endregion
 
             #region CosmoDB Definition
 
-            //var _endpointUri = configuration["CosmoDbSettings:Endpoint"];
+            var _endpointUri = configuration["CosmoDbSettings:Endpoint"];
 
-            //var _primaryKey = configuration["CosmoDbSettings:Key"];
+            var _primaryKey = configuration["CosmoDbSettings:Key"];
 
-            //var connectionString = configuration.GetConnectionString("CosmoDB");
+            var connectionString = configuration.GetConnectionString("CosmoDB");
 
-            //var _dbId = configuration["CosmoDbSettings:DbId"];
+            var _dbId = configuration["CosmoDbSettings:DbId"];
 
-            //var cosmoDBClient = new CosmosClient(connectionString);
+            var cosmoDBClient = new CosmosClient(connectionString);
 
-            //var cosmoDB = cosmoDBClient.GetDatabase(_dbId);
+            var cosmoDB = cosmoDBClient.GetDatabase(_dbId);
 
-            //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            //services.AddScoped<Database>(s => cosmoDB);
+            services.AddScoped<Database>(s => cosmoDB);
 
-            //CosmoDBProfileRepository profileRepository = new CosmoDBProfileRepository(cosmoDB);
+            CosmoDBProfileRepository profileRepository = new CosmoDBProfileRepository(cosmoDB);
 
-            //CosmoDBFuneralRepository funeralRespository = new CosmoDBFuneralRepository(cosmoDB);
+            CosmoDBFuneralRepository funeralRespository = new CosmoDBFuneralRepository(cosmoDB);
 
             #endregion
 
@@ -74,6 +77,8 @@ namespace Munharaunda.Application
             services.AddScoped<IProfileService, ProfileService>();
 
             services.AddScoped<IFuneralService, FuneralService>();
+
+            services.AddScoped<IProfileBase, CosmosProfile>();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

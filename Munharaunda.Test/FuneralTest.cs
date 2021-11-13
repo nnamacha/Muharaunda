@@ -1,12 +1,14 @@
 ﻿using Moq;
 using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
+using Muharaunda.Domain.Models;
 using Munharaunda.Application.Orchestration.Services;
 using Munharaunda.Application.Validators.Implementations;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Models;
 using Munharaunda.Core.Utilities;
 using Munharaunda.Domain.Contracts;
+using Munharaunda.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +45,11 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit()
+                {
+                    CreatedBy = 1
+
+                }
 
 
             };
@@ -75,7 +81,7 @@ namespace Munharaunda.Test
         {
             
 
-            var getProfileResponse = new ResponseModel<Profile>()
+            var getProfileResponse = new ResponseModel<IProfileBase>()
             {
                 ResponseCode = responseCode,
                  

@@ -3,12 +3,14 @@ using Microsoft.Extensions.Configuration;
 using Moq;
 using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
+using Muharaunda.Domain.Models;
 using Munharaunda.Application.Orchestration.Implementation;
 using Munharaunda.Application.Validators.Implementations;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
 using Munharaunda.Domain.Contracts;
+using Munharaunda.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,24 +25,24 @@ namespace Munharaunda.Test
 
     public class UserTest
     {
-        private CreateProfileRequest ProfileRecord;
+        private IProfileBase ProfileRecord;
         private Mock<IProfileRepository> _profileRepository;
         private Mock<IAppSettings> _appSettings;
         private Mock<IMapper> _mapper;
         private readonly Mock<IConfiguration> _configuration;
         private readonly ProfileService profilesImplementation;
-        private List<Profile> profiles = new List<Profile>();
-        private List<Profile> activeProfiles = new List<Profile>();
-        private List<Profile> unauthorisedProfiles;
-        private List<Profile> dependentProfiles;
+        private List<IProfileBase> profiles = new List<IProfileBase>();
+        private List<IProfileBase> activeProfiles = new List<IProfileBase>();
+        private List<IProfileBase> unauthorisedProfiles;
+        private List<IProfileBase> dependentProfiles;
         private ProfileValidator validator;
         private readonly DependentValidator dependentValidator;
-        private ResponseModel<Profile> resultGetProfileDetails;
+        private ResponseModel<IProfileBase> resultGetProfileDetails;
 
 
         public UserTest()
         {
-            ProfileRecord = new CreateProfileRequest()
+            ProfileRecord = new CosmosProfile()
             {
                 ProfileId = 1,
                 FirstName = "Nicholas",
@@ -54,7 +56,12 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit()
+                {
+                    
+                        CreatedBy = 1
+                    
+                }
 
 
             };
@@ -76,7 +83,12 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit()
+                {
+
+                    CreatedBy = 1
+
+                }
 
 
             });
@@ -95,7 +107,12 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Unauthorised,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit()
+                {
+
+                    CreatedBy = 1
+
+                }
 
 
             });
@@ -114,7 +131,7 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Terminated,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit() { CreatedBy = 1 }
 
 
             });
@@ -134,7 +151,7 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Flagged,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit() { CreatedBy = 1 }
 
 
             });
@@ -154,7 +171,7 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Flagged,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit() { CreatedBy = 1 }
 
 
             });
@@ -172,14 +189,14 @@ namespace Munharaunda.Test
 
             };
 
-            resultGetProfileDetails = new ResponseModel<Profile>
+            resultGetProfileDetails = new ResponseModel<IProfileBase>
             {
                 ResponseCode = ResponseConstants.R00,
-                ResponseData = new List<Profile>()
+                ResponseData = new List<IProfileBase>()
 
             };
 
-            var userCreationRepoResponse = new ResponseModel<ProfileBase>
+            var userCreationRepoResponse = new ResponseModel<IProfileBase>
             {
                 ResponseCode = ResponseConstants.R00,
             };
@@ -199,7 +216,7 @@ namespace Munharaunda.Test
 
             _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(resultGetProfileDetails);
 
-            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<IProfileBase>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
 
             _appSettings.SetupGet(x => x.MinAgeInMonths).Returns(3);
 
@@ -221,7 +238,7 @@ namespace Munharaunda.Test
 
         public void TestNextOfKinValidation(bool valid, string expected)
         {
-            var result = new ResponseModel<Profile>
+            var result = new ResponseModel<IProfileBase>
             {
                 ResponseCode = expected,
 
@@ -302,7 +319,7 @@ namespace Munharaunda.Test
         {
             var dob = DateTime.Now.AddYears(age * -1);
 
-            var dependent = new CreateProfileRequest()
+            var dependent = new CosmosProfile()
             {
                 ProfileId = 2,
                 FirstName = "Marvelous",
@@ -316,7 +333,7 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit() { CreatedBy = 1 }
             };
 
             var validation = dependentValidator.Validate(dependent);
@@ -333,7 +350,7 @@ namespace Munharaunda.Test
         {
             var dob = DateTime.Now.AddYears(age * -1);
 
-            var dependent = new CreateProfileRequest()
+            var dependent = new CosmosProfile()
             {
                 ProfileId = 2,
                 FirstName = "Marvelous",
@@ -348,7 +365,7 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit() { CreatedBy = 1 }
             };
 
             var validation = dependentValidator.Validate(dependent);
@@ -363,13 +380,13 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R400)]
         public async Task TestProfileCreation(string repoResponse)
         {
-            var userCreationRepoResponse = new ResponseModel<ProfileBase>
+            var userCreationRepoResponse = new ResponseModel<IProfileBase>
             {
                 ResponseCode = repoResponse,
             };
 
             _appSettings.SetupGet(x => x.ProfileCreationAutoAuthorisation).Returns(true);
-            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<IProfileBase>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
 
             var result = await profilesImplementation.CreateProfileAsync(ProfileRecord);
 
@@ -383,7 +400,7 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R400)]
         public async Task TestProfileDelete(string repoResponse)
         {
-            var GetProfileDetailsRepoResponse = new ResponseModel<Profile>
+            var GetProfileDetailsRepoResponse = new ResponseModel<IProfileBase>
             {
                 ResponseCode = repoResponse,
             };
@@ -431,7 +448,7 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit() { CreatedBy = 1 }
 
 
             };
@@ -479,7 +496,7 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit() { CreatedBy = 1 }
 
 
             };
@@ -504,13 +521,13 @@ namespace Munharaunda.Test
         public async Task TestCreateProfileAutoAuthorizationFlag(string repoResponse, Statuses profileStatus)
         {
 
-            var getProfileRepoResponse = new ResponseModel<Profile>
+            var getProfileRepoResponse = new ResponseModel<IProfileBase>
             {
                 ResponseCode = ResponseConstants.R00,
 
 
             };
-            var userCreationRepoResponse = new ResponseModel<ProfileBase>
+            var userCreationRepoResponse = new ResponseModel<IProfileBase>
             {
                 ResponseCode = repoResponse,
 
@@ -541,7 +558,7 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit() { CreatedBy = 1 }
 
 
             };
@@ -551,7 +568,7 @@ namespace Munharaunda.Test
             getProfileRepoResponse.ResponseData.Add(ProfileRecord);
             _appSettings.SetupGet(x => x.ProfileCreationAutoAuthorisation).Returns(true);
 
-            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<IProfileBase>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
 
             _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(getProfileRepoResponse);
 
@@ -568,9 +585,9 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R400)]
         public async Task TestGetListOfActiveProfiles(string repoResponse)
         {
-            var listOfProfiles = new ResponseModel<Profile>()
+            var listOfProfiles = new ResponseModel<IProfileBase>()
             {
-                ResponseData = new List<Profile>()
+                ResponseData = new List<IProfileBase>()
             };
 
             if (repoResponse == ResponseConstants.R00)
@@ -595,9 +612,9 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R400)]
         public async Task TestGetListOfUnauthorisedProfiles(string repoResponse)
         {
-            var listOfProfiles = new ResponseModel<Profile>()
+            var listOfProfiles = new ResponseModel<IProfileBase>()
             {
-                ResponseData = new List<Profile>()
+                ResponseData = new List<IProfileBase>()
             };
 
             if (repoResponse == ResponseConstants.R00)
@@ -622,9 +639,9 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R400)]
         public async Task TestGetListOfDependentsByProfile(string repoResponse)
         {
-            var listOfProfiles = new ResponseModel<Profile>()
+            var listOfProfiles = new ResponseModel<IProfileBase>()
             {
-                ResponseData = new List<Profile>()
+                ResponseData = new List<IProfileBase>()
             };
 
             if (repoResponse == ResponseConstants.R00)
@@ -667,7 +684,7 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit() { CreatedBy = 1 }
 
 
             };

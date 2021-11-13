@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { Profile } from 'src/app/profile/profile-edit/Profile.model';
 
 @Component({
   selector: 'app-profile-detail',
@@ -8,7 +9,7 @@ import { Component, OnInit } from '@angular/core';
 export class ProfileDetailComponent implements OnInit {
 
   constructor() { }
-
+  @Input() currentProfile: Profile;
   ngOnInit() {
   }
 

@@ -2,12 +2,14 @@
 using Muharaunda.Core.Constants;
 using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
+using Muharaunda.Domain.Models;
 using Munharaunda.Application.Orchestration.Contracts;
 using Munharaunda.Application.Validators.Implementations;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
 using Munharaunda.Core.Utilities;
+using Munharaunda.Domain.Contracts;
 using System;
 using System.Threading.Tasks;
 using Profile = Muharaunda.Core.Models.Profile;
@@ -65,9 +67,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
             return response;
         }
 
-        public async Task<ResponseModel<ProfileBase>> CreateProfileAsync(CreateProfileRequest request, bool checkUnique = false)
+        public async Task<ResponseModel<IProfileBase>> CreateProfileAsync(IProfileBase request, bool checkUnique = false)
         {
-            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
+            var response = CommonUtilites.GenerateResponseModel<IProfileBase>();
 
             try
             {
@@ -90,7 +92,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
                         request.ActivationDate = CalculateProfileActivationDate();
                     }
 
-                    request.Created = DateTime.Now.ToLocalTime();
+                    request.Audit.Created = DateTime.Now.ToLocalTime();
 
                     response = await _repository.CreateProfileAsync(request, checkUnique);
                 }
@@ -123,7 +125,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
         public async Task<ResponseModel<bool>> DeleteProfileAsync(int profileId)
         {
-            var GetProfileResponse = CommonUtilites.GenerateResponseModel<Profile>();
+            var GetProfileResponse = CommonUtilites.GenerateResponseModel<IProfileBase>();
             var response = CommonUtilites.GenerateResponseModel<bool>();
 
 
@@ -156,9 +158,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
             }
         }
 
-        public async Task<ResponseModel<Profile>> GetListOfActiveProfilesAsync()
+        public async Task<ResponseModel<IProfileBase>> GetListOfActiveProfilesAsync()
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<IProfileBase>();
 
             try
             {
@@ -191,9 +193,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
         }
 
-        public async Task<ResponseModel<Profile>> GetUnauthorisedProfilesAsync()
+        public async Task<ResponseModel<IProfileBase>> GetUnauthorisedProfilesAsync()
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<IProfileBase>();
 
             try
             {
@@ -226,9 +228,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
         }
 
 
-        public async Task<ResponseModel<Profile>> GetListOfDependentsByProfileAsync(int profileId)
+        public async Task<ResponseModel<IProfileBase>> GetListOfDependentsByProfileAsync(int profileId)
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<IProfileBase>();
 
             try
             {
@@ -248,9 +250,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
         }
 
-        public async Task<ResponseModel<Profile>> GetNextOfKindByProfileAsync(int profileId)
+        public async Task<ResponseModel<IProfileBase>> GetNextOfKindByProfileAsync(int profileId)
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<IProfileBase>();
 
             try
             {
@@ -270,9 +272,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
 
 
-        public async Task<ResponseModel<Profile>> GetProfileDetailsAsync(int profileId)
+        public async Task<ResponseModel<IProfileBase>> GetProfileDetailsAsync(int profileId)
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<IProfileBase>();
 
             try
             {

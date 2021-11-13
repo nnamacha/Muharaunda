@@ -1,5 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Muharaunda.Domain.Models;
+using Munharaunda.Domain.Contracts;
 using Munharaunda.Domain.Models;
 using Newtonsoft.Json;
 using System;
@@ -9,8 +11,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Muharaunda.Core.Models
 {
 
-    [Table("Profile")]
-    public class Profile : ProfileBase
+
+    public class Profile : ProfileBase, IProfileBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -19,7 +21,7 @@ namespace Muharaunda.Core.Models
         [JsonProperty("_id")]
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string _id { get; set; }
+        public Guid id { get; set; }
 
 
 

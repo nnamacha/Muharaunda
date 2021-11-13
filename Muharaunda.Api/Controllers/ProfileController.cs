@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Muharaunda.Core.Models;
+using Muharaunda.Domain.Models;
 using Munharaunda.Application.Orchestration.Contracts;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
+using Munharaunda.Domain.Contracts;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -23,27 +25,27 @@ namespace Munharaunda.Api.Controllers
         }
         // GET: api/<ProfileController>
         [HttpGet]
-        public async Task<ResponseModel<Profile>> Get()
+        public async Task<ResponseModel<IProfileBase>> Get()
         {
             return await _profileService.GetListOfActiveProfilesAsync();
         }
 
         [HttpGet("Unauthorised")]
-        public async Task<ResponseModel<Profile>> GetUnauthorisedProfiles()
+        public async Task<ResponseModel<IProfileBase>> GetUnauthorisedProfiles()
         {
             return await _profileService.GetUnauthorisedProfilesAsync();
         }
 
         // GET api/<ProfileController>/5
         [HttpGet("{id}")]
-        public async Task<ResponseModel<Profile>> Get(int id)
+        public async Task<ResponseModel<IProfileBase>> Get(int id)
         {
             return await _profileService.GetProfileDetailsAsync(id);
         }
 
         // POST api/<ProfileController>
         [HttpPost]
-        public async Task<ResponseModel<ProfileBase>> Post([FromBody] CreateProfileRequest profile)
+        public async Task<ResponseModel<IProfileBase>> Post([FromBody] IProfileBase profile)
         {
             return await _profileService.CreateProfileAsync(profile);
         }

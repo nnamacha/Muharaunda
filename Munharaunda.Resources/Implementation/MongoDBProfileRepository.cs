@@ -1,5 +1,6 @@
 ﻿using MongoDB.Driver;
 using Muharaunda.Core.Models;
+using Muharaunda.Domain.Models;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
@@ -17,8 +18,8 @@ namespace Munharaunda.Resources.Implementation
     {
 
         private readonly IMongoDatabase mongoDb;
-        private readonly FilterDefinitionBuilder<Profile> filterBuilder;
-        private readonly UpdateDefinitionBuilder<Profile> updateBuilder;
+        private readonly FilterDefinitionBuilder<IProfileBase> filterBuilder;
+        private readonly UpdateDefinitionBuilder<IProfileBase> updateBuilder;
 
         public MongoDBProfileRepository(IMongoClient client)
         {
@@ -27,9 +28,9 @@ namespace Munharaunda.Resources.Implementation
 
 
 
-            filterBuilder = Builders<Profile>.Filter;
+            filterBuilder = Builders<IProfileBase>.Filter;
 
-            updateBuilder = Builders<Profile>.Update;
+            updateBuilder = Builders<IProfileBase>.Update;
         }
 
         public async Task<ResponseModel<bool>> AuthoriseProfileAsync(int profileId)
@@ -42,7 +43,7 @@ namespace Munharaunda.Resources.Implementation
 
                 var update = updateBuilder.Set(u => u.ProfileStatus, Statuses.Active);
 
-                var result = await mongoDb.GetCollection<Profile>("Profile").UpdateOneAsync(filter, update);
+                var result = await mongoDb.GetCollection<IProfileBase>("Profile").UpdateOneAsync(filter, update);
 
                 response.ResponseData.Add(result.MatchedCount == 1);
 
@@ -59,9 +60,9 @@ namespace Munharaunda.Resources.Implementation
             return response;
         }
 
-        public async Task<ResponseModel<ProfileBase>> CreateProfileAsync(CreateProfileRequest request, bool checkUnique = false)
+        public async Task<ResponseModel<IProfileBase>> CreateProfileAsync(IProfileBase request, bool checkUnique = false)
         {
-            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
+            var response = CommonUtilites.GenerateResponseModel<IProfileBase>();
 
             try
             {
@@ -77,7 +78,7 @@ namespace Munharaunda.Resources.Implementation
 
                 request.ProfileId = currentProfilesCount++;
 
-                await mongoDb.GetCollection<CreateProfileRequest>("Profile").InsertOneAsync(request);
+                await mongoDb.GetCollection<IProfileBase>("Profile").InsertOneAsync(request);
             }
             catch (Exception ex)
             {
@@ -90,11 +91,11 @@ namespace Munharaunda.Resources.Implementation
             return response;
         }
 
-        public async Task<bool> CheckPersonIsUnique(CreateProfileRequest request)
+        public async Task<bool> CheckPersonIsUnique(IProfileBase request)
         {
             var filter = filterBuilder.Where(u => u.FirstName == request.FirstName && u.Surname == request.Surname && u.DateOfBirth == request.DateOfBirth);
 
-            var profiles = await mongoDb.GetCollection<Profile>("Profile").FindAsync(filter).Result.ToListAsync();
+            var profiles = await mongoDb.GetCollection<IProfileBase>("Profile").FindAsync(filter).Result.ToListAsync();
 
             return profiles.Count == 0;
         }
@@ -107,7 +108,7 @@ namespace Munharaunda.Resources.Implementation
             {
                 var filter = filterBuilder.Eq("ProfileId", profileId);
 
-                await mongoDb.GetCollection<Profile>("Profile").DeleteOneAsync(filter);
+                await mongoDb.GetCollection<IProfileBase>("Profile").DeleteOneAsync(filter);
 
                 response.ResponseData.Add(true);
             }
@@ -124,14 +125,14 @@ namespace Munharaunda.Resources.Implementation
 
 
 
-        public async Task<ResponseModel<Profile>> GetListOfActiveProfilesAsync()
+        public async Task<ResponseModel<IProfileBase>> GetListOfActiveProfilesAsync()
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<IProfileBase>();
             try
             {
                 var filter = filterBuilder.Eq("ProfileStatus", 0);
 
-                var profile = await mongoDb.GetCollection<Profile>("Profile").FindAsync(filter).Result.ToListAsync();
+                var profile = await mongoDb.GetCollection<IProfileBase>("Profile").FindAsync(filter).Result.ToListAsync();
 
 
                 response.ResponseData = profile;
@@ -147,16 +148,16 @@ namespace Munharaunda.Resources.Implementation
             return response;
         }
 
-        public async Task<ResponseModel<Profile>> GetListOfDependentsByProfileAsync(int profileId)
+        public async Task<ResponseModel<IProfileBase>> GetListOfDependentsByProfileAsync(int profileId)
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<IProfileBase>();
             try
             {
 
 
                 var filter = filterBuilder.Where(u => u.ProfileType == ProfileTypes.Dependent && u.NextOfKin == profileId);
 
-                var profiles = await mongoDb.GetCollection<Profile>("Profile").FindAsync(filter).Result.ToListAsync();
+                var profiles = await mongoDb.GetCollection<IProfileBase>("Profile").FindAsync(filter).Result.ToListAsync();
 
 
                 response.ResponseData = profiles;
@@ -172,16 +173,16 @@ namespace Munharaunda.Resources.Implementation
             return response;
         }
 
-        public async Task<ResponseModel<Profile>> GetNextOfKindByProfileAsync(int profileId)
+        public async Task<ResponseModel<IProfileBase>> GetNextOfKindByProfileAsync(int profileId)
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<IProfileBase>();
             try
             {
 
 
                 var filter = filterBuilder.Eq("NextOfKind", profileId);
 
-                var profiles = await mongoDb.GetCollection<Profile>("Profile").FindAsync(filter).Result.ToListAsync();
+                var profiles = await mongoDb.GetCollection<IProfileBase>("Profile").FindAsync(filter).Result.ToListAsync();
 
 
                 response.ResponseData = profiles;
@@ -197,14 +198,14 @@ namespace Munharaunda.Resources.Implementation
             return response;
         }
 
-        public async Task<ResponseModel<Profile>> GetProfileDetailsAsync(int profileId)
+        public async Task<ResponseModel<IProfileBase>> GetProfileDetailsAsync(int profileId)
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<IProfileBase>();
             try
             {
-                var filter = Builders<Profile>.Filter.Eq("ProfileId", profileId);
+                var filter = Builders<IProfileBase>.Filter.Eq("ProfileId", profileId);
 
-                var profile = await mongoDb.GetCollection<Profile>("Profile").FindAsync(filter).Result.FirstOrDefaultAsync();
+                var profile = await mongoDb.GetCollection<IProfileBase>("Profile").FindAsync(filter).Result.FirstOrDefaultAsync();
 
 
                 response.ResponseData.Add(profile);
@@ -220,14 +221,14 @@ namespace Munharaunda.Resources.Implementation
             return response;
         }
 
-        public async Task<ResponseModel<Profile>> GetUnauthorisedProfilesAsync()
+        public async Task<ResponseModel<IProfileBase>> GetUnauthorisedProfilesAsync()
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<IProfileBase>();
             try
             {
-                var filter = Builders<Profile>.Filter.Eq("ProfileStatus", 3);
+                var filter = Builders<IProfileBase>.Filter.Eq("ProfileStatus", 3);
 
-                var profiles = await mongoDb.GetCollection<Profile>("Profile").Find(filter).ToListAsync();
+                var profiles = await mongoDb.GetCollection<IProfileBase>("Profile").Find(filter).ToListAsync();
 
 
                 response.ResponseData = profiles;
@@ -248,11 +249,11 @@ namespace Munharaunda.Resources.Implementation
             var response = CommonUtilites.GenerateResponseModel<bool>();
             try
             {
-                var filter = Builders<Profile>.Filter.Eq(u => u.ProfileId, profile.ProfileId);
+                var filter = Builders<IProfileBase>.Filter.Eq(u => u.ProfileId, profile.ProfileId);
 
                 var update = updateBuilder.Set(u => u.ProfileStatus, Statuses.Active);
 
-                var result = await mongoDb.GetCollection<Profile>("Profile").ReplaceOneAsync(filter, profile);
+                var result = await mongoDb.GetCollection<IProfileBase>("Profile").ReplaceOneAsync(filter, profile);
 
                 if (result.IsAcknowledged && result.ModifiedCount == 1)
                 {
@@ -285,9 +286,9 @@ namespace Munharaunda.Resources.Implementation
         {
             var response = CommonUtilites.GenerateResponseModel<bool>();
 
-            var filter = Builders<Profile>.Filter.Eq("IdentificationNumber", IdNumber);
+            var filter = Builders<IProfileBase>.Filter.Eq("IdentificationNumber", IdNumber);
 
-            var profilesCount = await mongoDb.GetCollection<Profile>("Profile").Find(filter).CountDocumentsAsync();
+            var profilesCount = await mongoDb.GetCollection<IProfileBase>("Profile").Find(filter).CountDocumentsAsync();
 
 
             response.ResponseData.Add(profilesCount == 0);
@@ -300,11 +301,11 @@ namespace Munharaunda.Resources.Implementation
             var response = CommonUtilites.GenerateResponseModel<bool>();
             try
             {
-                var filter = Builders<Profile>.Filter.Eq(u => u.ProfileId, profileId);
+                var filter = Builders<IProfileBase>.Filter.Eq(u => u.ProfileId, profileId);
 
                 var update = updateBuilder.Set(u => u.ProfileStatus, newStatus);
 
-                var result = await mongoDb.GetCollection<Profile>("Profile").UpdateOneAsync(filter, update);
+                var result = await mongoDb.GetCollection<IProfileBase>("Profile").UpdateOneAsync(filter, update);
 
                 if (result.IsAcknowledged && result.ModifiedCount == 1)
                 {
@@ -330,5 +331,7 @@ namespace Munharaunda.Resources.Implementation
 
             return response;
         }
+
+       
     }
 }

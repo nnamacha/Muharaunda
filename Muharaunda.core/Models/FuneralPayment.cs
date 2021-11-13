@@ -1,6 +1,4 @@
 ﻿using Muharaunda.Core.Models;
-using Muharaunda.Domain.Models;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace Munharaunda.Domain.Models
 {
-    public class CosmosProfile: ProfileBase, IProfileBase
+    public class FuneralPayment
     {
-        [JsonProperty(PropertyName = "id")]
-        public Guid id { get; set; }
+        public Funeral Funeral { get; set; }
+        public bool Paid { get; set; }
+        public decimal Amount { get; set; }
     }
 }

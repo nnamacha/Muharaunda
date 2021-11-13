@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Muharaunda.Core.Constants;
 using Muharaunda.Core.Models;
+using Muharaunda.Domain.Models;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
@@ -34,24 +35,24 @@ namespace Munharaunda.Infrastructure.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<bool> CheckPersonIsUnique(CreateProfileRequest request)
+        public Task<bool> CheckPersonIsUnique(IProfileBase request)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<ResponseModel<ProfileBase>> CreateProfileAsync(CreateProfileRequest request, bool checkUnique = false)
+        public async Task<ResponseModel<IProfileBase>> CreateProfileAsync(IProfileBase request, bool checkUnique = false)
         {
 
 
             request.id = Guid.NewGuid();
 
-            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
+            var response = CommonUtilites.GenerateResponseModel<IProfileBase>();
 
             try
             {
 
 
-                var result = await _container.CreateItemAsync<CreateProfileRequest>(request);
+                var result = await _container.CreateItemAsync<IProfileBase>(request);
 
 
                 response.ResponseCode = ResponseConstants.R00;
@@ -77,27 +78,27 @@ namespace Munharaunda.Infrastructure.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<Muharaunda.Core.Models.Profile>> GetListOfActiveProfilesAsync()
+        public Task<ResponseModel<IProfileBase>> GetListOfActiveProfilesAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<Profile>> GetListOfDependentsByProfileAsync(int profileId)
+        public Task<ResponseModel<IProfileBase>> GetListOfDependentsByProfileAsync(int profileId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<Profile>> GetNextOfKindByProfileAsync(int profileId)
+        public Task<ResponseModel<IProfileBase>> GetNextOfKindByProfileAsync(int profileId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<Profile>> GetProfileDetailsAsync(int ProfileId)
+        public Task<ResponseModel<IProfileBase>> GetProfileDetailsAsync(int ProfileId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<Profile>> GetUnauthorisedProfilesAsync()
+        public Task<ResponseModel<IProfileBase>> GetUnauthorisedProfilesAsync()
         {
             throw new NotImplementedException();
         }

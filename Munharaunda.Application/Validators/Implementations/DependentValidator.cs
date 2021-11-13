@@ -1,12 +1,13 @@
 ﻿using FluentValidation;
 using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
+using Muharaunda.Domain.Models;
 using System;
 using static Muharaunda.Core.Constants.SystemWideConstants;
 
 namespace Munharaunda.Application.Validators.Implementations
 {
-    public class DependentValidator : AbstractValidator<ProfileBase>
+    public class DependentValidator : AbstractValidator<IProfileBase>
     {
 
         private readonly IAppSettings _appSettings;

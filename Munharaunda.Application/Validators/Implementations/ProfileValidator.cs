@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Muharaunda.Core.Constants;
 using Muharaunda.Core.Contracts;
+using Muharaunda.Domain.Models;
 using Munharaunda.Core.Dtos;
 using System;
 using System.Net.Mail;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Munharaunda.Application.Validators.Implementations
 {
-    public class ProfileValidator : AbstractValidator<CreateProfileRequest>
+    public class ProfileValidator : AbstractValidator<IProfileBase>
     {
         private readonly IAppSettings _appSettings;
         private readonly IProfile _profileRepository;
@@ -44,7 +45,7 @@ namespace Munharaunda.Application.Validators.Implementations
 
             RuleFor(x => x.Address).NotNull();
 
-            RuleFor(x => x.CreatedBy).NotNull();
+            RuleFor(x => x.Audit.CreatedBy).NotNull();
 
 
         }
