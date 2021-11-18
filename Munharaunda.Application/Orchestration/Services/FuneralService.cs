@@ -43,7 +43,7 @@ namespace Munharaunda.Application.Orchestration.Services
                 {
                     var funeral = new Funeral()
                     {
-                        Profile = getProfileResponse.ResponseData[0],
+                        //Profile = getProfileResponse.ResponseData[0],
                         DateOfDeath = request.DateOfDeath,
                         Address = request.Address,
                         Created = DateTime.Now

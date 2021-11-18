@@ -12,7 +12,7 @@ namespace Muharaunda.Core.Models
 {
 
 
-    public class Profile : ProfileBase, IProfileBase
+    public class Profile : ProfileBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -21,7 +21,7 @@ namespace Muharaunda.Core.Models
         [JsonProperty("_id")]
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public Guid id { get; set; }
+        public Guid _id { get; set; }
 
 
 

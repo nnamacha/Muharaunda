@@ -7,6 +7,6 @@ namespace Munharaunda.Domain.Contracts
 {
     public interface IProfileRepository : IProfile
     {
-        public Task<bool> CheckPersonIsUnique(IProfileBase request);
+        public Task<bool> CheckPersonIsUnique(ProfileBase request);
     }
 }

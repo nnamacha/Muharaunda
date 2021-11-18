@@ -25,19 +25,19 @@ namespace Munharaunda.Test
 
     public class UserTest
     {
-        private IProfileBase ProfileRecord;
+        private ProfileBase ProfileRecord;
         private Mock<IProfileRepository> _profileRepository;
         private Mock<IAppSettings> _appSettings;
         private Mock<IMapper> _mapper;
         private readonly Mock<IConfiguration> _configuration;
         private readonly ProfileService profilesImplementation;
-        private List<IProfileBase> profiles = new List<IProfileBase>();
-        private List<IProfileBase> activeProfiles = new List<IProfileBase>();
-        private List<IProfileBase> unauthorisedProfiles;
-        private List<IProfileBase> dependentProfiles;
+        private List<ProfileBase> profiles = new List<ProfileBase>();
+        private List<ProfileBase> activeProfiles = new List<ProfileBase>();
+        private List<ProfileBase> unauthorisedProfiles;
+        private List<ProfileBase> dependentProfiles;
         private ProfileValidator validator;
         private readonly DependentValidator dependentValidator;
-        private ResponseModel<IProfileBase> resultGetProfileDetails;
+        private ResponseModel<ProfileBase> resultGetProfileDetails;
 
 
         public UserTest()
@@ -189,14 +189,14 @@ namespace Munharaunda.Test
 
             };
 
-            resultGetProfileDetails = new ResponseModel<IProfileBase>
+            resultGetProfileDetails = new ResponseModel<ProfileBase>
             {
                 ResponseCode = ResponseConstants.R00,
-                ResponseData = new List<IProfileBase>()
+                ResponseData = new List<ProfileBase>()
 
             };
 
-            var userCreationRepoResponse = new ResponseModel<IProfileBase>
+            var userCreationRepoResponse = new ResponseModel<ProfileBase>
             {
                 ResponseCode = ResponseConstants.R00,
             };
@@ -216,7 +216,7 @@ namespace Munharaunda.Test
 
             _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(resultGetProfileDetails);
 
-            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<IProfileBase>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<ProfileBase>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
 
             _appSettings.SetupGet(x => x.MinAgeInMonths).Returns(3);
 
@@ -238,7 +238,7 @@ namespace Munharaunda.Test
 
         public void TestNextOfKinValidation(bool valid, string expected)
         {
-            var result = new ResponseModel<IProfileBase>
+            var result = new ResponseModel<ProfileBase>
             {
                 ResponseCode = expected,
 
@@ -380,13 +380,13 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R400)]
         public async Task TestProfileCreation(string repoResponse)
         {
-            var userCreationRepoResponse = new ResponseModel<IProfileBase>
+            var userCreationRepoResponse = new ResponseModel<ProfileBase>
             {
                 ResponseCode = repoResponse,
             };
 
             _appSettings.SetupGet(x => x.ProfileCreationAutoAuthorisation).Returns(true);
-            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<IProfileBase>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<ProfileBase>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
 
             var result = await profilesImplementation.CreateProfileAsync(ProfileRecord);
 
@@ -400,7 +400,7 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R400)]
         public async Task TestProfileDelete(string repoResponse)
         {
-            var GetProfileDetailsRepoResponse = new ResponseModel<IProfileBase>
+            var GetProfileDetailsRepoResponse = new ResponseModel<ProfileBase>
             {
                 ResponseCode = repoResponse,
             };
@@ -521,13 +521,13 @@ namespace Munharaunda.Test
         public async Task TestCreateProfileAutoAuthorizationFlag(string repoResponse, Statuses profileStatus)
         {
 
-            var getProfileRepoResponse = new ResponseModel<IProfileBase>
+            var getProfileRepoResponse = new ResponseModel<ProfileBase>
             {
                 ResponseCode = ResponseConstants.R00,
 
 
             };
-            var userCreationRepoResponse = new ResponseModel<IProfileBase>
+            var userCreationRepoResponse = new ResponseModel<ProfileBase>
             {
                 ResponseCode = repoResponse,
 
@@ -568,7 +568,7 @@ namespace Munharaunda.Test
             getProfileRepoResponse.ResponseData.Add(ProfileRecord);
             _appSettings.SetupGet(x => x.ProfileCreationAutoAuthorisation).Returns(true);
 
-            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<IProfileBase>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<ProfileBase>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
 
             _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(getProfileRepoResponse);
 
@@ -585,9 +585,9 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R400)]
         public async Task TestGetListOfActiveProfiles(string repoResponse)
         {
-            var listOfProfiles = new ResponseModel<IProfileBase>()
+            var listOfProfiles = new ResponseModel<ProfileBase>()
             {
-                ResponseData = new List<IProfileBase>()
+                ResponseData = new List<ProfileBase>()
             };
 
             if (repoResponse == ResponseConstants.R00)
@@ -612,9 +612,9 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R400)]
         public async Task TestGetListOfUnauthorisedProfiles(string repoResponse)
         {
-            var listOfProfiles = new ResponseModel<IProfileBase>()
+            var listOfProfiles = new ResponseModel<ProfileBase>()
             {
-                ResponseData = new List<IProfileBase>()
+                ResponseData = new List<ProfileBase>()
             };
 
             if (repoResponse == ResponseConstants.R00)
@@ -639,9 +639,9 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R400)]
         public async Task TestGetListOfDependentsByProfile(string repoResponse)
         {
-            var listOfProfiles = new ResponseModel<IProfileBase>()
+            var listOfProfiles = new ResponseModel<ProfileBase>()
             {
-                ResponseData = new List<IProfileBase>()
+                ResponseData = new List<ProfileBase>()
             };
 
             if (repoResponse == ResponseConstants.R00)

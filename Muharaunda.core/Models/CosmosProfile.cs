@@ -9,9 +9,8 @@ using System.Threading.Tasks;
 
 namespace Munharaunda.Domain.Models
 {
-    public class CosmosProfile: ProfileBase, IProfileBase
+    public class CosmosProfile: ProfileBase
     {
-        [JsonProperty(PropertyName = "id")]
-        public Guid id { get; set; }
+
     }
 }

@@ -24,9 +24,7 @@ namespace Muharaunda.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication(options => 
-            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options => Configuration.Bind("AzureAd", options));
+            services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
             //services.Configure<OpenIdConnectOptions>(AzureADDefaults)
             services.AddControllers();
 

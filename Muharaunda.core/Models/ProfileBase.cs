@@ -12,7 +12,7 @@ namespace Muharaunda.Domain.Models
         DateTime ActivationDate { get; set; }
         string Address { get; set; }
         Audit Audit { get; set; }
-        string DateOfBirth { get; set; }
+        DateTime DateOfBirth { get; set; }
         string Email { get; set; }
         string FirstName { get; set; }
         List<FuneralPayment> FuneralPayments { get; set; }
@@ -27,15 +27,15 @@ namespace Muharaunda.Domain.Models
         string Surname { get; set; }
     }
 
-    public class ProfileBase 
+    public class ProfileBase: IProfileBase
     {
-        
+        public Guid id { get ; set ; }
         public int ProfileId { get; set; }
         public string FirstName { get; set; }
 
         public string Surname { get; set; }
 
-        public string DateOfBirth { get; set; }
+        public DateTime DateOfBirth { get; set; }
 
         public IdentificationTypes IdentificationType { get; set; }
 

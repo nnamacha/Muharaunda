@@ -15,15 +15,10 @@ namespace Muharaunda.Core.Models
     [Table("Funerals")]
     public class Funeral: CreateFuneralRequest
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [BsonElement("_id")]
-        [JsonProperty("FuneralId")]
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
+
 
         public string FuneralId { get; set; }
-        public IProfileBase Profile { get; set; }
+        //public ProfileBase Profile { get; set; }
         public DateTime Created { get; set; }
         public int CreatedBy { get; set; }
         public int UpdatedBy { get ; set ; }

@@ -7,6 +7,7 @@ using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
 using Munharaunda.Core.Utilities;
 using Munharaunda.Domain.Contracts;
+using Munharaunda.Domain.Models;
 using System;
 using System.Threading.Tasks;
 using Profile = Muharaunda.Core.Models.Profile;
@@ -35,24 +36,24 @@ namespace Munharaunda.Infrastructure.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<bool> CheckPersonIsUnique(IProfileBase request)
+        public Task<bool> CheckPersonIsUnique(ProfileBase request)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<ResponseModel<IProfileBase>> CreateProfileAsync(IProfileBase request, bool checkUnique = false)
+        public async Task<ResponseModel<ProfileBase>> CreateProfileAsync(ProfileBase request, bool checkUnique = false)
         {
 
 
             request.id = Guid.NewGuid();
 
-            var response = CommonUtilites.GenerateResponseModel<IProfileBase>();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
             try
             {
 
 
-                var result = await _container.CreateItemAsync<IProfileBase>(request);
+                var result = await _container.CreateItemAsync<ProfileBase>(request);
 
 
                 response.ResponseCode = ResponseConstants.R00;
@@ -78,27 +79,50 @@ namespace Munharaunda.Infrastructure.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<IProfileBase>> GetListOfActiveProfilesAsync()
+        public async Task<ResponseModel<ProfileBase>> GetListOfActiveProfilesAsync()
+        {
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
+            try
+            {
+                var sql = "select * from c";
+
+                var iterator =  _container.GetItemQueryIterator<CosmosProfile>(sql);
+
+                var profiles = await iterator.ReadNextAsync();
+
+                foreach (var profile in profiles)
+                {
+                    response.ResponseData.Add(profile);
+                }
+                
+            }
+            catch (Exception ex)
+            {
+
+                response.ResponseCode = ResponseConstants.R500;
+
+                response.ResponseMessage = ex.Message;
+            }
+
+            return response;
+        }
+
+        public Task<ResponseModel<ProfileBase>> GetListOfDependentsByProfileAsync(int profileId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<IProfileBase>> GetListOfDependentsByProfileAsync(int profileId)
+        public Task<ResponseModel<ProfileBase>> GetNextOfKindByProfileAsync(int profileId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<IProfileBase>> GetNextOfKindByProfileAsync(int profileId)
+        public Task<ResponseModel<ProfileBase>> GetProfileDetailsAsync(int ProfileId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<IProfileBase>> GetProfileDetailsAsync(int ProfileId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ResponseModel<IProfileBase>> GetUnauthorisedProfilesAsync()
+        public Task<ResponseModel<ProfileBase>> GetUnauthorisedProfilesAsync()
         {
             throw new NotImplementedException();
         }

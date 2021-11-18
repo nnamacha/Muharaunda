@@ -36,7 +36,7 @@ namespace Munharaunda.Test
                 ProfileId = 1,
                 FirstName = "Nicholas",
                 Surname = "Namacha",
-                DateOfBirth = "24-Aug-1982",
+                DateOfBirth = DateTime.Parse("24-Aug-1982"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -81,7 +81,7 @@ namespace Munharaunda.Test
         {
             
 
-            var getProfileResponse = new ResponseModel<IProfileBase>()
+            var getProfileResponse = new ResponseModel<ProfileBase>()
             {
                 ResponseCode = responseCode,
                  
