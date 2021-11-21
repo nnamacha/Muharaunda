@@ -11,6 +11,7 @@ using Munharaunda.Core.Models;
 using Munharaunda.Core.Utilities;
 using Munharaunda.Domain.Contracts;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Profile = Muharaunda.Core.Models.Profile;
 
@@ -21,9 +22,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
         private readonly IProfile _repository;
         private readonly IMapper _mapper;
         private readonly ProfileValidator _validator;
-        private readonly IAppSettings _appSettings;
+        private readonly Muharaunda.Core.Contracts.IAppSettings _appSettings;
 
-        public ProfileService(IProfile repository, IMapper mapper, ProfileValidator validator, IAppSettings appSettings)
+        public ProfileService(IProfile repository, IMapper mapper, ProfileValidator validator, Muharaunda.Core.Contracts.IAppSettings appSettings)
         {
             _repository = repository;
             _mapper = mapper;
@@ -334,6 +335,16 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
             return await _repository.UpdateProfileStatusAsync(profileId,newStatus);
         }
+        
+      
+
+        public async Task CreateBulkProfilesAsync(List<ProfileBase> profiles)
+        {
+           await _repository.CreateBulkProfilesAsync(profiles);
+        }
+
+        
+
 
 
 

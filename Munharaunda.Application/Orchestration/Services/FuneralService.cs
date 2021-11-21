@@ -14,10 +14,10 @@ namespace Munharaunda.Application.Orchestration.Services
     {
         private readonly IFuneralRepository _funeralRepository;
         private readonly FuneralValidator _validator;
-        private readonly IAppSettings _appSettings;
+        private readonly Muharaunda.Core.Contracts.IAppSettings _appSettings;
         private readonly IProfile _profileRepository;
 
-        public FuneralService(IFuneralRepository funeralRepository, FuneralValidator validator, IAppSettings appSettings, IProfile profileRepository)
+        public FuneralService(IFuneralRepository funeralRepository, FuneralValidator validator, Muharaunda.Core.Contracts.IAppSettings appSettings, IProfile profileRepository)
         {
             _funeralRepository = funeralRepository;
             _validator = validator;

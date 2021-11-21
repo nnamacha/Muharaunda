@@ -1,11 +1,6 @@
-﻿using Bogus;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Muharaunda.Domain.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Models;
-using System;
-using System.Collections.Generic;
 
 namespace Munharaunda.Core.Utilities
 {
@@ -20,7 +15,7 @@ namespace Munharaunda.Core.Utilities
 
         public static IActionResult GenerateResponse<T>(ResponseModel<T> response)
         {
-            if (response.ResponseCode == ResponseConstants.R00 )
+            if (response.ResponseCode == ResponseConstants.R00)
             {
                 return new OkObjectResult(response.ResponseData);
             }
@@ -38,6 +33,6 @@ namespace Munharaunda.Core.Utilities
             }
         }
 
-        
+
     }
 }

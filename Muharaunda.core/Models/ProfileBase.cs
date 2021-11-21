@@ -60,6 +60,7 @@ namespace Muharaunda.Domain.Models
 
         public List<FuneralPayment> FuneralPayments { get; set; }
         public Audit Audit { get; set; }
+        public string Pk { get; set; }
         
     }
 }

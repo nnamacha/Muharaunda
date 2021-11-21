@@ -7,6 +7,7 @@ using Munharaunda.Core.Models;
 using Munharaunda.Core.Utilities;
 using Munharaunda.Domain.Contracts;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static Muharaunda.Core.Constants.SystemWideConstants;
@@ -332,6 +333,9 @@ namespace Munharaunda.Resources.Implementation
             return response;
         }
 
-       
+        public Task CreateBulkProfilesAsync(List<ProfileBase> profiles)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -47,7 +47,7 @@ namespace Munharaunda.Test
                 ProfileId = 1,
                 FirstName = "Nicholas",
                 Surname = "Namacha",
-                DateOfBirth = "24-Aug-1982",
+                DateOfBirth = (DateTime.Parse("24-Aug-1982")),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -73,7 +73,7 @@ namespace Munharaunda.Test
                 ProfileId = 2,
                 FirstName = "Marvelous",
                 Surname = "Namacha",
-                DateOfBirth = "15-May-1985",
+                DateOfBirth = DateTime.Parse("15-May-1985"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -97,7 +97,7 @@ namespace Munharaunda.Test
                 ProfileId = 3,
                 FirstName = "Patick",
                 Surname = "Namacha",
-                DateOfBirth = "15-May-1985",
+                DateOfBirth = DateTime.Parse("15-May-1985"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -121,7 +121,7 @@ namespace Munharaunda.Test
                 ProfileId = 4,
                 FirstName = "Leon",
                 Surname = "Mapemba",
-                DateOfBirth = "15-May-1985",
+                DateOfBirth = DateTime.Parse("15-May-1985"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -141,7 +141,7 @@ namespace Munharaunda.Test
                 ProfileId = 5,
                 FirstName = "Nick",
                 Surname = "Namacha",
-                DateOfBirth = "15-May-1985",
+                DateOfBirth = DateTime.Parse("15-May-1985"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -161,7 +161,7 @@ namespace Munharaunda.Test
                 ProfileId = 6,
                 FirstName = "Nick",
                 Surname = "Namacha",
-                DateOfBirth = "15-May-1985",
+                DateOfBirth = DateTime.Parse("15-May-1985"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -317,14 +317,14 @@ namespace Munharaunda.Test
         [InlineData(30, false)]
         public void TestDependentAgeValidation(int age, bool Validation)
         {
-            var dob = DateTime.Now.AddYears(age * -1);
+            
 
             var dependent = new CosmosProfile()
             {
                 ProfileId = 2,
                 FirstName = "Marvelous",
                 Surname = "Namacha",
-                DateOfBirth = dob.ToString(),
+                DateOfBirth = DateTime.Now.AddYears(age * -1),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -348,14 +348,14 @@ namespace Munharaunda.Test
         [InlineData(10, ProfileTypes.Member, false)]
         public void TestDependentProfileTypeValidation(int age, ProfileTypes profileType, bool Validation)
         {
-            var dob = DateTime.Now.AddYears(age * -1);
+            
 
             var dependent = new CosmosProfile()
             {
                 ProfileId = 2,
                 FirstName = "Marvelous",
                 Surname = "Namacha",
-                DateOfBirth = dob.ToString(),
+                DateOfBirth = DateTime.Now.AddYears(age * -1),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -439,7 +439,7 @@ namespace Munharaunda.Test
                 ProfileId = 1,
                 FirstName = "Nicholas",
                 Surname = "Namacha",
-                DateOfBirth = "24-Aug-1982",
+                DateOfBirth = DateTime.Parse("24-Aug-1982"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -487,7 +487,7 @@ namespace Munharaunda.Test
                 ProfileId = 1,
                 FirstName = "Nicholas",
                 Surname = "Namacha",
-                DateOfBirth = "24-Aug-1982",
+                DateOfBirth = DateTime.Parse("24-Aug-1982"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -549,7 +549,7 @@ namespace Munharaunda.Test
                 ProfileId = 1,
                 FirstName = "Nicholas",
                 Surname = "Namacha",
-                DateOfBirth = "24-Aug-1982",
+                DateOfBirth = DateTime.Parse("24-Aug-1982"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -675,7 +675,7 @@ namespace Munharaunda.Test
                 ProfileId = 1,
                 FirstName = "Nicholas",
                 Surname = "Namacha",
-                DateOfBirth = "24-Aug-1982",
+                DateOfBirth = DateTime.Parse("24-Aug-1982"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",

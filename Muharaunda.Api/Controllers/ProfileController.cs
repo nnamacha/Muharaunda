@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
 using Muharaunda.Domain.Models;
 using Munharaunda.Application.Orchestration.Contracts;
+using Munharaunda.Application.Orchestration.Services;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
 using Munharaunda.Domain.Contracts;
@@ -19,10 +21,12 @@ namespace Munharaunda.Api.Controllers
     public class ProfileController : ControllerBase
     {
         private readonly IProfileService _profileService;
+        private readonly IAppSettings _appSettings;
 
-        public ProfileController(IProfileService profileService)
+        public ProfileController(IProfileService profileService, IAppSettings appSettings)
         {
             _profileService = profileService;
+            _appSettings = appSettings;
         }
         // GET: api/<ProfileController>
         [HttpGet]
@@ -49,6 +53,17 @@ namespace Munharaunda.Api.Controllers
         public async Task<ResponseModel<ProfileBase>> Post([FromBody] ProfileBase  profile)
         {
             return await _profileService.CreateProfileAsync(profile);
+        }// POST api/<ProfileController>
+        [HttpPost("dummy")]
+        public async Task<string> CreateDummyData()
+        {
+            var dummy = new DummyData(_appSettings);
+
+            var profiles = dummy.GenerateDummyProfiles(1000);
+
+            await _profileService.CreateBulkProfilesAsync(profiles);
+
+            return "Completed";
         }
 
         // PUT api/<ProfileController>/

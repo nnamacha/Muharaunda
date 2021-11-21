@@ -9,6 +9,7 @@ using Munharaunda.Core.Utilities;
 using Munharaunda.Domain.Contracts;
 using Munharaunda.Domain.Models;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Profile = Muharaunda.Core.Models.Profile;
 
@@ -41,6 +42,31 @@ namespace Munharaunda.Infrastructure.Implementation
             throw new NotImplementedException();
         }
 
+        public async Task CreateBulkProfilesAsync(List<ProfileBase> profiles)
+        {
+            var response = CommonUtilites.GenerateResponseModel<bool>();
+
+            var tasks = new List<Task>();
+            foreach (var profile in profiles)
+            {
+                var task = _container.CreateItemAsync<ProfileBase>(profile, new PartitionKey(profile.Pk));
+                tasks.Add(task
+                    .ContinueWith(t =>
+                    {
+                        if (t.Status != TaskStatus.RanToCompletion)
+                        {
+                            Console.WriteLine($"Error creating document : {t.Exception.Message} ");
+                        }
+                    }));
+            }
+
+            await Task.WhenAll(tasks);
+
+            
+        }
+
+
+
         public async Task<ResponseModel<ProfileBase>> CreateProfileAsync(ProfileBase request, bool checkUnique = false)
         {
 
@@ -52,8 +78,8 @@ namespace Munharaunda.Infrastructure.Implementation
             try
             {
 
-
-                var result = await _container.CreateItemAsync<ProfileBase>(request);
+                request.Pk = request.ProfileId.ToString();
+                var result = await _container.CreateItemAsync<ProfileBase>(request, new PartitionKey(request.Pk));
 
 
                 response.ResponseCode = ResponseConstants.R00;

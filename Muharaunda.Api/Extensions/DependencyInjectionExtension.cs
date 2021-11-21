@@ -23,9 +23,9 @@ namespace Munharaunda.Api.Extensions
 
         public static IServiceCollection AddResources(this IServiceCollection services, IConfiguration configuration)
         {
-            AppSettings appSettings = new(configuration);
+            Application.AppSettings appSettings = new(configuration);
 
-            services.AddTransient<IAppSettings>(a => appSettings);
+            services.AddTransient((Func<IServiceProvider, Muharaunda.Core.Contracts.IAppSettings>)(a => appSettings));
 
             #region MongoDB Definition
             //var settings = MongoClientSettings.FromConnectionString(configuration.GetConnectionString("MongoDB"));
@@ -50,7 +50,7 @@ namespace Munharaunda.Api.Extensions
 
             var _dbId = configuration["CosmoDbSettings:DbId"];
 
-            var cosmoDBClient = new CosmosClient(connectionString);
+            var cosmoDBClient = new CosmosClient(connectionString, new CosmosClientOptions { AllowBulkExecution = true });
 
             var cosmoDB = cosmoDBClient.GetDatabase(_dbId);
 

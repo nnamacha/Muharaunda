@@ -3,6 +3,7 @@ using Muharaunda.Domain.Models;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
 using Munharaunda.Domain.Contracts;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using static Muharaunda.Core.Constants.SystemWideConstants;
 
@@ -27,6 +28,9 @@ namespace Muharaunda.Core.Contracts
 
         public Task<ResponseModel<bool>> UpdateProfileAsync(Profile profile);
         public Task<ResponseModel<bool>> UpdateProfileStatusAsync(int profileId, Statuses newStatus);
+        public Task CreateBulkProfilesAsync(List<ProfileBase> profiles);
+
+       
 
         #endregion
 
