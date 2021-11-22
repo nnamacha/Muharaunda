@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Configuration;
 using Muharaunda.Core.Constants;
 using Muharaunda.Core.Models;
 using Muharaunda.Domain.Models;
@@ -18,28 +19,35 @@ namespace Munharaunda.Infrastructure.Implementation
     public class CosmoDBProfileRepository : IProfileRepository
     {
         private readonly Database _dataBase;
-        private readonly string containerId;
-        private readonly Container _container;
+        private readonly IConfiguration _configuration;
+        private Container _container;
 
-        public CosmoDBProfileRepository(Database dataBase)
+        public CosmoDBProfileRepository(Database dataBase, IConfiguration configuration)
         {
 
             _dataBase = dataBase ?? throw new ArgumentNullException(nameof(dataBase));
+            _configuration = configuration;
+            
 
 
-            containerId = "Profile";
-
-            _container = _dataBase.GetContainer(containerId);
 
         }
-        public Task<ResponseModel<bool>> AuthoriseProfileAsync(int ProfileId)
+        public async Task<ResponseModel<bool>> AuthoriseProfileAsync(int ProfileId)
         {
-            throw new NotImplementedException();
+            var response = CommonUtilites.GenerateResponseModel<bool>();
+
+            await PrepareContainer();
+
+            return response;
         }
 
-        public Task<bool> CheckPersonIsUnique(ProfileBase request)
+        public async Task<bool> CheckPersonIsUnique(ProfileBase request)
         {
-            throw new NotImplementedException();
+            var response = false;
+
+            await PrepareContainer();
+
+            return response;
         }
 
         public async Task CreateBulkProfilesAsync(List<ProfileBase> profiles)
@@ -100,9 +108,11 @@ namespace Munharaunda.Infrastructure.Implementation
 
         }
 
-        public Task<ResponseModel<bool>> DeleteProfileAsync(int ProfileId)
+        public async Task<ResponseModel<bool>> DeleteProfileAsync(int ProfileId)
         {
-            throw new NotImplementedException();
+            var response = CommonUtilites.GenerateResponseModel<bool>();
+            await PrepareContainer();
+             return response;
         }
 
         public async Task<ResponseModel<ProfileBase>> GetListOfActiveProfilesAsync()
@@ -133,34 +143,50 @@ namespace Munharaunda.Infrastructure.Implementation
             return response;
         }
 
-        public Task<ResponseModel<ProfileBase>> GetListOfDependentsByProfileAsync(int profileId)
+        public async Task<ResponseModel<ProfileBase>> GetListOfDependentsByProfileAsync(int profileId)
         {
-            throw new NotImplementedException();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
+
+            await PrepareContainer();
+
+            return response;
         }
 
-        public Task<ResponseModel<ProfileBase>> GetNextOfKindByProfileAsync(int profileId)
+        public async Task<ResponseModel<ProfileBase>> GetNextOfKindByProfileAsync(int profileId)
         {
-            throw new NotImplementedException();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
+
+            await PrepareContainer();
+
+            return response;
         }
 
-        public Task<ResponseModel<ProfileBase>> GetProfileDetailsAsync(int ProfileId)
+        public async Task<ResponseModel<ProfileBase>> GetProfileDetailsAsync(int ProfileId)
         {
-            throw new NotImplementedException();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
+            await PrepareContainer();
+            return response;
         }
 
-        public Task<ResponseModel<ProfileBase>> GetUnauthorisedProfilesAsync()
+        public async Task<ResponseModel<ProfileBase>> GetUnauthorisedProfilesAsync()
         {
-            throw new NotImplementedException();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
+            await PrepareContainer();
+            return response;
         }
 
-        public Task<ResponseModel<bool>> UpdateProfileAsync(Profile profile)
+        public async Task<ResponseModel<bool>> UpdateProfileAsync(Profile profile)
         {
-            throw new NotImplementedException();
+            var response = CommonUtilites.GenerateResponseModel<bool>();
+            await PrepareContainer();
+            return response;
         }
 
-        public Task<ResponseModel<bool>> UpdateProfileStatusAsync(int profileId, SystemWideConstants.Statuses newStatus)
+        public async Task<ResponseModel<bool>> UpdateProfileStatusAsync(int profileId, SystemWideConstants.Statuses newStatus)
         {
-            throw new NotImplementedException();
+            var response = CommonUtilites.GenerateResponseModel<bool>();
+            await PrepareContainer();
+            return response;
         }
 
         public async Task<ResponseModel<bool>> ValidateIdNumber(string IdNumber)
@@ -172,6 +198,18 @@ namespace Munharaunda.Infrastructure.Implementation
             await Task.CompletedTask;
 
             return response;
+        }
+
+        private async Task PrepareContainer()
+        {
+            
+            var containerProperties = new ContainerProperties()
+            {
+                Id = _configuration["CosmosDB:ProfileId"],
+                PartitionKeyPath = _configuration["CosmosDB:PartitionKeyPath"],
+                
+            };
+            _container = await _dataBase.CreateContainerIfNotExistsAsync(containerProperties);
         }
     }
 }
