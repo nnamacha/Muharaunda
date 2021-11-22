@@ -30,6 +30,7 @@ namespace Munharaunda.Infrastructure.Implementation
             containerId = "Profile";
 
             _container = _dataBase.GetContainer(containerId);
+            _dataBase.CreateContainerAsync()
 
         }
         public Task<ResponseModel<bool>> AuthoriseProfileAsync(int ProfileId)
@@ -49,6 +50,7 @@ namespace Munharaunda.Infrastructure.Implementation
             var tasks = new List<Task>();
             foreach (var profile in profiles)
             {
+                profile.Pk = profile.ProfileId.ToString();
                 var task = _container.CreateItemAsync<ProfileBase>(profile, new PartitionKey(profile.Pk));
                 tasks.Add(task
                     .ContinueWith(t =>

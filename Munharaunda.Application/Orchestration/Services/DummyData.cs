@@ -25,7 +25,7 @@ namespace Munharaunda.Application.Orchestration.Services
         public List<ProfileBase> GenerateDummyProfiles(int numberOfProfiles)
         {
             var profiles = new List<ProfileBase>();
-
+            var paid = new[] { true, false };
             for (int j = 0; j <= numberOfProfiles; j++)
             {
                 var funeralPayments = new List<FuneralPayment>();
@@ -41,10 +41,12 @@ namespace Munharaunda.Application.Orchestration.Services
 
                     var funeralPayment = new Faker<FuneralPayment>()
                      .RuleFor(o => o.Amount, 100)
-                     .RuleFor(o => o.Paid, f => f.PickRandom<bool>())
+                     .RuleFor(o => o.Paid, f => f.PickRandom(paid))
                      .RuleFor(o => o.Funeral, f => funeral);
 
-                    funeralPayments.Add(funeralPayment);
+                    var test = funeralPayment.Generate();
+                    
+                    funeralPayments.Add(funeralPayment.Generate());
 
 
                 }
@@ -53,7 +55,7 @@ namespace Munharaunda.Application.Orchestration.Services
 
                 var profile = new Faker<ProfileBase>()
                     .StrictMode(false)
-                    .RuleFor(o => o.id, f => Guid.NewGuid())
+                    .RuleFor(o => o.ProfileId, f => f.Random.Number(1200))
                     .RuleFor(o => o.ActivationDate, f => f.Date.Soon(_appSettings.NumberOfDaysToActivateProfile))
                     .RuleFor(o => o.Address, f => f.Address.StreetAddress(true))
                     .RuleFor(o => o.DateOfBirth, f => f.Date.Between(DateTime.Today.AddYears(-100), DateTime.Now.AddMonths(-1)))
@@ -63,7 +65,7 @@ namespace Munharaunda.Application.Orchestration.Services
                     .RuleFor(o => o.FuneralPayments, funeralPayments);
 
 
-                profiles.Add(profile);
+                profiles.Add(profile.Generate());
             }
 
            

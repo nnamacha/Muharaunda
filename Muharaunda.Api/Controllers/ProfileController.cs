@@ -59,7 +59,7 @@ namespace Munharaunda.Api.Controllers
         {
             var dummy = new DummyData(_appSettings);
 
-            var profiles = dummy.GenerateDummyProfiles(1000);
+            var profiles = dummy.GenerateDummyProfiles(10);
 
             await _profileService.CreateBulkProfilesAsync(profiles);
 
