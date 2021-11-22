@@ -55,6 +55,7 @@ namespace Munharaunda.Application.Orchestration.Services
 
                 var profile = new Faker<ProfileBase>()
                     .StrictMode(false)
+                    .RuleFor(o => o.id, f => Guid.NewGuid())
                     .RuleFor(o => o.ProfileId, f => f.Random.Number(1200))
                     .RuleFor(o => o.ActivationDate, f => f.Date.Soon(_appSettings.NumberOfDaysToActivateProfile))
                     .RuleFor(o => o.Address, f => f.Address.StreetAddress(true))

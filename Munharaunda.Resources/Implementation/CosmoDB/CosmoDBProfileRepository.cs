@@ -26,11 +26,7 @@ namespace Munharaunda.Infrastructure.Implementation
         {
 
             _dataBase = dataBase ?? throw new ArgumentNullException(nameof(dataBase));
-            _configuration = configuration;
-            
-
-
-            _container = _dataBase.GetContainer(containerId);
+            _configuration = configuration;            
 
         }
         public async Task<ResponseModel<bool>> AuthoriseProfileAsync(int ProfileId)
@@ -54,7 +50,7 @@ namespace Munharaunda.Infrastructure.Implementation
         public async Task CreateBulkProfilesAsync(List<ProfileBase> profiles)
         {
             var response = CommonUtilites.GenerateResponseModel<bool>();
-
+            await PrepareContainer();
             var tasks = new List<Task>();
             foreach (var profile in profiles)
             {
@@ -82,7 +78,7 @@ namespace Munharaunda.Infrastructure.Implementation
 
 
             request.id = Guid.NewGuid();
-
+            await PrepareContainer();
             var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
             try
@@ -120,6 +116,7 @@ namespace Munharaunda.Infrastructure.Implementation
         public async Task<ResponseModel<ProfileBase>> GetListOfActiveProfilesAsync()
         {
             var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
+            await PrepareContainer();
             try
             {
                 var sql = "select * from c";
@@ -207,7 +204,7 @@ namespace Munharaunda.Infrastructure.Implementation
             
             var containerProperties = new ContainerProperties()
             {
-                Id = _configuration["CosmosDB:ProfileId"],
+                Id = _configuration["CosmosDB:ContainerId"],
                 PartitionKeyPath = _configuration["CosmosDB:PartitionKeyPath"],
                 
             };

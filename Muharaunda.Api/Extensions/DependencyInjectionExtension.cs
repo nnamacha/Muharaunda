@@ -58,7 +58,7 @@ namespace Munharaunda.Api.Extensions
 
             services.AddScoped<Database>(s => cosmoDB);
 
-            CosmoDBProfileRepository profileRepository = new CosmoDBProfileRepository(cosmoDB);
+            CosmoDBProfileRepository profileRepository = new CosmoDBProfileRepository(cosmoDB, configuration);
 
             CosmoDBFuneralRepository funeralRespository = new CosmoDBFuneralRepository(cosmoDB);
 
