@@ -29,8 +29,9 @@ namespace Muharaunda.Core.Contracts
         public Task<ResponseModel<bool>> UpdateProfileAsync(Profile profile);
         public Task<ResponseModel<bool>> UpdateProfileStatusAsync(int profileId, Statuses newStatus);
         public Task CreateBulkProfilesAsync(List<ProfileBase> profiles);
+        public Task UpdateBulkProfilesAsync(List<ProfileBase> profiles);
 
-       
+
 
         #endregion
 

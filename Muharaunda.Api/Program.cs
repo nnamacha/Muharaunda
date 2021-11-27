@@ -35,6 +35,11 @@ namespace Muharaunda.Api
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+.ConfigureAppConfiguration((context, config) =>
+{
+var keyVaultEndpoint = new Uri(Environment.GetEnvironmentVariable("KEYVAULT_URL"));
+config.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
+})
                 //.ConfigureAppConfiguration((context, config) =>
                 //{
                 //    if (context.HostingEnvironment.IsProduction())

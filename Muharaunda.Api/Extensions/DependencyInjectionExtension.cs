@@ -58,17 +58,19 @@ namespace Munharaunda.Api.Extensions
 
             services.AddScoped<Database>(s => cosmoDB);
 
-            CosmoDBProfileRepository profileRepository = new CosmoDBProfileRepository(cosmoDB, configuration);
+            var cosmosUtils = new CosmosUtilities(cosmoDB, configuration);
 
-            CosmoDBFuneralRepository funeralRespository = new CosmoDBFuneralRepository(cosmoDB);
+            services.AddScoped<ICosmosUtilities>(s => new CosmosUtilities(cosmoDB, configuration));
+
+            CosmoDBProfileRepository profileRepository = new(cosmosUtils);
+
+            CosmoDBFuneralRepository funeralRespository = new(cosmosUtils, profileRepository);
 
             #endregion
 
             services.AddScoped<IProfile>(r => profileRepository);
 
-            services.AddScoped<ProfileValidator>(s => new ProfileValidator(appSettings, profileRepository));
-
-            
+            services.AddScoped<ProfileValidator>(s => new ProfileValidator(appSettings, profileRepository));            
 
             services.AddScoped<IFuneralRepository>(x => funeralRespository);
 
@@ -79,6 +81,8 @@ namespace Munharaunda.Api.Extensions
             services.AddScoped<IFuneralService, FuneralService>();
 
             services.AddScoped<IProfileBase, CosmosProfile>();
+
+            
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

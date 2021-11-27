@@ -12,19 +12,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Muharaunda.Core.Models
 {
-    [Table("Funerals")]
-    public class Funeral: CreateFuneralRequest
+    public class Funeral
     {
-
-
-        public string FuneralId { get; set; }
-        //public ProfileBase Profile { get; set; }
-        public DateTime Created { get; set; }
-        public int CreatedBy { get; set; }
-        public int UpdatedBy { get ; set ; }
-        public DateTime Updated { get ; set ; }
-        public int ApprovedBy { get ; set ; }
-        public DateTime Approved { get ; set ; }
+        public Guid id { get; set; }
+        public Guid FuneralId { get; set; }
+        public ProfileBase Profile { get; set; }
+        public string Address { get; set; }
+        public DateTime DateOfDeath { get; set; }        
         public Audit Audit { get; set; }
+        public string Pk { get; set; }
     }
 }

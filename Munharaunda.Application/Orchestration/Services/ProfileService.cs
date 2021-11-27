@@ -343,7 +343,13 @@ namespace Munharaunda.Application.Orchestration.Implementation
            await _repository.CreateBulkProfilesAsync(profiles);
         }
 
-        
+        public async Task UpdateBulkProfilesAsync(List<ProfileBase> profiles)
+        {
+            await _repository.UpdateBulkProfilesAsync(profiles);
+        }
+
+
+
 
 
 

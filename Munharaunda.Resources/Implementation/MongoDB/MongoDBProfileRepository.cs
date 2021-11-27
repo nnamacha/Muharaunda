@@ -337,5 +337,10 @@ namespace Munharaunda.Resources.Implementation
         {
             throw new NotImplementedException();
         }
+
+        public Task UpdateBulkProfilesAsync(List<ProfileBase> profiles)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

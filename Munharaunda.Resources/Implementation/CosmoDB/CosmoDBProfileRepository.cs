@@ -9,6 +9,7 @@ using Munharaunda.Core.Models;
 using Munharaunda.Core.Utilities;
 using Munharaunda.Domain.Contracts;
 using Munharaunda.Domain.Models;
+using Munharaunda.Infrastructure.Implementation.CosmoDB;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,22 +19,22 @@ namespace Munharaunda.Infrastructure.Implementation
 {
     public class CosmoDBProfileRepository : IProfileRepository
     {
-        private readonly Database _dataBase;
-        private readonly IConfiguration _configuration;
+        
+        private readonly ICosmosUtilities _cosmosUtilities;
         private Container _container;
+        private string containerId = "Profile";
 
-        public CosmoDBProfileRepository(Database dataBase, IConfiguration configuration)
-        {
+        public CosmoDBProfileRepository(ICosmosUtilities cosmosUtilities)
+        {            
 
-            _dataBase = dataBase ?? throw new ArgumentNullException(nameof(dataBase));
-            _configuration = configuration;            
+            _cosmosUtilities = cosmosUtilities ?? throw new ArgumentNullException(nameof(cosmosUtilities));                                  
 
         }
         public async Task<ResponseModel<bool>> AuthoriseProfileAsync(int ProfileId)
         {
             var response = CommonUtilites.GenerateResponseModel<bool>();
 
-            await PrepareContainer();
+            _container =  await _cosmosUtilities.GetContainer(containerId);
 
             return response;
         }
@@ -42,16 +43,20 @@ namespace Munharaunda.Infrastructure.Implementation
         {
             var response = false;
 
-            await PrepareContainer();
+            _container =  await _cosmosUtilities.GetContainer(containerId);
 
             return response;
         }
 
         public async Task CreateBulkProfilesAsync(List<ProfileBase> profiles)
         {
-            var response = CommonUtilites.GenerateResponseModel<bool>();
-            await PrepareContainer();
+
+            
+
+            _container =  await _cosmosUtilities.GetContainer(containerId);
+            
             var tasks = new List<Task>();
+
             foreach (var profile in profiles)
             {
                 profile.Pk = profile.ProfileId.ToString();
@@ -78,7 +83,7 @@ namespace Munharaunda.Infrastructure.Implementation
 
 
             request.id = Guid.NewGuid();
-            await PrepareContainer();
+            _container =  await _cosmosUtilities.GetContainer(containerId);
             var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
             try
@@ -109,27 +114,43 @@ namespace Munharaunda.Infrastructure.Implementation
         public async Task<ResponseModel<bool>> DeleteProfileAsync(int ProfileId)
         {
             var response = CommonUtilites.GenerateResponseModel<bool>();
-            await PrepareContainer();
+            _container =  await _cosmosUtilities.GetContainer(containerId);
              return response;
         }
 
         public async Task<ResponseModel<ProfileBase>> GetListOfActiveProfilesAsync()
         {
             var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
-            await PrepareContainer();
+            _container =  await _cosmosUtilities.GetContainer(containerId);
             try
             {
-                var sql = "select * from c";
 
-                var iterator =  _container.GetItemQueryIterator<CosmosProfile>(sql);
+                _container = await _cosmosUtilities.GetContainer(containerId);
+
+                QueryDefinition query = new QueryDefinition(
+                   "select * from Profile WHERE Profile.ProfileStatus = @ProfileStatus")
+                   .WithParameter("@ProfileStatus", SystemWideConstants.Statuses.Active);
+
+
+                var iterator = _container.GetItemQueryIterator<ProfileBase>(query);
+
 
                 var profiles = await iterator.ReadNextAsync();
+
+                if (profiles.Count == 0)
+                {
+                    response.ResponseCode = ResponseConstants.R404;
+
+                    response.ResponseMessage = ResponseConstants.RECORD_NOT_FOUND;
+
+                    return response;
+                }
 
                 foreach (var profile in profiles)
                 {
                     response.ResponseData.Add(profile);
                 }
-                
+                                
             }
             catch (Exception ex)
             {
@@ -146,7 +167,7 @@ namespace Munharaunda.Infrastructure.Implementation
         {
             var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
-            await PrepareContainer();
+            _container =  await _cosmosUtilities.GetContainer(containerId);
 
             return response;
         }
@@ -155,7 +176,7 @@ namespace Munharaunda.Infrastructure.Implementation
         {
             var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
-            await PrepareContainer();
+            _container =  await _cosmosUtilities.GetContainer(containerId);
 
             return response;
         }
@@ -163,28 +184,95 @@ namespace Munharaunda.Infrastructure.Implementation
         public async Task<ResponseModel<ProfileBase>> GetProfileDetailsAsync(int ProfileId)
         {
             var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
-            await PrepareContainer();
+
+            _container =  await _cosmosUtilities.GetContainer(containerId);
+
+            QueryDefinition query = new QueryDefinition(
+               "select * from Profile WHERE Profile.ProfileId = @ProfileId")
+               .WithParameter("@ProfileId", ProfileId);           
+            
+
+            var iterator = _container.GetItemQueryIterator<ProfileBase>(query, requestOptions: new QueryRequestOptions()
+            {
+                PartitionKey = new PartitionKey(ProfileId.ToString()),
+                MaxItemCount = 1
+            });
+
+            
+            var profiles = await iterator.ReadNextAsync();
+
+            if (profiles.Count > 1)
+            {
+                throw new Exception($"Duplicate Profiles for ProfileID {ProfileId}");
+            }
+
+            foreach (var profile in profiles)
+            {
+                response.ResponseData.Add(profile);
+            }
+
             return response;
         }
 
         public async Task<ResponseModel<ProfileBase>> GetUnauthorisedProfilesAsync()
         {
             var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
-            await PrepareContainer();
+            _container =  await _cosmosUtilities.GetContainer(containerId);
             return response;
+        }
+
+        public async Task UpdateBulkProfilesAsync(List<ProfileBase> profiles)
+        {
+            List<Task> tasks = new();
+
+            foreach (var profile in profiles)
+            {
+
+                
+
+                Task task = _container.ReplaceItemAsync<ProfileBase>(profile, profile.id.ToString(), new PartitionKey(profile.Pk));
+
+                tasks.Add(task
+                    .ContinueWith(t =>
+                    {
+                        if (t.Status != TaskStatus.RanToCompletion)
+                        {
+                            Console.WriteLine($"Error creating document : {t.Exception.Message} ");
+                        }
+                    }));
+            }
+
+            await Task.WhenAll(tasks);
         }
 
         public async Task<ResponseModel<bool>> UpdateProfileAsync(Profile profile)
         {
             var response = CommonUtilites.GenerateResponseModel<bool>();
-            await PrepareContainer();
+            _container =  await _cosmosUtilities.GetContainer(containerId);
             return response;
         }
 
         public async Task<ResponseModel<bool>> UpdateProfileStatusAsync(int profileId, SystemWideConstants.Statuses newStatus)
         {
             var response = CommonUtilites.GenerateResponseModel<bool>();
-            await PrepareContainer();
+
+            _container =  await _cosmosUtilities.GetContainer(containerId);
+
+            var dbResponse =  await GetProfileDetailsAsync(profileId);
+
+            var profile = dbResponse.ResponseData[0];
+
+            profile.ProfileStatus = newStatus;
+
+            ItemResponse<ProfileBase> replaceResponse = await _container.ReplaceItemAsync<ProfileBase>(profile, profile.id.ToString(), new PartitionKey(profile.Pk));
+
+            if (replaceResponse.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                response.ResponseMessage = ResponseConstants.FAILED_PROFILE_STATUS_UPDATE;
+
+                response.ResponseCode = ResponseConstants.R01;
+            }
+
             return response;
         }
 
@@ -199,16 +287,5 @@ namespace Munharaunda.Infrastructure.Implementation
             return response;
         }
 
-        private async Task PrepareContainer()
-        {
-            
-            var containerProperties = new ContainerProperties()
-            {
-                Id = _configuration["CosmosDB:ContainerId"],
-                PartitionKeyPath = _configuration["CosmosDB:PartitionKeyPath"],
-                
-            };
-            _container = await _dataBase.CreateContainerIfNotExistsAsync(containerProperties);
-        }
     }
 }

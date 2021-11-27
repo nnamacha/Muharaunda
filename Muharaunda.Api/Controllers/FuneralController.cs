@@ -6,6 +6,7 @@ using Munharaunda.Core.Constants;
 using Munharaunda.Core.Models;
 using Munharaunda.Core.Utilities;
 using Munharaunda.Domain.Contracts;
+using Munharaunda.Domain.Dtos;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Munharaunda.Api.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class FuneralController : ControllerBase
@@ -53,10 +54,10 @@ namespace Munharaunda.Api.Controllers
 
         // POST api/<FuneralController>
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Funeral funeral)
+        public async Task<IActionResult> Post([FromBody] CreateFuneralRequest request )
         {
             //HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
-            var result =  await _funeralService.CreateFuneralAsync(funeral);
+            var result =  await _funeralService.CreateFuneralAsync(request);
 
             return CommonUtilites.GenerateResponse(result);
         }
@@ -67,6 +68,16 @@ namespace Munharaunda.Api.Controllers
         {
             //HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
             var result = await _funeralService.UpdateFuneralAsync(funeral);
+
+            return CommonUtilites.GenerateResponse(result);
+        }
+
+        // PUT api/<FuneralController>/profiles/5
+        [HttpPut("profiles/{id}")]
+        public async Task<IActionResult> UpdateProfiles(string id)
+        {
+            //HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
+            var result = await _funeralService.UpdateProfiles(id);
 
             return CommonUtilites.GenerateResponse(result);
         }

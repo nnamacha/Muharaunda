@@ -33,10 +33,10 @@ namespace Munharaunda.Application.Orchestration.Services
                 for (int i = 0; i < 4; i++)
                 {
                     var funeral = new Faker<Funeral>()
-                        .RuleFor(o => o.FuneralId, f => Guid.NewGuid().ToString())
+                        .RuleFor(o => o.FuneralId, f => Guid.NewGuid())
                         .RuleFor(o => o.Address, f => f.Address.StreetAddress(true))
-                        .RuleFor(o => o.Created, f => DateTime.Now)
-                        .RuleFor(o => o.ProfileId, f => f.Random.Number())
+                        .RuleFor(o => o.Audit.Created, f => DateTime.Now)
+                        .RuleFor(o => o.Profile.ProfileId, f => f.Random.Number())
                         .RuleFor(o => o.DateOfDeath, f => f.Date.Between(DateTime.Now.AddYears(-20), DateTime.Today));
 
                     var funeralPayment = new Faker<FuneralPayment>()
