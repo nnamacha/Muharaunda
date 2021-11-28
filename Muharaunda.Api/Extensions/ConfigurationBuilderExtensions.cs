@@ -14,7 +14,7 @@ namespace Munharaunda.Api.Extensions
     {
         public static void ConfigureKeyVault(this IConfigurationBuilder config)
         {
-            var keyVaultEndPoint = Environment.GetEnvironmentVariable("KEYVAULT_ENDPOINT");
+            var keyVaultEndPoint = Environment.GetEnvironmentVariable("KEYVAULT_URL");
 
             if (keyVaultEndPoint is null)
             {
