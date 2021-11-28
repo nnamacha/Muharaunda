@@ -16,9 +16,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "KEYVAULT_URL": "https://munharaunda.vault.azure.net/",
-        "Azure_Client_Id": "e0a1b2f0-d4df-4196-98d8-43968ed8b91c",
-        "Azure_Tenant_Id": "a53164c8-ecce-43cd-9e56-2bf2d4a416be",
-        "Azure_Client_Secret": "Quj7Q~ZW7WXiz1fVVVIpuZ6PJfTdhY5RN3Npz"
+
       }
     },
     "Muharaunda.Api": {
@@ -30,9 +28,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "KEYVAULT_URL": "https://munharaunda.vault.azure.net/",
-        "Azure_Client_Id": "e0a1b2f0-d4df-4196-98d8-43968ed8b91c",
-        "Azure_Tenant_Id": "a53164c8-ecce-43cd-9e56-2bf2d4a416be",
-        "Azure_Client_Secret": "Quj7Q~ZW7WXiz1fVVVIpuZ6PJfTdhY5RN3Npz"
+
 
       }
     }
