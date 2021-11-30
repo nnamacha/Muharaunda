@@ -30,7 +30,7 @@ namespace Muharaunda.Api
                 .AddJwtBearer(options =>
                 {
                     options.Audience = Configuration["AzureAd:ClientId"];
-                    options.Authority = $"{Configuration["AzureAd:Instance"]}{Configuration["TenantId"]}";
+                    options.Authority = $"{Configuration["AzureAd:Instance"]}{Configuration["AzureAd:TenantId"]}";
 
                 });
             
