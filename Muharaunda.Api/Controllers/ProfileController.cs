@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web.Resource;
 using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
 using Muharaunda.Domain.Models;
@@ -22,6 +23,7 @@ namespace Munharaunda.Api.Controllers
     {
         private readonly IProfileService _profileService;
         private readonly IAppSettings _appSettings;
+        static readonly string[] scopeRequiredByApi = new string[] { "userAccess" };
 
         public ProfileController(IProfileService profileService, IAppSettings appSettings)
         {
@@ -32,12 +34,14 @@ namespace Munharaunda.Api.Controllers
         [HttpGet]
         public async Task<ResponseModel<ProfileBase>> Get()
         {
+            HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
             return await _profileService.GetListOfActiveProfilesAsync();
         }
 
         [HttpGet("Unauthorised")]
         public async Task<ResponseModel<ProfileBase>> GetUnauthorisedProfiles()
         {
+            HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
             return await _profileService.GetUnauthorisedProfilesAsync();
         }
 
@@ -45,6 +49,7 @@ namespace Munharaunda.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ResponseModel<ProfileBase>> Get(int id)
         {
+            HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
             return await _profileService.GetProfileDetailsAsync(id);
         }
 
@@ -52,6 +57,7 @@ namespace Munharaunda.Api.Controllers
         [HttpPost]
         public async Task<ResponseModel<ProfileBase>> Post([FromBody] ProfileBase  profile)
         {
+            HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
             return await _profileService.CreateProfileAsync(profile);
         }// POST api/<ProfileController>
         [HttpPost("dummy")]
@@ -60,7 +66,7 @@ namespace Munharaunda.Api.Controllers
             var dummy = new DummyData(_appSettings);
 
             var profiles = dummy.GenerateDummyProfiles(1);
-
+            HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
             await _profileService.CreateBulkProfilesAsync(profiles);
 
             return "Completed";
@@ -70,6 +76,7 @@ namespace Munharaunda.Api.Controllers
         [HttpPut("{id}")]
         public async Task<ResponseModel<bool>> Put([FromBody] Profile profile)
         {
+            HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
             return await _profileService.UpdateProfileAsync(profile);
         }
 
@@ -77,6 +84,7 @@ namespace Munharaunda.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<ResponseModel<bool>> Delete(int id)
         {
+            HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
             return await _profileService.DeleteProfileAsync(id);
         }
     }
