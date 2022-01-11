@@ -25,16 +25,9 @@ namespace Muharaunda.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
-
-            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //    .AddJwtBearer(options =>
-            //    {
-            //        options.Audience = Configuration["AzureAd:ClientId"];
-            //        options.Authority = $"{Configuration["AzureAd:Instance"]}{Configuration["AzureAd:TenantId"]}";
-
-            //    });
             
-            //services.Configure<OpenIdConnectOptions>(AzureADDefaults)
+
+           
             services.AddControllers();
 
             services.AddSwaggerGen(c =>
