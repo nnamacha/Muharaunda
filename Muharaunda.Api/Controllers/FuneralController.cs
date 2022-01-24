@@ -14,13 +14,13 @@ using System.Threading.Tasks;
 
 namespace Munharaunda.Api.Controllers
 {
-    [Authorize]
+    //Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class FuneralController : ControllerBase
     {
         private readonly IFuneralService _funeralService;
-        static readonly string[] scopeRequiredByApi = new string[] { "test1" };
+        static readonly string[] scopeRequiredByApi = new string[] { "userAccess" };
 
         public FuneralController(IFuneralService funeralService)
         {
@@ -32,7 +32,7 @@ namespace Munharaunda.Api.Controllers
         //[AllowAnonymous]
         public async Task<IActionResult> Get()
         {
-           // //HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
+            //HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
             var result = await _funeralService.GetListOfActiveFuneralsAsync();            
 
             return CommonUtilites.GenerateResponse(result);
