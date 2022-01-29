@@ -1,6 +1,6 @@
-﻿using Muharaunda.Core.Contracts;
+﻿using FluentValidation;
+using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
-using Munharaunda.Application.Validators.Implementations;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Models;
 using Munharaunda.Core.Utilities;
@@ -15,10 +15,10 @@ namespace Munharaunda.Application.Orchestration.Services
     public class FuneralService : IFuneralService
     {
         private readonly IFuneralRepository _funeralRepository;
-        private readonly FuneralValidator _validator;
+        private readonly IValidator<Funeral> _validator;
         private readonly IProfile _profileRepository;
 
-        public FuneralService(IFuneralRepository funeralRepository, FuneralValidator validator, IProfile profileRepository)
+        public FuneralService(IFuneralRepository funeralRepository, IValidator<Funeral> validator, IProfile profileRepository)
         {
             _funeralRepository = funeralRepository;
             _validator = validator;
@@ -46,6 +46,13 @@ namespace Munharaunda.Application.Orchestration.Services
                     return response;
 
                 }
+                else if (getProfileResponse.ResponseCode != ResponseConstants.R00)
+                {
+                    response.ResponseCode= getProfileResponse.ResponseCode;
+                    response.ResponseMessage = getProfileResponse.ResponseMessage;
+                    return response;
+                }
+
 
 
                 var FuneralId = Guid.NewGuid();
@@ -112,7 +119,7 @@ namespace Munharaunda.Application.Orchestration.Services
 
             }
 
-            
+
         }
 
         public async Task<ResponseModel<bool>> DeleteFuneralAsync(int profileId)

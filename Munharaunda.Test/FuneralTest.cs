@@ -1,4 +1,6 @@
-﻿using Moq;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using Moq;
 using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
 using Muharaunda.Domain.Models;
@@ -11,9 +13,7 @@ using Munharaunda.Domain.Contracts;
 using Munharaunda.Domain.Dtos;
 using Munharaunda.Domain.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using static Muharaunda.Core.Constants.SystemWideConstants;
@@ -30,6 +30,7 @@ namespace Munharaunda.Test
         private readonly Mock<IFuneralRepository> _funeralRepository;
         private readonly Mock<IAppSettings> _appSettings;
         private readonly FuneralValidator validator;
+        private readonly Mock<IValidator<Funeral>> _validator;
 
         public FuneralTest()
         {
@@ -77,7 +78,9 @@ namespace Munharaunda.Test
 
             validator = new FuneralValidator(_appSettings.Object, _funeralRepository.Object);
 
-            funeralService = new FuneralService(_funeralRepository.Object, validator, _profileRepository.Object);
+            _validator = new Mock<IValidator<Funeral>>(MockBehavior.Loose);
+
+            funeralService = new FuneralService(_funeralRepository.Object, _validator.Object, _profileRepository.Object);
 
         }
 
@@ -86,13 +89,15 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R00, 1)]
         public async Task TestFuneralCreationWhenNoProfileFound(string responseCode, int runtimes)
         {
-            
+
 
             var getProfileResponse = new ResponseModel<ProfileBase>()
             {
                 ResponseCode = responseCode,
-                 
+
             };
+
+            var validationResult = new ValidationResult();
 
             var createFuneralResponse = new ResponseModel<Funeral>();
 
@@ -102,13 +107,14 @@ namespace Munharaunda.Test
 
             };
 
-             var getFuneralDetailsByProfileId = CommonUtilites.GenerateResponseModel<Funeral>();
+            var getFuneralDetailsByProfileId = CommonUtilites.GenerateResponseModel<Funeral>();
 
             getProfileResponse.ResponseData.Add(profileRecord);
             _funeralRepository.Setup(x => x.CreateFuneralAsync(It.IsAny<Funeral>())).ReturnsAsync(createFuneralResponse);
             _profileRepository.Setup(x => x.UpdateProfileStatusAsync(It.IsAny<int>(), It.IsAny<Statuses>())).ReturnsAsync(updateProfileStatusResponse);
             _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(getProfileResponse);
             _funeralRepository.Setup(x => x.GetFuneralDetailsByProfileIdAsync(It.IsAny<int>())).ReturnsAsync(getFuneralDetailsByProfileId);
+            _validator.Setup(validator => validator.Validate(It.IsAny<Funeral>())).Returns(validationResult);
 
             var result = await funeralService.CreateFuneralAsync(request);
 
@@ -121,10 +127,11 @@ namespace Munharaunda.Test
         [Fact]
         public async Task CreateFuneralAsync_Success()
         {
-           
+
             var getProfileResponse = CommonUtilites.GenerateResponseModel<ProfileBase>();
             var getFuneralDetailsByProfileId = CommonUtilites.GenerateResponseModel<Funeral>();
             var createFuneralResponse = new ResponseModel<Funeral>();
+            var validationResult = new ValidationResult();
 
             getProfileResponse.ResponseData.Add(new()
             {
@@ -134,6 +141,7 @@ namespace Munharaunda.Test
             _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(getProfileResponse);
             _funeralRepository.Setup(x => x.CreateFuneralAsync(It.IsAny<Funeral>())).ReturnsAsync(createFuneralResponse);
             _funeralRepository.Setup(x => x.GetFuneralDetailsByProfileIdAsync(It.IsAny<int>())).ReturnsAsync(getFuneralDetailsByProfileId);
+            _validator.Setup(validator => validator.Validate(It.IsAny<Funeral>())).Returns(validationResult);
 
             var result = await funeralService.CreateFuneralAsync(request);
             Assert.Equal(result.ResponseCode, ResponseConstants.R00);
@@ -148,7 +156,7 @@ namespace Munharaunda.Test
             var getFuneralDetailsByProfileId = CommonUtilites.GenerateResponseModel<Funeral>();
             var createFuneralResponse = new ResponseModel<Funeral>();
 
-            
+
 
             _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(getProfileResponse);
             _funeralRepository.Setup(x => x.CreateFuneralAsync(It.IsAny<Funeral>())).ReturnsAsync(createFuneralResponse);
@@ -156,6 +164,32 @@ namespace Munharaunda.Test
 
             var result = await funeralService.CreateFuneralAsync(request);
             Assert.Equal(result.ResponseCode, ResponseConstants.R404);
+            Assert.Equal(result.ResponseMessage, ResponseConstants.PROFILE_NOT_FOUND);
+        }
+
+        [Fact]
+        public async Task FuneralValidation_Failed()
+        {
+            var result = new ValidationResult();
+            result.Errors.Add(new ValidationFailure("SomeProperty", "SomeError"));
+            var funeral = new Funeral();
+            var getProfileResponse = CommonUtilites.GenerateResponseModel<ProfileBase>();
+            var getFuneralDetailsByProfileId = CommonUtilites.GenerateResponseModel<Funeral>();
+            var createFuneralResponse = new ResponseModel<Funeral>();
+
+            getProfileResponse.ResponseData.Add(new()
+            {
+                ProfileId = 1
+            });
+
+
+            _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(getProfileResponse);
+            _funeralRepository.Setup(x => x.CreateFuneralAsync(It.IsAny<Funeral>())).ReturnsAsync(createFuneralResponse);
+            _funeralRepository.Setup(x => x.GetFuneralDetailsByProfileIdAsync(It.IsAny<int>())).ReturnsAsync(getFuneralDetailsByProfileId);
+            _validator.Setup(validator => validator.Validate(It.IsAny<Funeral>())).Returns(result);
+
+            var response = await funeralService.CreateFuneralAsync(request);
+            Assert.Equal(response.ResponseCode, ResponseConstants.R01);
         }
 
 
