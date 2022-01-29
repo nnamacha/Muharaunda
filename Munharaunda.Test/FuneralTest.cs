@@ -77,7 +77,7 @@ namespace Munharaunda.Test
 
             validator = new FuneralValidator(_appSettings.Object, _funeralRepository.Object);
 
-            funeralService = new FuneralService(_funeralRepository.Object, validator, _appSettings.Object, _profileRepository.Object);
+            funeralService = new FuneralService(_funeralRepository.Object, validator, _profileRepository.Object);
 
         }
 

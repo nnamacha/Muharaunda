@@ -20,9 +20,8 @@ namespace Munharaunda.Infrastructure.Implementation.CosmoDB
         
         private readonly ICosmosUtilities _cosmosUtilities;
         private readonly IProfileRepository _profileRepository;
-        private Container _container;
-        private string containerId = "Funeral";
-        private FuneralPayment funeralPayment;
+        private readonly string containerId = "Funeral";
+        
 
         public CosmoDBFuneralRepository( ICosmosUtilities cosmosUtilities, IProfileRepository profileRepository)
         {
@@ -38,7 +37,8 @@ namespace Munharaunda.Infrastructure.Implementation.CosmoDB
         public async Task<ResponseModel<Funeral>> CreateFuneralAsync(Funeral funeral)
         {
             
-            _container = await _cosmosUtilities.GetContainer(containerId);
+
+           var  _container = await _cosmosUtilities.GetContainer(containerId);
 
             
 
@@ -47,10 +47,7 @@ namespace Munharaunda.Infrastructure.Implementation.CosmoDB
             try
             {
                 funeral.Pk = funeral.Profile.ProfileId.ToString();
-
-                var result = await _container.CreateItemAsync<Funeral>(funeral, new PartitionKey(funeral.Pk));
-
-
+                
                 response.ResponseCode = ResponseConstants.R00;
 
                 response.ResponseMessage = ResponseConstants.R00Message;
@@ -81,7 +78,7 @@ namespace Munharaunda.Infrastructure.Implementation.CosmoDB
             var id = Guid.Parse(funeralId);
             var response = CommonUtilites.GenerateResponseModel<Funeral>();
 
-            _container = await _cosmosUtilities.GetContainer(containerId);
+            var _container = await _cosmosUtilities.GetContainer(containerId);
 
             QueryDefinition query = new QueryDefinition(
                "select * from c WHERE c.id = @id")
@@ -95,7 +92,7 @@ namespace Munharaunda.Infrastructure.Implementation.CosmoDB
 
             if (funerals.Count > 1)
             {
-                throw new Exception($"Duplicate funeral with funeralId {funeralId}");
+                throw new NotSupportedException($"Duplicate funeral with funeralId {funeralId}");
             }
 
             foreach (var funeral in funerals)
@@ -110,7 +107,7 @@ namespace Munharaunda.Infrastructure.Implementation.CosmoDB
         {
             var response = CommonUtilites.GenerateResponseModel<Funeral>();
 
-            _container = await _cosmosUtilities.GetContainer(containerId);
+            var _container = await _cosmosUtilities.GetContainer(containerId);
 
             QueryDefinition query = new QueryDefinition(
                "select * from c WHERE c.Profile.ProfileId = @ProfileId")
@@ -158,7 +155,7 @@ namespace Munharaunda.Infrastructure.Implementation.CosmoDB
 
                 List<ProfileBase> profiles = new();
 
-                _container = await _cosmosUtilities.GetContainer(containerId);
+                var _container = await _cosmosUtilities.GetContainer(containerId);
 
                 var dbResponse = await _profileRepository.GetListOfActiveProfilesAsync();
 
@@ -176,9 +173,7 @@ namespace Munharaunda.Infrastructure.Implementation.CosmoDB
 
                 }
 
-                var tasks = new List<Task>();
-
-                funeralPayment = new FuneralPayment()
+                var funeralPayment = new FuneralPayment()
                 {
                     Paid = false,
                     Amount = 0,

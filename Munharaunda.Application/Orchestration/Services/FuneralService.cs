@@ -16,14 +16,12 @@ namespace Munharaunda.Application.Orchestration.Services
     {
         private readonly IFuneralRepository _funeralRepository;
         private readonly FuneralValidator _validator;
-        private readonly Muharaunda.Core.Contracts.IAppSettings _appSettings;
         private readonly IProfile _profileRepository;
 
-        public FuneralService(IFuneralRepository funeralRepository, FuneralValidator validator, Muharaunda.Core.Contracts.IAppSettings appSettings, IProfile profileRepository)
+        public FuneralService(IFuneralRepository funeralRepository, FuneralValidator validator, IProfile profileRepository)
         {
             _funeralRepository = funeralRepository;
             _validator = validator;
-            _appSettings = appSettings;
             _profileRepository = profileRepository;
         }
 
@@ -41,61 +39,65 @@ namespace Munharaunda.Application.Orchestration.Services
 
                 var getProfileResponse = await _profileRepository.GetProfileDetailsAsync(request.ProfileId);
 
-                if (getProfileResponse.ResponseCode == ResponseConstants.R00 && getProfileResponse.ResponseData.Count == 1)
-                {
-                    var FuneralId = Guid.NewGuid();
-
-                    var funeral = new Funeral()
-                    {
-                        id = FuneralId,
-                        FuneralId = FuneralId,
-                        Profile = getProfileResponse.ResponseData[0],
-                        Address = request.Address,
-                        DateOfDeath = request.DateOfDeath,
-                        Audit = new Audit()
-                        {
-                            Created = DateTime.Now
-                        },
-                        Pk = request.ProfileId.ToString()
-                    };
-                    var requestValidation = _validator.Validate(funeral);
-
-                    if (requestValidation.IsValid)
-                    {
-
-                        response = await _funeralRepository.CreateFuneralAsync(funeral);
-
-                        if (response.ResponseCode == ResponseConstants.R00)
-                        {
-                            await _profileRepository.UpdateProfileStatusAsync(request.ProfileId, Muharaunda.Core.Constants.SystemWideConstants.Statuses.Deceased);
-
-                            var createdFuneral = await _funeralRepository.GetFuneralDetailsByProfileIdAsync(request.ProfileId);
-
-                            if (createdFuneral.ResponseCode == ResponseConstants.R00)
-                            {
-                                response.ResponseData = createdFuneral.ResponseData;
-                            }
-                        }
-
-
-                    }
-                    else
-                    {
-                        response.ResponseMessage = ResponseConstants.CREATE_FUNERAL_REQUEST_INVALID;
-
-                        foreach (var error in requestValidation.Errors)
-                        {
-                            response.Errors.Add(error.ErrorMessage);
-                        }
-                    }
-
-                }
-                else
+                if (!(getProfileResponse.ResponseCode == ResponseConstants.R00 && getProfileResponse.ResponseData.Count == 1))
                 {
                     response.ResponseCode = ResponseConstants.R404;
                     response.ResponseMessage = ResponseConstants.PROFILE_NOT_FOUND;
+                    return response;
 
                 }
+
+
+                var FuneralId = Guid.NewGuid();
+
+                var funeral = new Funeral()
+                {
+                    id = FuneralId,
+                    FuneralId = FuneralId,
+                    Profile = getProfileResponse.ResponseData[0],
+                    Address = request.Address,
+                    DateOfDeath = request.DateOfDeath,
+                    Audit = new Audit()
+                    {
+                        Created = DateTime.Now
+                    },
+                    Pk = request.ProfileId.ToString()
+                };
+                var requestValidation = _validator.Validate(funeral);
+
+                if (!requestValidation.IsValid)
+                {
+                    response.ResponseCode = ResponseConstants.R01;
+
+                    response.ResponseMessage = ResponseConstants.CREATE_FUNERAL_REQUEST_INVALID;
+
+                    foreach (var error in requestValidation.Errors)
+                    {
+                        response.Errors.Add(error.ErrorMessage);
+                    }
+                    return response;
+                }
+
+
+                response = await _funeralRepository.CreateFuneralAsync(funeral);
+
+                if (response.ResponseCode == ResponseConstants.R00)
+                {
+                    await _profileRepository.UpdateProfileStatusAsync(request.ProfileId, Muharaunda.Core.Constants.SystemWideConstants.Statuses.Deceased);
+
+                    var createdFuneral = await _funeralRepository.GetFuneralDetailsByProfileIdAsync(request.ProfileId);
+
+                    if (createdFuneral.ResponseCode == ResponseConstants.R00)
+                    {
+                        response.ResponseData = createdFuneral.ResponseData;
+                    }
+                }
+                return response;
+
+
+
+
+
 
 
 
@@ -105,11 +107,12 @@ namespace Munharaunda.Application.Orchestration.Services
 
                 response.ResponseCode = ResponseConstants.R500;
                 response.ResponseMessage = ex.Message;
+                return response;
 
 
             }
 
-            return response;
+            
         }
 
         public async Task<ResponseModel<bool>> DeleteFuneralAsync(int profileId)
@@ -122,7 +125,7 @@ namespace Munharaunda.Application.Orchestration.Services
         public async Task<ResponseModel<Funeral>> GetFuneralDetailsByFuneralIdAsync(string funeralId)
         {
             return await _funeralRepository.GetFuneralDetailsByFuneralIdAsync(funeralId);
-            
+
         }
 
         public async Task<ResponseModel<Funeral>> GetFuneralDetailsByProfileIdAsync(int profileId)
@@ -157,7 +160,7 @@ namespace Munharaunda.Application.Orchestration.Services
             }
         }
 
-        public async  Task<ResponseModel<bool>> UpdateFuneralAsync(Funeral funeral)
+        public async Task<ResponseModel<bool>> UpdateFuneralAsync(Funeral funeral)
         {
             var response = CommonUtilites.GenerateResponseModel<bool>();
 
@@ -174,14 +177,14 @@ namespace Munharaunda.Application.Orchestration.Services
 
         }
 
-        public async  Task<ResponseModel<bool>> UpdateProfiles(string funeralId)
+        public async Task<ResponseModel<bool>> UpdateProfiles(string funeralId)
         {
             var response = CommonUtilites.GenerateResponseModel<bool>();
 
-           
+
             return await _funeralRepository.UpdateProfiles(funeralId);
 
-            
+
         }
     }
 }
