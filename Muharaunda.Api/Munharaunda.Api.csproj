@@ -21,6 +21,9 @@
     <ProjectReference Include="..\Munharaunda.Application\Munharaunda.Application.csproj" />
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.0" />
   </ItemGroup>
+  <ItemGroup>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </ItemGroup>
   
 
 </Project>
