@@ -82,7 +82,7 @@ namespace Munharaunda.Test
         }
 
         [Theory]
-        [InlineData(ResponseConstants.R400, 0)]
+        [InlineData(ResponseConstants.R404, 0)]
         [InlineData(ResponseConstants.R00, 1)]
         public async Task TestFuneralCreationWhenNoProfileFound(string responseCode, int runtimes)
         {
