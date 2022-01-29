@@ -2,13 +2,16 @@
 using Muharaunda.Core.Constants;
 using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
+using Muharaunda.Domain.Models;
 using Munharaunda.Application.Orchestration.Contracts;
 using Munharaunda.Application.Validators.Implementations;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
 using Munharaunda.Core.Utilities;
+using Munharaunda.Domain.Contracts;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Profile = Muharaunda.Core.Models.Profile;
 
@@ -19,9 +22,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
         private readonly IProfile _repository;
         private readonly IMapper _mapper;
         private readonly ProfileValidator _validator;
-        private readonly IAppSettings _appSettings;
+        private readonly Muharaunda.Core.Contracts.IAppSettings _appSettings;
 
-        public ProfileService(IProfile repository, IMapper mapper, ProfileValidator validator, IAppSettings appSettings)
+        public ProfileService(IProfile repository, IMapper mapper, ProfileValidator validator, Muharaunda.Core.Contracts.IAppSettings appSettings)
         {
             _repository = repository;
             _mapper = mapper;
@@ -65,7 +68,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
             return response;
         }
 
-        public async Task<ResponseModel<ProfileBase>> CreateProfileAsync(CreateProfileRequest request, bool checkUnique = false)
+        public async Task<ResponseModel<ProfileBase>> CreateProfileAsync(ProfileBase request, bool checkUnique = false)
         {
             var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
@@ -90,7 +93,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
                         request.ActivationDate = CalculateProfileActivationDate();
                     }
 
-                    request.Created = DateTime.Now.ToLocalTime();
+                    request.Audit.Created = DateTime.Now.ToLocalTime();
 
                     response = await _repository.CreateProfileAsync(request, checkUnique);
                 }
@@ -123,7 +126,7 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
         public async Task<ResponseModel<bool>> DeleteProfileAsync(int profileId)
         {
-            var GetProfileResponse = CommonUtilites.GenerateResponseModel<Profile>();
+            var GetProfileResponse = CommonUtilites.GenerateResponseModel<ProfileBase>();
             var response = CommonUtilites.GenerateResponseModel<bool>();
 
 
@@ -156,9 +159,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
             }
         }
 
-        public async Task<ResponseModel<Profile>> GetListOfActiveProfilesAsync()
+        public async Task<ResponseModel<ProfileBase>> GetListOfActiveProfilesAsync()
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
             try
             {
@@ -191,9 +194,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
         }
 
-        public async Task<ResponseModel<Profile>> GetUnauthorisedProfilesAsync()
+        public async Task<ResponseModel<ProfileBase>> GetUnauthorisedProfilesAsync()
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
             try
             {
@@ -226,9 +229,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
         }
 
 
-        public async Task<ResponseModel<Profile>> GetListOfDependentsByProfileAsync(int profileId)
+        public async Task<ResponseModel<ProfileBase>> GetListOfDependentsByProfileAsync(int profileId)
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
             try
             {
@@ -248,9 +251,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
         }
 
-        public async Task<ResponseModel<Profile>> GetNextOfKindByProfileAsync(int profileId)
+        public async Task<ResponseModel<ProfileBase>> GetNextOfKindByProfileAsync(int profileId)
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
             try
             {
@@ -270,9 +273,9 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
 
 
-        public async Task<ResponseModel<Profile>> GetProfileDetailsAsync(int profileId)
+        public async Task<ResponseModel<ProfileBase>> GetProfileDetailsAsync(int profileId)
         {
-            var response = CommonUtilites.GenerateResponseModel<Profile>();
+            var response = CommonUtilites.GenerateResponseModel<ProfileBase>();
 
             try
             {
@@ -332,6 +335,22 @@ namespace Munharaunda.Application.Orchestration.Implementation
 
             return await _repository.UpdateProfileStatusAsync(profileId,newStatus);
         }
+        
+      
+
+        public async Task CreateBulkProfilesAsync(List<ProfileBase> profiles)
+        {
+           await _repository.CreateBulkProfilesAsync(profiles);
+        }
+
+        public async Task UpdateBulkProfilesAsync(List<ProfileBase> profiles)
+        {
+            await _repository.UpdateBulkProfilesAsync(profiles);
+        }
+
+
+
+
 
 
 

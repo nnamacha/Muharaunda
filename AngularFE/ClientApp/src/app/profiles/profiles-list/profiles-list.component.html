@@ -1,22 +1,29 @@
 <div class="container-fluid">
   <div class="row">
-    <div class="col-xs 12">
-      <button class="btn btn-success">New Profile</button>
-    </div>
-    <hr>
-    <div class="row">
-      <div class="col-xs-12">
-          <a href="#" class="list-group-item clearfix" *ngFor="let profile of profiles">
-            <div class="pull-left">
+     <div class="col-xs 12">
+        <button class="btn btn-success">New Profile</button>
+     </div>
+    
+  </div>
+  
+  <div class="row" >
+     <div class="col-xs-5" >
+      <hr>
+        <a href="#" class="list-group-item clearfix" *ngFor="let profile of profiles">
+           <div class="pull-left">
               <h4 class="list-group-item-heading">{{profile.FirstName}} {{profile.FirstName}} </h4>
               <p class="list-group-item-text">Profile number {{profile.ProfileId}}</p>
-            </div>
-            <span class="pull-right">
-              <img src="{{profile.Image}}" alt="" class="img-responsive" style="max-height: 50px;"> 
-            </span>
-          </a>
+           </div>
+           <span class="pull-right">
+           <img src="{{profile.Image}}" alt="" class="img-responsive" style="max-height: 50px;"> 
+           
+           </span>
+        </a>
+        
+     </div>
+     
+     <div class="col-xs-7">
         <app-profile-detail></app-profile-detail>
-      </div>
-    </div>
+     </div>
   </div>
 </div>

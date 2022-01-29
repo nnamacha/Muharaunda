@@ -7,6 +7,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Munharaunda.Application;
 using Microsoft.Identity.Web;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Munharaunda.Api.Extensions;
+
 namespace Muharaunda.Api
 {
     public class Startup
@@ -21,8 +24,10 @@ namespace Muharaunda.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //    .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
+            services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
+            
+
+           
             services.AddControllers();
 
             services.AddSwaggerGen(c =>
@@ -52,9 +57,9 @@ namespace Muharaunda.Api
 
             app.UseRouting();
 
-            //app.UseAuthentication();
+            app.UseAuthentication();
 
-            //app.UseAuthorization();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

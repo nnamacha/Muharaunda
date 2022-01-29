@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31129.286
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Munharaunda.Api", "Muharaunda.Api\Munharaunda.Api.csproj", "{3074142B-288D-4ACD-A12B-3ABB4FD5B4E4}"
 EndProject
@@ -12,8 +12,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Munharaunda.Test", "Munharaunda.Test\Munharaunda.Test.csproj", "{72F4F79F-F710-46B5-B7E5-AEA779A25556}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Munharaunda.Infrastructure", "Munharaunda.Resources\Munharaunda.Infrastructure.csproj", "{56B86712-B152-4341-8ECE-124285735224}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngularFE", "AngularFE\AngularFE.csproj", "{95E0959A-D5F8-4B91-B3CD-AF118B86AC83}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +39,6 @@ Global
 		{56B86712-B152-4341-8ECE-124285735224}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56B86712-B152-4341-8ECE-124285735224}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56B86712-B152-4341-8ECE-124285735224}.Release|Any CPU.Build.0 = Release|Any CPU
-		{95E0959A-D5F8-4B91-B3CD-AF118B86AC83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{95E0959A-D5F8-4B91-B3CD-AF118B86AC83}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{95E0959A-D5F8-4B91-B3CD-AF118B86AC83}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{95E0959A-D5F8-4B91-B3CD-AF118B86AC83}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

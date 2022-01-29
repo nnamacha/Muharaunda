@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Models;
 
@@ -16,7 +15,7 @@ namespace Munharaunda.Core.Utilities
 
         public static IActionResult GenerateResponse<T>(ResponseModel<T> response)
         {
-            if (response.ResponseCode == ResponseConstants.R00 )
+            if (response.ResponseCode == ResponseConstants.R00)
             {
                 return new OkObjectResult(response.ResponseData);
             }
@@ -33,5 +32,7 @@ namespace Munharaunda.Core.Utilities
                 return new BadRequestObjectResult(response.ResponseMessage);
             }
         }
+
+
     }
 }

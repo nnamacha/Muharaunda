@@ -1,12 +1,15 @@
 ﻿using Moq;
 using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
+using Muharaunda.Domain.Models;
 using Munharaunda.Application.Orchestration.Services;
 using Munharaunda.Application.Validators.Implementations;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Models;
 using Munharaunda.Core.Utilities;
 using Munharaunda.Domain.Contracts;
+using Munharaunda.Domain.Dtos;
+using Munharaunda.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +24,7 @@ namespace Munharaunda.Test
     {
         private Profile profileRecord;
         private Funeral funeralRecord;
+        private CreateFuneralRequest request;
         private FuneralService funeralService;
         private readonly Mock<IProfileRepository> _profileRepository;
         private readonly Mock<IFuneralRepository> _funeralRepository;
@@ -34,7 +38,7 @@ namespace Munharaunda.Test
                 ProfileId = 1,
                 FirstName = "Nicholas",
                 Surname = "Namacha",
-                DateOfBirth = "24-Aug-1982",
+                DateOfBirth = DateTime.Parse("24-Aug-1982"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -43,19 +47,28 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit()
+                {
+                    CreatedBy = 1
+
+                }
 
 
             };
 
             funeralRecord = new Funeral()
             {
-                ProfileId = 1,
+                Profile = profileRecord,
                 Address = "30-33 crescent",
                 DateOfDeath = DateTime.Parse("2021-10-03T00:00:36.597Z")
             };
 
-
+            request = new CreateFuneralRequest()
+            {
+                DateOfDeath = DateTime.Now,
+                Address = "21 Jump Street",
+                ProfileId = 1
+            };
             _profileRepository = new Mock<IProfileRepository>();
 
             _funeralRepository = new Mock<IFuneralRepository>();
@@ -75,7 +88,7 @@ namespace Munharaunda.Test
         {
             
 
-            var getProfileResponse = new ResponseModel<Profile>()
+            var getProfileResponse = new ResponseModel<ProfileBase>()
             {
                 ResponseCode = responseCode,
                  
@@ -97,7 +110,7 @@ namespace Munharaunda.Test
             _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(getProfileResponse);
             _funeralRepository.Setup(x => x.GetFuneralDetailsByProfileIdAsync(It.IsAny<int>())).ReturnsAsync(getFuneralDetailsByProfileId);
 
-            var result = await funeralService.CreateFuneralAsync(funeralRecord);
+            var result = await funeralService.CreateFuneralAsync(request);
 
             Assert.Equal(result.ResponseCode, responseCode);
 

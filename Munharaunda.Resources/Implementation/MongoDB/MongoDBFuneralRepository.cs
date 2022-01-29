@@ -169,5 +169,15 @@ namespace Munharaunda.Infrastructure.Implementation
 
             return response;
         }
+
+        public Task<ResponseModel<Funeral>> GetFuneralDetailsByFuneralIdAsync(string funeralId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ResponseModel<bool>> UpdateProfiles(string funeralId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

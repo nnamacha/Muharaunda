@@ -3,12 +3,14 @@ using Microsoft.Extensions.Configuration;
 using Moq;
 using Muharaunda.Core.Contracts;
 using Muharaunda.Core.Models;
+using Muharaunda.Domain.Models;
 using Munharaunda.Application.Orchestration.Implementation;
 using Munharaunda.Application.Validators.Implementations;
 using Munharaunda.Core.Constants;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Core.Models;
 using Munharaunda.Domain.Contracts;
+using Munharaunda.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,29 +25,29 @@ namespace Munharaunda.Test
 
     public class UserTest
     {
-        private CreateProfileRequest ProfileRecord;
+        private ProfileBase ProfileRecord;
         private Mock<IProfileRepository> _profileRepository;
         private Mock<IAppSettings> _appSettings;
         private Mock<IMapper> _mapper;
         private readonly Mock<IConfiguration> _configuration;
         private readonly ProfileService profilesImplementation;
-        private List<Profile> profiles = new List<Profile>();
-        private List<Profile> activeProfiles = new List<Profile>();
-        private List<Profile> unauthorisedProfiles;
-        private List<Profile> dependentProfiles;
+        private List<ProfileBase> profiles = new List<ProfileBase>();
+        private List<ProfileBase> activeProfiles = new List<ProfileBase>();
+        private List<ProfileBase> unauthorisedProfiles;
+        private List<ProfileBase> dependentProfiles;
         private ProfileValidator validator;
         private readonly DependentValidator dependentValidator;
-        private ResponseModel<Profile> resultGetProfileDetails;
+        private ResponseModel<ProfileBase> resultGetProfileDetails;
 
 
         public UserTest()
         {
-            ProfileRecord = new CreateProfileRequest()
+            ProfileRecord = new CosmosProfile()
             {
                 ProfileId = 1,
                 FirstName = "Nicholas",
                 Surname = "Namacha",
-                DateOfBirth = "24-Aug-1982",
+                DateOfBirth = (DateTime.Parse("24-Aug-1982")),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -54,7 +56,12 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit()
+                {
+                    
+                        CreatedBy = 1
+                    
+                }
 
 
             };
@@ -66,7 +73,7 @@ namespace Munharaunda.Test
                 ProfileId = 2,
                 FirstName = "Marvelous",
                 Surname = "Namacha",
-                DateOfBirth = "15-May-1985",
+                DateOfBirth = DateTime.Parse("15-May-1985"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -76,7 +83,12 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit()
+                {
+
+                    CreatedBy = 1
+
+                }
 
 
             });
@@ -85,7 +97,7 @@ namespace Munharaunda.Test
                 ProfileId = 3,
                 FirstName = "Patick",
                 Surname = "Namacha",
-                DateOfBirth = "15-May-1985",
+                DateOfBirth = DateTime.Parse("15-May-1985"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -95,7 +107,12 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Unauthorised,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit()
+                {
+
+                    CreatedBy = 1
+
+                }
 
 
             });
@@ -104,7 +121,7 @@ namespace Munharaunda.Test
                 ProfileId = 4,
                 FirstName = "Leon",
                 Surname = "Mapemba",
-                DateOfBirth = "15-May-1985",
+                DateOfBirth = DateTime.Parse("15-May-1985"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -114,7 +131,7 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Terminated,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit() { CreatedBy = 1 }
 
 
             });
@@ -124,7 +141,7 @@ namespace Munharaunda.Test
                 ProfileId = 5,
                 FirstName = "Nick",
                 Surname = "Namacha",
-                DateOfBirth = "15-May-1985",
+                DateOfBirth = DateTime.Parse("15-May-1985"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -134,7 +151,7 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Flagged,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit() { CreatedBy = 1 }
 
 
             });
@@ -144,7 +161,7 @@ namespace Munharaunda.Test
                 ProfileId = 6,
                 FirstName = "Nick",
                 Surname = "Namacha",
-                DateOfBirth = "15-May-1985",
+                DateOfBirth = DateTime.Parse("15-May-1985"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -154,7 +171,7 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Flagged,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit() { CreatedBy = 1 }
 
 
             });
@@ -172,10 +189,10 @@ namespace Munharaunda.Test
 
             };
 
-            resultGetProfileDetails = new ResponseModel<Profile>
+            resultGetProfileDetails = new ResponseModel<ProfileBase>
             {
                 ResponseCode = ResponseConstants.R00,
-                ResponseData = new List<Profile>()
+                ResponseData = new List<ProfileBase>()
 
             };
 
@@ -199,7 +216,7 @@ namespace Munharaunda.Test
 
             _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(resultGetProfileDetails);
 
-            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<ProfileBase>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
 
             _appSettings.SetupGet(x => x.MinAgeInMonths).Returns(3);
 
@@ -221,7 +238,7 @@ namespace Munharaunda.Test
 
         public void TestNextOfKinValidation(bool valid, string expected)
         {
-            var result = new ResponseModel<Profile>
+            var result = new ResponseModel<ProfileBase>
             {
                 ResponseCode = expected,
 
@@ -300,14 +317,14 @@ namespace Munharaunda.Test
         [InlineData(30, false)]
         public void TestDependentAgeValidation(int age, bool Validation)
         {
-            var dob = DateTime.Now.AddYears(age * -1);
+            
 
-            var dependent = new CreateProfileRequest()
+            var dependent = new CosmosProfile()
             {
                 ProfileId = 2,
                 FirstName = "Marvelous",
                 Surname = "Namacha",
-                DateOfBirth = dob.ToString(),
+                DateOfBirth = DateTime.Now.AddYears(age * -1),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -316,7 +333,7 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit() { CreatedBy = 1 }
             };
 
             var validation = dependentValidator.Validate(dependent);
@@ -331,14 +348,14 @@ namespace Munharaunda.Test
         [InlineData(10, ProfileTypes.Member, false)]
         public void TestDependentProfileTypeValidation(int age, ProfileTypes profileType, bool Validation)
         {
-            var dob = DateTime.Now.AddYears(age * -1);
+            
 
-            var dependent = new CreateProfileRequest()
+            var dependent = new CosmosProfile()
             {
                 ProfileId = 2,
                 FirstName = "Marvelous",
                 Surname = "Namacha",
-                DateOfBirth = dob.ToString(),
+                DateOfBirth = DateTime.Now.AddYears(age * -1),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -348,7 +365,7 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit() { CreatedBy = 1 }
             };
 
             var validation = dependentValidator.Validate(dependent);
@@ -369,7 +386,7 @@ namespace Munharaunda.Test
             };
 
             _appSettings.SetupGet(x => x.ProfileCreationAutoAuthorisation).Returns(true);
-            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<ProfileBase>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
 
             var result = await profilesImplementation.CreateProfileAsync(ProfileRecord);
 
@@ -383,7 +400,7 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R400)]
         public async Task TestProfileDelete(string repoResponse)
         {
-            var GetProfileDetailsRepoResponse = new ResponseModel<Profile>
+            var GetProfileDetailsRepoResponse = new ResponseModel<ProfileBase>
             {
                 ResponseCode = repoResponse,
             };
@@ -422,7 +439,7 @@ namespace Munharaunda.Test
                 ProfileId = 1,
                 FirstName = "Nicholas",
                 Surname = "Namacha",
-                DateOfBirth = "24-Aug-1982",
+                DateOfBirth = DateTime.Parse("24-Aug-1982"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -431,7 +448,7 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit() { CreatedBy = 1 }
 
 
             };
@@ -470,7 +487,7 @@ namespace Munharaunda.Test
                 ProfileId = 1,
                 FirstName = "Nicholas",
                 Surname = "Namacha",
-                DateOfBirth = "24-Aug-1982",
+                DateOfBirth = DateTime.Parse("24-Aug-1982"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -479,7 +496,7 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit() { CreatedBy = 1 }
 
 
             };
@@ -504,7 +521,7 @@ namespace Munharaunda.Test
         public async Task TestCreateProfileAutoAuthorizationFlag(string repoResponse, Statuses profileStatus)
         {
 
-            var getProfileRepoResponse = new ResponseModel<Profile>
+            var getProfileRepoResponse = new ResponseModel<ProfileBase>
             {
                 ResponseCode = ResponseConstants.R00,
 
@@ -532,7 +549,7 @@ namespace Munharaunda.Test
                 ProfileId = 1,
                 FirstName = "Nicholas",
                 Surname = "Namacha",
-                DateOfBirth = "24-Aug-1982",
+                DateOfBirth = DateTime.Parse("24-Aug-1982"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -541,7 +558,7 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit() { CreatedBy = 1 }
 
 
             };
@@ -551,7 +568,7 @@ namespace Munharaunda.Test
             getProfileRepoResponse.ResponseData.Add(ProfileRecord);
             _appSettings.SetupGet(x => x.ProfileCreationAutoAuthorisation).Returns(true);
 
-            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<CreateProfileRequest>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
+            _profileRepository.Setup(x => x.CreateProfileAsync(It.IsAny<ProfileBase>(), It.IsAny<bool>())).ReturnsAsync(userCreationRepoResponse);
 
             _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(getProfileRepoResponse);
 
@@ -568,9 +585,9 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R400)]
         public async Task TestGetListOfActiveProfiles(string repoResponse)
         {
-            var listOfProfiles = new ResponseModel<Profile>()
+            var listOfProfiles = new ResponseModel<ProfileBase>()
             {
-                ResponseData = new List<Profile>()
+                ResponseData = new List<ProfileBase>()
             };
 
             if (repoResponse == ResponseConstants.R00)
@@ -595,9 +612,9 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R400)]
         public async Task TestGetListOfUnauthorisedProfiles(string repoResponse)
         {
-            var listOfProfiles = new ResponseModel<Profile>()
+            var listOfProfiles = new ResponseModel<ProfileBase>()
             {
-                ResponseData = new List<Profile>()
+                ResponseData = new List<ProfileBase>()
             };
 
             if (repoResponse == ResponseConstants.R00)
@@ -622,9 +639,9 @@ namespace Munharaunda.Test
         [InlineData(ResponseConstants.R400)]
         public async Task TestGetListOfDependentsByProfile(string repoResponse)
         {
-            var listOfProfiles = new ResponseModel<Profile>()
+            var listOfProfiles = new ResponseModel<ProfileBase>()
             {
-                ResponseData = new List<Profile>()
+                ResponseData = new List<ProfileBase>()
             };
 
             if (repoResponse == ResponseConstants.R00)
@@ -658,7 +675,7 @@ namespace Munharaunda.Test
                 ProfileId = 1,
                 FirstName = "Nicholas",
                 Surname = "Namacha",
-                DateOfBirth = "24-Aug-1982",
+                DateOfBirth = DateTime.Parse("24-Aug-1982"),
                 IdentificationType = IdentificationTypes.Passport,
                 IdentificationNumber = "123458690",
                 MobileNumber = "+27846994000",
@@ -667,7 +684,7 @@ namespace Munharaunda.Test
                 NextOfKin = 2,
                 ProfileStatus = Statuses.Active,
                 Address = "15-10 Test Road",
-                CreatedBy = 1
+                Audit = new Audit() { CreatedBy = 1 }
 
 
             };

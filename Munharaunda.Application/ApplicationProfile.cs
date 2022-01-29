@@ -1,4 +1,5 @@
 ﻿using Muharaunda.Core.Models;
+using Muharaunda.Domain.Models;
 using Munharaunda.Core.Dtos;
 using Munharaunda.Domain.Models;
 

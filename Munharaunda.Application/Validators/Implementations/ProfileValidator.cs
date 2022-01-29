@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Muharaunda.Core.Constants;
 using Muharaunda.Core.Contracts;
+using Muharaunda.Domain.Models;
 using Munharaunda.Core.Dtos;
 using System;
 using System.Net.Mail;
@@ -8,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace Munharaunda.Application.Validators.Implementations
 {
-    public class ProfileValidator : AbstractValidator<CreateProfileRequest>
+    public class ProfileValidator : AbstractValidator<IProfileBase>
     {
-        private readonly IAppSettings _appSettings;
+        private readonly Muharaunda.Core.Contracts.IAppSettings _appSettings;
         private readonly IProfile _profileRepository;
 
-        public ProfileValidator(IAppSettings appSettings, IProfile profileRepository)
+        public ProfileValidator(Muharaunda.Core.Contracts.IAppSettings appSettings, IProfile profileRepository)
         {
             _appSettings = appSettings;
             _profileRepository = profileRepository;
@@ -44,7 +45,7 @@ namespace Munharaunda.Application.Validators.Implementations
 
             RuleFor(x => x.Address).NotNull();
 
-            RuleFor(x => x.CreatedBy).NotNull();
+            RuleFor(x => x.Audit.CreatedBy).NotNull();
 
 
         }
@@ -82,13 +83,13 @@ namespace Munharaunda.Application.Validators.Implementations
             }
 
         }
-        private bool IsValidDateOfBirth(string dob)
+        private bool IsValidDateOfBirth(DateTime dob)
         {
             try
             {
-                var dateOfBirth = Convert.ToDateTime(dob);
+                
 
-                var ageInmonths = dateOfBirth.Subtract(DateTime.Now).Days / (365.2425 / 12) * -1;
+                var ageInmonths = dob.Subtract(DateTime.Now).Days / (365.2425 / 12) * -1;
 
                 return (_appSettings.MinAgeInMonths <= ageInmonths);
 

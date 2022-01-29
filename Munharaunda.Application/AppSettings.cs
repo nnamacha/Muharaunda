@@ -3,7 +3,7 @@ using Muharaunda.Core.Contracts;
 
 namespace Munharaunda.Application
 {
-    public class AppSettings : IAppSettings
+    public class AppSettings : Muharaunda.Core.Contracts.IAppSettings
     {
         private readonly int minAgeInMonths;
         private readonly int lengthForMobileNumber;
