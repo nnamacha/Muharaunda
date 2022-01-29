@@ -141,6 +141,23 @@ namespace Munharaunda.Test
 
         }
 
+        [Fact]
+        public async Task CreateFuneral_ProfileNotFound()
+        {
+            var getProfileResponse = CommonUtilites.GenerateResponseModel<ProfileBase>();
+            var getFuneralDetailsByProfileId = CommonUtilites.GenerateResponseModel<Funeral>();
+            var createFuneralResponse = new ResponseModel<Funeral>();
+
+            
+
+            _profileRepository.Setup(x => x.GetProfileDetailsAsync(It.IsAny<int>())).ReturnsAsync(getProfileResponse);
+            _funeralRepository.Setup(x => x.CreateFuneralAsync(It.IsAny<Funeral>())).ReturnsAsync(createFuneralResponse);
+            _funeralRepository.Setup(x => x.GetFuneralDetailsByProfileIdAsync(It.IsAny<int>())).ReturnsAsync(getFuneralDetailsByProfileId);
+
+            var result = await funeralService.CreateFuneralAsync(request);
+            Assert.Equal(result.ResponseCode, ResponseConstants.R404);
+        }
+
 
     }
 }

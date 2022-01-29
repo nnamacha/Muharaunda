@@ -39,7 +39,7 @@ namespace Munharaunda.Application.Orchestration.Services
 
                 var getProfileResponse = await _profileRepository.GetProfileDetailsAsync(request.ProfileId);
 
-                if (!(getProfileResponse.ResponseCode == ResponseConstants.R00 && getProfileResponse.ResponseData.Count == 1))
+                if (getProfileResponse.ResponseCode == ResponseConstants.R00 && getProfileResponse.ResponseData.Count == 0)
                 {
                     response.ResponseCode = ResponseConstants.R404;
                     response.ResponseMessage = ResponseConstants.PROFILE_NOT_FOUND;
