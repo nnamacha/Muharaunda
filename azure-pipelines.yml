@@ -47,7 +47,8 @@ steps:
   inputs:
     command: 'test'
     projects: '**/Munharaunda.Test.csproj'
-    arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./MyCoverage/'
+    arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger trx'
+    testRunTitle: 'dotnet test'
     publishTestResults: true
  
 - task: PublishCodeCoverageResults@1
