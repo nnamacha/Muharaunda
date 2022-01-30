@@ -24,6 +24,13 @@ steps:
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'sonarcloud'
+    organization: 'nnamacha0157'
+    scannerMode: 'MSBuild'
+    projectKey: 'nnamacha0157_TestAzureDevOps'
+    projectName: 'Munharaunda'
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
@@ -45,13 +52,7 @@ steps:
     codeCoverageTool: 'Cobertura'
     summaryFileLocation: '$(Build.SourcesDirectory)/**/MyCoverage/coverage.cobertura.xml'
     failIfCoverageEmpty: true
-- task: SonarCloudPrepare@1
-  inputs:
-    SonarCloud: 'sonarcloud'
-    organization: 'nnamacha0157'
-    scannerMode: 'MSBuild'
-    projectKey: 'nnamacha0157_TestAzureDevOps'
-    projectName: 'Munharaunda'
+
 - task: SonarCloudAnalyze@1
 - task: SonarCloudPublish@1
   inputs:
