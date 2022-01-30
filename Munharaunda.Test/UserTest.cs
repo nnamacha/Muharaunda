@@ -641,21 +641,18 @@ namespace Munharaunda.Test
         {
             var listOfProfiles = new ResponseModel<ProfileBase>()
             {
-                ResponseData = new List<ProfileBase>()
+                ResponseData = new List<ProfileBase>(),
+                ResponseCode = repoResponse
+                
             };
 
-            if (repoResponse == ResponseConstants.R00)
-            {
-                listOfProfiles.ResponseData = dependentProfiles.ToList(); ;
-            }
-            else
-            {
-                listOfProfiles.ResponseData = profiles.ToList(); ;
-            }
+           
 
             _profileRepository.Setup(x => x.GetListOfDependentsByProfileAsync(It.IsAny<int>())).ReturnsAsync(listOfProfiles);
 
             var result = await profilesImplementation.GetListOfDependentsByProfileAsync(1);
+
+            Assert.Equal(repoResponse, result.ResponseCode);
 
 
         }
