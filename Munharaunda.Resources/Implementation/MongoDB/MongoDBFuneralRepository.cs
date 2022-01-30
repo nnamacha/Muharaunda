@@ -21,18 +21,18 @@ namespace Munharaunda.Infrastructure.Implementation
             mongoDb = _mongoClient.GetDatabase("KnowledgeBank");
         }
 
-        public Task<ResponseModel<bool>> AuthoriseFuneralAsync(int FuneralId)
+        public Task<ResponseModel<bool>> AuthoriseFuneralAsync(int funeralId)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<ResponseModel<Funeral>> CreateFuneralAsync(Funeral request)
+        public async Task<ResponseModel<Funeral>> CreateFuneralAsync(Funeral funeral)
         {
             var response = CommonUtilites.GenerateResponseModel<Funeral>();
 
             try
             {
-                await mongoDb.GetCollection<Funeral>("Funeral").InsertOneAsync(request);
+                await mongoDb.GetCollection<Funeral>("Funeral").InsertOneAsync(funeral);
                 
             }
             catch (Exception ex)

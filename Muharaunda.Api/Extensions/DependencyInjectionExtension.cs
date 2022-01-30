@@ -74,7 +74,7 @@ namespace Munharaunda.Api.Extensions
 
             services.AddScoped<IFuneralRepository>(x => funeralRespository);
 
-            services.AddScoped<FuneralValidator>(s => new FuneralValidator(appSettings, funeralRespository));
+            services.AddScoped<FuneralValidator>(s => new FuneralValidator());
 
             services.AddScoped<IProfileService, ProfileService>();
 

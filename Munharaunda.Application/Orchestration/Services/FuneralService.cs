@@ -122,9 +122,9 @@ namespace Munharaunda.Application.Orchestration.Services
 
         }
 
-        public async Task<ResponseModel<bool>> DeleteFuneralAsync(int profileId)
+        public async Task<ResponseModel<bool>> DeleteFuneralAsync(int funeraId)
         {
-            return await _funeralRepository.DeleteFuneralAsync(profileId);
+            return await _funeralRepository.DeleteFuneralAsync(funeraId);
         }
 
 

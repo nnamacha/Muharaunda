@@ -76,7 +76,7 @@ namespace Munharaunda.Test
 
             _appSettings = new Mock<IAppSettings>();
 
-            validator = new FuneralValidator(_appSettings.Object, _funeralRepository.Object);
+            validator = new FuneralValidator();
 
             _validator = new Mock<IValidator<Funeral>>(MockBehavior.Loose);
 

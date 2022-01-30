@@ -9,14 +9,14 @@ namespace Munharaunda.Application.Validators.Implementations
 {
     public class FuneralValidator : AbstractValidator<Funeral>
     {
-        private readonly Muharaunda.Core.Contracts.IAppSettings _appSettings;
-        private readonly IFuneralRepository _funeralRepository;
+        //private readonly Muharaunda.Core.Contracts.IAppSettings _appSettings;
+        //private readonly IFuneralRepository _funeralRepository;
 
-        public FuneralValidator(Muharaunda.Core.Contracts.IAppSettings appSettings, IFuneralRepository funeralRepository)
+        public FuneralValidator(/*Muharaunda.Core.Contracts.IAppSettings appSettings, IFuneralRepository funeralRepository*/)
         {
-            _appSettings = appSettings;
+            //_appSettings = appSettings;
 
-            _funeralRepository = funeralRepository;
+           // _funeralRepository = funeralRepository;
 
             //RuleFor(x => x.Profile.ProfileStatus)
             //    .Must(isActiveProfile);

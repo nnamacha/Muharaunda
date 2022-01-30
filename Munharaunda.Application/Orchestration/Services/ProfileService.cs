@@ -20,14 +20,12 @@ namespace Munharaunda.Application.Orchestration.Implementation
     public class ProfileService : IProfileService
     {
         private readonly IProfile _repository;
-        private readonly IMapper _mapper;
         private readonly ProfileValidator _validator;
         private readonly Muharaunda.Core.Contracts.IAppSettings _appSettings;
 
-        public ProfileService(IProfile repository, IMapper mapper, ProfileValidator validator, Muharaunda.Core.Contracts.IAppSettings appSettings)
+        public ProfileService(IProfile repository, ProfileValidator validator, Muharaunda.Core.Contracts.IAppSettings appSettings)
         {
             _repository = repository;
-            _mapper = mapper;
             _validator = validator;
             _appSettings = appSettings;
         }

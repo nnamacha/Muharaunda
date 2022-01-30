@@ -228,7 +228,7 @@ namespace Munharaunda.Test
 
             dependentValidator = new DependentValidator(_appSettings.Object);
 
-            profilesImplementation = new ProfileService(_profileRepository.Object, _mapper.Object, validator, _appSettings.Object);
+            profilesImplementation = new ProfileService(_profileRepository.Object, validator, _appSettings.Object);
 
 
         }
