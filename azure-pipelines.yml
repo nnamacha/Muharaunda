@@ -31,6 +31,10 @@ steps:
     scannerMode: 'MSBuild'
     projectKey: 'nnamacha0157_TestAzureDevOps'
     projectName: 'Munharaunda'
+    extraProperties: |
+      sonar.exclusions=**/obj/**,**/*.dll
+      sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
+      sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/*.trx
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
