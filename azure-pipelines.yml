@@ -31,30 +31,31 @@ steps:
     scannerMode: 'MSBuild'
     projectKey: 'nnamacha0157_TestAzureDevOps'
     projectName: 'Munharaunda'
+    extraProperties: |
+      sonar.exclusions=**/obj/**,**/*.dll
+      sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
+      sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/*.trx
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
     msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-- task: SonarCloudAnalyze@1
-- task: SonarCloudPublish@1
-  inputs:
-    pollingTimeoutSec: '300'
+
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
   inputs:
     command: 'test'
     projects: '**/Munharaunda.Test.csproj'
-    arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./MyCoverage/'
+    arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger trx'
+    testRunTitle: 'dotnet test'
     publishTestResults: true
- 
-- task: PublishCodeCoverageResults@1
-  displayName: 'Publish Code Coverage Results'
+
+- task: SonarCloudAnalyze@1
+- task: SonarCloudPublish@1
   inputs:
-    codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(Build.SourcesDirectory)/**/MyCoverage/coverage.cobertura.xml'
-    failIfCoverageEmpty: true
+    pollingTimeoutSec: '300'
+
 
    
 
